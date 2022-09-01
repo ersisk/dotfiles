@@ -10,9 +10,10 @@ Warning: If you want to give these dotfiles a try, you should first fork this re
 [Oh My Zsh](https://ohmyz.sh/)
 [caffeine](https://www.atechtown.com/caffeine-for-ubuntu/)
 
-##Nvim
+## Nvim
+
 [AstroNvim](https://astronvim.github.io/)
 
-## License
+# License
 
 [MIT](https://choosealicense.com/licenses/mit/)
