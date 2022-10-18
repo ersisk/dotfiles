@@ -1,14 +1,15 @@
 local config = {
 
   -- Set colorscheme
-  colorscheme = "darcula",
+  --colorscheme = "darcula",
+  colorscheme = "default_theme",
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)
   options = {
     opt = {
-      relativenumber = false, -- sets vim.opt.relativenumber
-      colorcolumn = '120',
-      termguicolors= true
+      relativenumber = true, -- sets vim.opt.relativenumber
+      colorcolumn = "120",
+      termguicolors = true,
     },
     g = {
       mapleader = " ", -- sets vim.g.mapleader
@@ -60,8 +61,8 @@ local config = {
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
-      {'jwalton512/vim-blade'},
-      {'doums/darcula'},
+      { "jwalton512/vim-blade" },
+      { "doums/darcula" },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
@@ -90,7 +91,7 @@ local config = {
         null_ls.builtins.formatting.fprettify,
         -- Set a linter
         null_ls.builtins.diagnostics.rubocop,
-        null_ls.builtins.diagnostics.phpcs
+        null_ls.builtins.diagnostics.phpcs,
       }
       -- set up null-ls's on_attach function
       config.on_attach = function(client)
@@ -106,10 +107,10 @@ local config = {
       return config -- return final config table
     end,
     treesitter = {
-      ensure_installed = { "lua" , "php"},
-      indent={
-        enable=true
-      }
+      ensure_installed = { "lua", "php" },
+      indent = {
+        enable = true,
+      },
     },
     ["nvim-lsp-installer"] = {
       ensure_installed = { "sumneko_lua" },
