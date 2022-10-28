@@ -37,15 +37,14 @@ Plug 'ncm2/ncm2'
 Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-path'
 Plug 'phpactor/ncm2-phpactor'
-Plug 'doums/darcula'
 
 let g:deoplete#enable_at_startup = 1
 call plug#end()
-
+let g:colors_name="onedark"
 set number
 syntax enable
 set background=dark
-colorscheme darcula
+colorscheme onedark
 set laststatus=2
 set tabstop=4
 set softtabstop=0 noexpandtab
