@@ -118,4 +118,6 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # Initialise zulu plugin manager
 #source "${ZULU_DIR:-"${ZDOTDIR:-$HOME}/.zulu"}/core/zulu"
 #zulu init
-
+alias vim="nvim"
+alias vi="nvim"
+export EDITOR="nvim"
