@@ -1,7 +1,7 @@
 local config = {
   require("onedark").setup {
     -- Main options --
-    style = "darker", -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+    style = "warmer", -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
     transparent = false, -- Show/hide background
     term_colors = true, -- Change terminal color as per the selected theme style
     ending_tildes = false, -- Show the end-of-buffer tildes. By default they are hidden
@@ -26,10 +26,9 @@ local config = {
     lualine = {
       transparent = false, -- lualine center bar transparency
     },
-
+    colors = {},
+    highlights = {},
     -- Custom Highlights --
-    colors = {}, -- Override default colors
-    highlights = {}, -- Override highlight groups
 
     -- Plugins Config --
     diagnostics = {
@@ -38,7 +37,6 @@ local config = {
       background = true, -- use background color for virtual text
     },
   },
-  require("onedark").load(),
   -- Set colorscheme
   --colorscheme = "darcula",
   --colorscheme = "default_theme",
@@ -58,16 +56,14 @@ local config = {
 
   -- Default theme configuration
   default_theme = {
-    diagnostics_style = { italic = true },
+
     -- Modify the color table
-    colors = {
-      fg = "#abb2bf",
-    },
+    colors = {},
     -- Modify the highlight groups
     highlights = function(highlights)
-      local C = require "default_theme.colors"
+      -- local C = require "default_theme.colors"
 
-      highlights.Normal = { fg = C.fg, bg = C.bg }
+      --highlights.Normal = { fg = C.fg, bg = C.bg }
       return highlights
     end,
     plugins = { -- enable or disable extra plugin highlighting
