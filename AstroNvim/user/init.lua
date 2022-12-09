@@ -1,8 +1,48 @@
 local config = {
+  require("onedark").setup {
+    -- Main options --
+    style = "darker", -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+    transparent = false, -- Show/hide background
+    term_colors = true, -- Change terminal color as per the selected theme style
+    ending_tildes = false, -- Show the end-of-buffer tildes. By default they are hidden
+    cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
 
+    -- toggle theme style ---
+    toggle_style_key = nil, -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+    toggle_style_list = { "dark", "darker", "cool", "deep", "warm", "warmer", "light" }, -- List of styles to toggle between
+
+    -- Change code style ---
+    -- Options are italic, bold, underline, none
+    -- You can configure multiple style with comma seperated, For e.g., keywords = 'italic,bold'
+    code_style = {
+      comments = "italic",
+      keywords = "none",
+      functions = "none",
+      strings = "none",
+      variables = "none",
+    },
+
+    -- Lualine options --
+    lualine = {
+      transparent = false, -- lualine center bar transparency
+    },
+
+    -- Custom Highlights --
+    colors = {}, -- Override default colors
+    highlights = {}, -- Override highlight groups
+
+    -- Plugins Config --
+    diagnostics = {
+      darker = true, -- darker colors for diagnostic
+      undercurl = true, -- use undercurl instead of underline for diagnostics
+      background = true, -- use background color for virtual text
+    },
+  },
+  require("onedark").load(),
   -- Set colorscheme
   --colorscheme = "darcula",
-  colorscheme = "default_theme",
+  --colorscheme = "default_theme",
+  colorscheme = "onedark",
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)
   options = {
@@ -62,7 +102,7 @@ local config = {
     -- Add plugins, the packer syntax without the "use"
     init = {
       { "jwalton512/vim-blade" },
-      { "doums/darcula" },
+      { "navarasu/onedark.nvim" },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
@@ -96,7 +136,7 @@ local config = {
       -- set up null-ls's on_attach function
       config.on_attach = function(client)
         -- NOTE: You can remove this on attach function to disable format on save
-        if client.resolved_capabilities.document_formatting then
+        if client.server_capabilities.documentFormattingProvider then
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
@@ -107,13 +147,13 @@ local config = {
       return config -- return final config table
     end,
     treesitter = {
-      ensure_installed = { "lua", "php" },
+      ensure_installed = { "lua", "php", "python" },
       indent = {
         enable = true,
       },
     },
     ["nvim-lsp-installer"] = {
-      ensure_installed = { "sumneko_lua" },
+      ensure_installed = {},
     },
     packer = {
       compile_path = vim.fn.stdpath "config" .. "/lua/packer_compiled.lua",
