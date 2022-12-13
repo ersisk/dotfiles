@@ -4,11 +4,10 @@ Warning: If you want to give these dotfiles a try, you should first fork this re
 
 # What you will need
 
-## Linux
-
-[tilix](https://gnunn1.github.io/tilix-web/)
+[alacritty](https://github.com/alacritty/alacritty)
 [Oh My Zsh](https://ohmyz.sh/)
 [caffeine](https://www.atechtown.com/caffeine-for-ubuntu/)
+[zsh](https://www.zsh.org/)
 
 ## Nvim
 
