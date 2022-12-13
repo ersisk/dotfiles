@@ -57,19 +57,6 @@ local config = {
     -- Add plugins, the packer syntax without the "use"
     init = {
       { "jwalton512/vim-blade" },
-      { "folke/tokyonight.nvim" },
-      -- You can disable default plugins as follows:
-      -- ["goolord/alpha-nvim"] = { disable = true },
-
-      -- You can also add new plugins here as well:
-      -- { "andweeb/presence.nvim" },
-      -- {
-      --   "ray-x/lsp_signature.nvim",
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
     },
     -- All other entries override the setup() call for default plugins
     ["null-ls"] = function(config)
@@ -86,7 +73,7 @@ local config = {
         null_ls.builtins.formatting.fprettify,
         -- Set a linter
         null_ls.builtins.diagnostics.rubocop,
-        null_ls.builtins.diagnostics.phpcs,
+        --null_ls.builtins.diagnostics.phpcs,
       }
       -- set up null-ls's on_attach function
       config.on_attach = function(client)
@@ -95,14 +82,14 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = vim.lsp.buf.formatting_sync,
+            callback = vim.lsp.buf.format,
           })
         end
       end
       return config -- return final config table
     end,
     treesitter = {
-      ensure_installed = { "lua", "php", "python" },
+      ensure_installed = { "lua", "php", "python", "go", "javascript" },
       indent = {
         enable = true,
       },
@@ -185,6 +172,14 @@ local config = {
       --   },
       -- },
     },
+    formatting = {
+      filter = function(client)
+        -- only enable null-ls for javascript files
+        if vim.bo.filetype == "javascript" then return client.name == "null-ls" end
+        -- enable all other clients
+        return true
+      end,
+    },
   },
 
   -- Diagnostics configuration (for vim.diagnostics.config({}))
@@ -199,6 +194,7 @@ local config = {
     -- Set key bindings
     vim.keymap.set("n", "<C-s>", ":w!<CR>")
 
+    vim.keymap.set("n", "<leader>lf", ":lua vim.lsp.buf.format()<CR>")
     -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", { clear = true })
     vim.api.nvim_create_autocmd("BufWritePost", {
