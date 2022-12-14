@@ -20,9 +20,9 @@ local config = {
     colors = {},
     -- Modify the highlight groups
     highlights = function(highlights)
-      -- local C = require "default_theme.colors"
+      local C = require "default_theme.colors"
 
-      --highlights.Normal = { fg = C.fg, bg = C.bg }
+      highlights.Normal = { fg = C.fg, bg = C.bg }
       return highlights
     end,
     plugins = { -- enable or disable extra plugin highlighting
@@ -57,6 +57,7 @@ local config = {
     -- Add plugins, the packer syntax without the "use"
     init = {
       { "jwalton512/vim-blade" },
+      { "ekalinin/Dockerfile.vim" },
     },
     -- All other entries override the setup() call for default plugins
     ["null-ls"] = function(config)
@@ -89,8 +90,24 @@ local config = {
       return config -- return final config table
     end,
     treesitter = {
-      ensure_installed = { "lua", "php", "python", "go", "javascript" },
+      ensure_installed = {
+        "lua",
+        "tsx",
+        "html",
+        "css",
+        "php",
+        "python",
+        "go",
+        "javascript",
+        "json",
+      },
       indent = {
+        enable = true,
+      },
+      highlight = {
+        enable = true,
+      },
+      autotag = {
         enable = true,
       },
     },
@@ -108,7 +125,7 @@ local config = {
     vscode_snippet_paths = {},
     -- Extend filetypes
     filetype_extend = {
-      javascript = { "javascriptreact" },
+      -- javascript = { "javascriptreact" },
     },
   },
 
