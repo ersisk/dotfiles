@@ -58,6 +58,8 @@ local config = {
     init = {
       { "jwalton512/vim-blade" },
       { "ekalinin/Dockerfile.vim" },
+      { "mg979/vim-visual-multi" },
+      { "mralejandro/vim-phpdoc"}
     },
     -- All other entries override the setup() call for default plugins
     ["null-ls"] = function(config)
@@ -212,6 +214,8 @@ local config = {
     vim.keymap.set("n", "<C-s>", ":w!<CR>")
 
     vim.keymap.set("n", "<leader>lf", ":lua vim.lsp.buf.format()<CR>")
+    vim.keymap.set("n", "<leader>d", ":call PhpDocPasteComment()<CR>")
+    
     -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", { clear = true })
     vim.api.nvim_create_autocmd("BufWritePost", {
