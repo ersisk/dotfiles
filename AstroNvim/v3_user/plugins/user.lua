@@ -9,8 +9,13 @@ return {
   --     require("lsp_signature").setup()
   --   end,
   -- },
-   { "jwalton512/vim-blade" },
-   { "ekalinin/Dockerfile.vim" },
-   { "mg979/vim-visual-multi" },
-   { "mralejandro/vim-phpdoc"}
+  { "jwalton512/vim-blade" },
+  { "ekalinin/Dockerfile.vim" },
+  { "mg979/vim-visual-multi" },
+  {
+    "Rican7/php-doc-modded",
+    as = "php-doc-modded",
+    enabled = true,
+    lazy = false,
+  },
 }
