@@ -18,4 +18,5 @@ return {
     enabled = true,
     lazy = false,
   },
+  { "christoomey/vim-tmux-navigator", lazy = false },
 }
