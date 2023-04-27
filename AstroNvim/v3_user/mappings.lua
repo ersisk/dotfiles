@@ -24,10 +24,10 @@ return {
     --  function() require("php-doc-modded").setup() end,
     --},
     ["<leader>lp"] = { "<cmd>call PhpDocSingle()<CR>" },
-    ["<C-h>"] = { "<cmd> TmuxNavigatorLeft <CR>"},
-    ["<C-l>"] = { "<cmd> TmuxNavigatorRight <CR>"},
-    ["<C-j>"] = { "<cmd> TmuxNavigatorDown <CR>"},
-    ["<C-k>"] = { "<cmd> TmuxNavigatorUp <CR>"},
+    --["<C-h>"] = { "<cmd> TmuxNavigatorLeft <CR>"},
+    --["<C-l>"] = { "<cmd> TmuxNavigatorRight <CR>"},
+    --["<C-j>"] = { "<cmd> TmuxNavigatorDown <CR>"},
+    --["<C-k>"] = { "<cmd> TmuxNavigatorUp <CR>"},
     -- quick save
     -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
   },
