@@ -16,7 +16,8 @@ export ZSH="/Users/ersanisik/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 #ZSH_THEME="powerlevel10k/powerlevel10k"
-ZSH_THEME="gozilla"
+#ZSH_THEME="gozilla"
+ZSH_THEME="eastwood"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -78,7 +79,7 @@ ZSH_THEME="gozilla"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting web-search)
+plugins=(git zsh-z zsh-autosuggestions zsh-syntax-highlighting web-search jsontools history)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -120,4 +121,12 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 #zulu init
 alias vim="nvim"
 alias vi="nvim"
+alias nv="nvim"
+alias pdup="docker-compose -f docker-compose-local.yml up -d"
+alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
+alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
+alias parendyTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=Parendy' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
+alias getLocationTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=GetLocation' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
 export EDITOR="nvim"
+bindkey '^P' up-history
+bindkey '^N' down-history
