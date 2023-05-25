@@ -1,7 +1,6 @@
 env:
   TERM: xterm-256color
 # Send ESC (\x1b) before characters when alt is pressed.
-alt_send_esc: false
 window:
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
@@ -16,18 +15,18 @@ scrolling:
   multiplier: 3
 font:
   normal:
-    family: "MesloLGS NF"
+    family: "UbuntuMono Nerd Font"
     style: Regular
   bold:
-    family: "MesloLGS NF"
+    family: "UbuntuMono Nerd Font"
     style: Bold
   italic:
-    family: "MesloLGS NF"
+    family: "UbuntuMono Nerd Font"
     style: Italic
   bold_italic:
-    family: "MesloLGS NF"
+    family: "UbuntuMono Nerd Font"
     style: Bold Italic
-  size: 14.0
+  size: 16.0
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 colors:
@@ -89,3 +88,5 @@ mouse:
     launcher:
       program: open
     modifiers: Command
+key_bindings:
+  - { key: J, mods: Command, chars: "\x02\x54" }
