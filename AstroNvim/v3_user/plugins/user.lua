@@ -9,14 +9,8 @@ return {
   --     require("lsp_signature").setup()
   --   end,
   -- },
-  { "jwalton512/vim-blade" },
-  { "ekalinin/Dockerfile.vim" },
-  { "mg979/vim-visual-multi" },
-  {
-    "Rican7/php-doc-modded",
-    as = "php-doc-modded",
-    enabled = true,
-    lazy = false,
-  },
-  { "christoomey/vim-tmux-navigator", lazy = false },
+  { "jwalton512/vim-blade",    event = "VeryLazy"},
+  { "ekalinin/Dockerfile.vim", event = "VeryLazy"},
+  { "mg979/vim-visual-multi",  event = "VeryLazy", enabled= true}, 
+  { "christoomey/vim-tmux-navigator", lazy = false }
 }

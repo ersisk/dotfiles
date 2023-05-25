@@ -127,6 +127,7 @@ alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias parendyTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=Parendy' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
 alias getLocationTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=GetLocation' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
+alias deletelocalbranch="git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -d"
 export EDITOR="nvim"
 bindkey '^P' up-history
 bindkey '^N' down-history
