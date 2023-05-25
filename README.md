@@ -13,6 +13,12 @@ Warning: If you want to give these dotfiles a try, you should first fork this re
 
 [AstroNvim](https://astronvim.github.io/)
 
+## Mac
+
+      brew install fzf
+      brew install zoxide
+
+
 # License
 
 [MIT](https://choosealicense.com/licenses/mit/)
