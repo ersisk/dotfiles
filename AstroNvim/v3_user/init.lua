@@ -17,7 +17,7 @@ return {
     },
   },
   -- Set colorscheme to use
-  colorscheme = "astrodark",
+  colorscheme = "nightfox",
   -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
   diagnostics = {
     virtual_text = true,
@@ -76,7 +76,5 @@ return {
     --   },
     -- }
     vim.keymap.set("n", "<C-s>", ":w!<CR>")
-
-    vim.keymap.set("n", "<leader>lf", ":lua vim.lsp.buf.format()<CR>")
   end,
 }

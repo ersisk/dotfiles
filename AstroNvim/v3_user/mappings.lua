@@ -20,10 +20,10 @@ return {
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
+    ["<leader>bf"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format Buffer with pint"},
     --["<leader>ç"] = {
     --  function() require("php-doc-modded").setup() end,
     --},
-    ["<leader>lp"] = { "<cmd>call PhpDocSingle()<CR>" },
     --["<C-h>"] = { "<cmd> TmuxNavigatorLeft <CR>"},
     --["<C-l>"] = { "<cmd> TmuxNavigatorRight <CR>"},
     --["<C-j>"] = { "<cmd> TmuxNavigatorDown <CR>"},
