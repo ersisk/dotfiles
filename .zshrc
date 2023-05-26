@@ -1,16 +1,12 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/ersanisik/.oh-my-zsh"
-
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -113,9 +109,6 @@ export PATH=/opt/homebrew/bin:$PATH
 #[ -f ~/.fzf.zsh ] && source ~/.fzf.zs
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # Initialise zulu plugin manager
 #source "${ZULU_DIR:-"${ZDOTDIR:-$HOME}/.zulu"}/core/zulu"
 #zulu init
@@ -128,6 +121,7 @@ alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:
 alias parendyTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=Parendy' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
 alias getLocationTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=GetLocation' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
 alias deletelocalbranch="git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -d"
+alias fvi="fzf --print0 | xargs -0 -o nvim"
 export EDITOR="nvim"
 bindkey '^P' up-history
 bindkey '^N' down-history

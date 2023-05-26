@@ -9,4 +9,4 @@
 
 #cmd - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty --args -e tmux attach 
 cmd - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty --args -e tmux 
-lctrl + cmd - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty 
+alt + cmd - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty 
