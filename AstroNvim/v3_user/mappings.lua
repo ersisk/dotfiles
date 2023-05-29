@@ -20,7 +20,9 @@ return {
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
-    ["<leader>bf"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format Buffer with pint"},
+    ["<leader>F"] = { name = "Docker Pint" },
+    ["<leader>Fa"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with pint"},
+    ["<leader>Ff"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with pint"},
     --["<leader>ç"] = {
     --  function() require("php-doc-modded").setup() end,
     --},
