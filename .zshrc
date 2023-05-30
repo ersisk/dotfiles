@@ -122,6 +122,7 @@ alias apTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=Parend
 alias agTest="aws ec2 describe-instances --filters 'Name=tag-value,Values=GetLocation' --query 'Reservations[*].Instances[*].{Name:Tags[?Key==\`Name\`]|[0].Value,IpAddress:PublicIpAddress,Status:State.Name,InstanceId:InstanceId,LaunchTime:LaunchTime}' --region us-east-1 --output table --profile ersan"
 alias deletelocalbranch="git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -d"
 alias fvi="fzf --print0 | xargs -0 -o nvim"
+alias numi="numi-cli"
 export EDITOR="nvim"
 bindkey '^P' up-history
 bindkey '^N' down-history
