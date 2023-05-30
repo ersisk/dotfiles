@@ -17,7 +17,7 @@ return {
     },
   },
   -- Set colorscheme to use
-  colorscheme = "github_dark_colorblind",
+  colorscheme = "astrodark",
   -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
   diagnostics = {
     virtual_text = true,
