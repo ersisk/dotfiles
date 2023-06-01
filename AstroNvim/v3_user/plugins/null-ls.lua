@@ -11,8 +11,8 @@ return {
       -- Set a formatter
       -- null_ls.builtins.formatting.stylua,
       -- null_ls.builtins.formatting.prettier,
-     -- null_ls.builtins.formatting.rufo,
-     --[[  null_ls.builtins.formatting.phpcsfixer.with{
+      -- null_ls.builtins.formatting.rufo,
+      --[[  null_ls.builtins.formatting.phpcsfixer.with{
         extra_args = {
            "--rules=@Symfony",
             "--using-cache=no",

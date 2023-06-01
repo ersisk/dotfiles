@@ -45,6 +45,7 @@ selection:
 window.dynamic_title: true
 window:
   decorations: None
+  startup_mode: Maximized
 cursor:
   style: Block
   unfocused_hollow: true
