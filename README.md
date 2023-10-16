@@ -8,6 +8,7 @@ Warning: If you want to give these dotfiles a try, you should first fork this re
 [Oh My Zsh](https://ohmyz.sh/)
 [caffeine](https://www.atechtown.com/caffeine-for-ubuntu/)
 [zsh](https://www.zsh.org/)
+[raycast](https://www.raycast.com/)
 
 ## Nvim
 
