@@ -3,9 +3,9 @@ add_newline = true
 command_timeout = 150
 
 [character]
-success_symbol = "[ ](fg:#7dcfff)"
-error_symbol = "[ ](gray)"
-vicmd_symbol = "[ ](purple)"
+success_symbol = "[ ](fg:#50FA7B)"
+error_symbol = "[ ](fg:#FF5555)"
+vicmd_symbol = "[ ](purple)"
 
 [git_state]
 disabled=false
@@ -14,17 +14,17 @@ disabled=false
 format = "on [$symbol$branch](bold purple) "
 
 [git_status]
-disabled = true
+disabled = false
 format = '([$all_status]($style))'
 conflicted = "([⚠️ ${count}](bold red) )"
-ahead = "([⟫${count}])"
-behind = "([⟪${count}])"
+ahead = "([⟫ ${count}])"
+behind = "([⟪ ${count}])"
 stashed = "([↪ ${count}](bold red)) "
-modified = "([柳${count}](bold yellow) )"
-staged = "([ ${count}](bold green) )"
+modified = "([  ${count}](bold yellow) )"
+staged = "([  ${count}](bold green) )"
 renamed = "([⇆ ${count}](vold blue) )"
-deleted = "([ ${count}](bold red) )"
-untracked ="([ ${count}](dimmed red) )"
+deleted = "([  ${count}](bold red) )"
+untracked ="([  ${count}](dimmed red) )"
 
 [directory]
 truncate_to_repo = false
