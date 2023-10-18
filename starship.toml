@@ -3,18 +3,19 @@ add_newline = true
 command_timeout = 150
 
 [character]
-success_symbol = "[ ](fg:#50FA7B)"
-error_symbol = "[ ](fg:#FF5555)"
-vicmd_symbol = "[ ](purple)"
+error_symbol = "[λ](bold #ff5555)"
+success_symbol = "[λ](bold #50fa7b)"
+vicmd_symbol = "[ ](purple)"
 
 [git_state]
 disabled=false
 
 [git_branch]
-format = "on [$symbol$branch](bold purple) "
+format = "on [$symbol$branch](bold #ff79c6)"
 
 [git_status]
 disabled = false
+style = "bold #ff5555"
 format = '([$all_status]($style))'
 conflicted = "([⚠️ ${count}](bold red) )"
 ahead = "([⟫ ${count}])"
@@ -28,6 +29,7 @@ untracked ="([  ${count}](dimmed red) )"
 
 [directory]
 truncate_to_repo = false
+style = "bold #50fa7b"
 truncation_length = 5
 read_only = " "
 truncation_symbol = "…/"
