@@ -1,14 +1,8 @@
 import:
- - ~/.config/alacritty/themes/themes/one_dark.yaml
+ - ~/.config/alacritty/themes/themes/dracula.yaml
+live_config_reload: true   
 env:
   TERM: xterm-256color
-# Send ESC (\x1b) before characters when alt is pressed.
-window:
-  # Blank space added around the window in pixels. This padding is scaled
-  # by DPI and the specified value is always added at both opposing sides.
-  padding:
-    x: 10
-    y: 10
 scrolling:
   # Specifying '0' will disable scrolling.
   history: 100000
@@ -28,7 +22,7 @@ font:
   bold_italic:
     family: "UbuntuMono Nerd Font"
     style: Bold Italic
-  size: 17
+  size: 18
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 bell:
@@ -42,16 +36,13 @@ selection:
   # When set to `true`, selected text will be copied to the primary clipboard.
   save_to_clipboard: true
 # Allow terminal applications to change Alacritty’s window title.
-window.dynamic_title: true
 window:
+  dynamic_title: true
   decorations: None
   startup_mode: Maximized
 cursor:
   style: Block
   unfocused_hollow: true
-# Live config reload (changes require restart)
-live_config_reload: true
-# Tell Alacritty that we’re using fish here
 shell:
   program: /bin/zsh
   args:
@@ -65,4 +56,7 @@ mouse:
       program: open
     modifiers: Command
 key_bindings:
-  - { key: J, mods: Command, chars: "\x02\x54" }
+  - { key: G, mods: Command, chars: "\x02lg\x0a" } # open git manager 'jesseduffield/lazygit'
+  - { key: J, mods: Command, chars: "\x02\x54\x0a" } # open t - tmux smart session manager
+  - { key: T, mods: Command, chars: "\x02\x74\x6e\x0a" } # create a new tmux window
+  - { key: W, mods: Command, chars: "\x02\x74\x6b\x0a" } # kill the current pane
