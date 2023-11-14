@@ -21,8 +21,8 @@ return {
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
     ["<leader>F"] = { name = "Personal" },
-    ["<leader>Fa"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with pint"},
-    ["<leader>Ff"] = {"<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with pint"},
+    ["<leader>Fa"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with pint" },
+    ["<leader>Ff"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with pint" },
     --  function() require("php-doc-modded").setup() end,
     --},
     --["<C-h>"] = { "<cmd> TmuxNavigatorLeft <CR>"},

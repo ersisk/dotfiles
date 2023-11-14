@@ -4,21 +4,22 @@ Warning: If you want to give these dotfiles a try, you should first fork this re
 
 # What you will need
 
-[alacritty](https://github.com/alacritty/alacritty)
-[Oh My Zsh](https://ohmyz.sh/)
-[caffeine](https://www.atechtown.com/caffeine-for-ubuntu/)
-[zsh](https://www.zsh.org/)
-[raycast](https://www.raycast.com/)
+** [alacritty](https://github.com/alacritty/alacritty)
+** [Oh My Zsh](https://ohmyz.sh/)
+** [zsh](https://www.zsh.org/)
+** [raycast](https://www.raycast.com/)
+** [nvim](https://neovim.io/)
 
-## Nvim
+## Nvim Distro
 
 [AstroNvim](https://astronvim.github.io/)
 
 ## Mac
 
-      brew install fzf
-      brew install zoxide
-
+```
+     brew install fzf
+     brew install zoxide
+```
 
 # License
 
