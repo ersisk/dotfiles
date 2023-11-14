@@ -162,7 +162,7 @@ function aws-ec2() {
     INSTANCE_ID=$(echo $INSTANCE_ID | cut -d, -f1)
 
     local ACTION
-    ACTION=$(echo "start\nstop\nterminate" | fzf $FZF_PARAMS $ACTION_QUERY --header="Select action")
+    ACTION=$(echo "start\nstop\nterminate\nconnect" | fzf $FZF_PARAMS $ACTION_QUERY --header="Select action")
     if [[ $? -ne 0 ]]; then
         echo "Action canceled"
         return 1
@@ -170,14 +170,17 @@ function aws-ec2() {
 
     case "$ACTION" in
     "start")
-        shellout "aws ec2 start-instances --instance-ids $INSTANCE_ID"
+        shellout "aws ec2 start-instances --profile ersan --instance-ids $INSTANCE_ID"
         ;;
     "stop")
-        shellout "aws ec2 stop-instances --instance-ids $INSTANCE_ID"
+        shellout "aws ec2 stop-instances --profile ersan --instance-ids $INSTANCE_ID"
         ;;
     "terminate")
-        shellout "aws ec2 terminate-instances --instance-ids $INSTANCE_ID"
+        shellout "aws ec2 terminate-instances --profile ersan --instance-ids $INSTANCE_ID"
         ;;
+     "connect")
+       shellout "aws ssm start-session --region us-east-1 --profile ersan --target $INSTANCE_ID"
+       ;;
     esac
 }
 
