@@ -1,6 +1,7 @@
 
-add_newline = true
+add_newline = false
 command_timeout = 150
+scan_timeout = 10
 
 [character]
 error_symbol = "[λ](bold #ff5555)"
@@ -16,7 +17,7 @@ format = "on [$symbol$branch](bold #ff79c6)"
 [git_status]
 disabled = false
 style = "bold #ff5555"
-format = '([$all_status]($style))'
+format = '( [$all_status]($style))'
 conflicted = "([⚠️ ${count}](bold red) )"
 ahead = "([⟫ ${count}])"
 behind = "([⟪ ${count}])"
