@@ -23,14 +23,14 @@ return {
     ["<leader>F"] = { name = "Personal" },
     ["<leader>Fa"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with pint" },
     ["<leader>Ff"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with pint" },
-    --  function() require("php-doc-modded").setup() end,
-    --},
-    --["<C-h>"] = { "<cmd> TmuxNavigatorLeft <CR>"},
-    --["<C-l>"] = { "<cmd> TmuxNavigatorRight <CR>"},
-    --["<C-j>"] = { "<cmd> TmuxNavigatorDown <CR>"},
-    --["<C-k>"] = { "<cmd> TmuxNavigatorUp <CR>"},
-    -- quick save
-    -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
+
+    ---CodeRunner
+    ["<leader>r"] = { desc = "󰐍 Code runner" },
+    ["<leader>re"] = { "<CMD>RunCode<CR>", desc = "Run code" },
+    ["<leader>rf"] = { "<CMD>RunFile<CR>", desc = "Run file" },
+    ["<leader>rt"] = { "<CMD>RunFile tab<CR>", desc = "Run file tab" },
+    ["<leader>rc"] = { "<CMD>RunClose<CR>", desc = "Close runner" },
+    ["<leader>p"] = { "<CMD>RunFile toggleterm<CR>", desc = "Run file pop up (toggleterm)" },
   },
   t = {
     -- setting a mapping to false will disable it
