@@ -9,6 +9,8 @@ return {
     wrap = false, -- sets vim.opt.wrap
     colorcolumn = "120",
     termguicolors = true,
+    autoindent = true,
+    smartindent = true,
   },
   g = {
     mapleader = " ", -- sets vim.g.mapleader
