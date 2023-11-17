@@ -12,6 +12,11 @@ return {
       "javascript",
       "json",
       "phpdoc",
+      "markdown",
+      "typescript",
+      "sql",
+      "rust",
+      "cpp"
     },
     indent = {
       enable = true,

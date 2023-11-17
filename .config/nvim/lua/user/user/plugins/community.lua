@@ -10,5 +10,7 @@ return {
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
-    -- { import = "astrocommunity.completion.copilot-lua-cmp" },
+  { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },
+  { import = "astrocommunity.motion.vim-matchup" },
+  -- { import = "astrocommunity.completion.copilot-lua-cmp" },
 }

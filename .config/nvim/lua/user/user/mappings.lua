@@ -31,6 +31,11 @@ return {
     ["<leader>rt"] = { "<CMD>RunFile tab<CR>", desc = "Run file tab" },
     ["<leader>rc"] = { "<CMD>RunClose<CR>", desc = "Close runner" },
     ["<leader>p"] = { "<CMD>RunFile toggleterm<CR>", desc = "Run file pop up (toggleterm)" },
+
+    --- Markdown Preview
+    ["<leader>m"] = { desc = "󰽛 Markdown" },
+    ["<leader>mm"] = { "<CMD>MarkdownPreview<CR>", desc = "MarkdownPreview" },
+    ["<leader>mt"] = { "<CMD>MarkdownPreviewToggle<CR>", desc = "MarkdownPreview Toggle" },
   },
   t = {
     -- setting a mapping to false will disable it
