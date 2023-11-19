@@ -36,6 +36,8 @@ return {
     ["<leader>m"] = { desc = "󰽛 Markdown" },
     ["<leader>mm"] = { "<CMD>MarkdownPreview<CR>", desc = "MarkdownPreview" },
     ["<leader>mt"] = { "<CMD>MarkdownPreviewToggle<CR>", desc = "MarkdownPreview Toggle" },
+    -- Next Tab
+    ["<S-Tab>"] = {"<CMD>bnext<CR>", desc = "Next Tab"}
   },
   t = {
     -- setting a mapping to false will disable it
