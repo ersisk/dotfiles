@@ -22,7 +22,8 @@ return {
         "sonarlint-language-server",
         "iferr",
         "impl",
-        "black"
+        "black",
+        "isort"
       },
     },
   },

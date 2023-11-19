@@ -12,5 +12,6 @@ return {
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
+  { import = "astrocommunity.motion.mini-move", enabled = true },
   -- { import = "astrocommunity.completion.copilot-lua-cmp" },
 }
