@@ -25,7 +25,6 @@ format = """
 $directory\
 $git_branch\
 $git_status\
-[\uE0B0 ](fg:#81A1C1 bg:#2E3440)\
 $line_break\
 $character
 """
@@ -40,10 +39,11 @@ error_symbol = "[ \uE007 ](bg:#4C566A fg:#BF616A)[\uE0BC](fg:#4C566A)"
 disabled=true
 
 [directory]
-style = "bg:#BF616A"
-format = "[ $path ]($style)[\uE0BE](bg:#BF616A fg:#D08770)"
+# style = "bg:#BF616A"
+style = "bg:#8fbcbb black"
+format = "[ $path ]($style)[\uE0BE](bg:#8fbcbb fg:#D08770)"
 truncate_to_repo = false
-truncation_length = 3
+truncation_length = 5
 truncation_symbol = "…/"
 
 # git
@@ -57,7 +57,7 @@ format = "[[ $symbol $branch ](bg:#D08770)]($style)"
 disabled = false
 
 [git_status]
-format = "[($all_status$ahead_behind)]($style)[\uE0BC](bg:#81A1C1 fg:#D08770)"
+format = "[($all_status$ahead_behind)]($style)[\uE0BC](bg:#D08770 fg:#D08770)"
 style = "bg:#D08770"
 conflicted = "👿 $count "
 ahead = "⇡ $count "
@@ -65,7 +65,7 @@ behind = "⇣ $count "
 diverged = " $count "
 untracked = "🤷 $count "
 stashed = "‍📦 $count "
-modified = "פֿ $count "
+modified = " $count "
 staged = "[ $count ]"
 renamed = " $count "
 deleted = "🗑 $count "
@@ -73,42 +73,28 @@ deleted = "🗑 $count "
 # languages
 
 [c]
-symbol = "© "
-style = "bg:#D8DEE9"
-format = "[[ $symbol ($version) ](bg:#D8DEE9)]($style)"
+disabled=true
 
 [elixir]
-symbol = "\uE62D "
-style = "bg:#D8DEE9"
-format = "[[ $symbol ($version) ](bg:#D8DEE9)]($style)"
+disabled=true
 
 [elm]
-symbol = "\uE62C "
-style = "bg:#D8DEE9"
-format = "[[ $symbol ($version) ](bg:#D8DEE9)]($style)"
+disabled=true
 
 [golang]
-symbol = "\uE627 "
-style = "bg:#81A1C1 fg:#4C566A"
-format = "[ $symbol]($style)"
+disabled=true
 
 [haskell]
-symbol = "\uE777 "
-style = "bg:#D8DEE9"
-format = "[[ $symbol($version)](bg:#D8DEE9)]($style)"
+disabled=true
 
 [nodejs]
 disabled=true
 
 [rust]
-symbol = "\uE7A8 "
-style = "bg:#D8DEE9"
-format = "[[ $symbol($version) ](bg:#D8DEE9)]($style)"
+disabled=true
 
 [ruby]
-symbol = "\uE739 "
-style = "bg:#D8DEE9"
-format = "[[ $symbol($version) ](bg:#D8DEE9)]($style)"
+disabled=true
 
 [directory.substitutions]
 "~/code/playground" = "@playground"
