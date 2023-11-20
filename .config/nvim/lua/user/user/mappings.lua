@@ -20,9 +20,8 @@ return {
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
-    ["<leader>F"] = { name = "Personal" },
-    ["<leader>Fa"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with pint" },
-    ["<leader>Ff"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with pint" },
+    ["<leader>lF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
+    ["<leader>bF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with Pint" },
 
     ---CodeRunner
     ["<leader>r"] = { desc = "󰐍 Code runner" },
@@ -30,14 +29,14 @@ return {
     ["<leader>rf"] = { "<CMD>RunFile<CR>", desc = "Run file" },
     ["<leader>rt"] = { "<CMD>RunFile tab<CR>", desc = "Run file tab" },
     ["<leader>rc"] = { "<CMD>RunClose<CR>", desc = "Close runner" },
-    ["<leader>p"] = { "<CMD>RunFile toggleterm<CR>", desc = "Run file pop up (toggleterm)" },
+    ["<leader>rp"] = { "<CMD>RunFile toggleterm<CR>", desc = "Run file pop up (toggleterm)" },
 
     --- Markdown Preview
     ["<leader>m"] = { desc = "󰽛 Markdown" },
     ["<leader>mm"] = { "<CMD>MarkdownPreview<CR>", desc = "MarkdownPreview" },
     ["<leader>mt"] = { "<CMD>MarkdownPreviewToggle<CR>", desc = "MarkdownPreview Toggle" },
     -- Next Tab
-    ["<S-Tab>"] = {"<CMD>bnext<CR>", desc = "Next Tab"}
+    ["<S-Tab>"] = { "<CMD>bnext<CR>", desc = "Next Tab" },
   },
   t = {
     -- setting a mapping to false will disable it

@@ -34,7 +34,7 @@ return {
   end,
   opts = {
     skip_confirm_for_simple_edits = true,
-    delete_to_trash = true,
+    delete_to_trash = false,
     trash_command = "trash",
     view_options = {
       show_hidden = true,
