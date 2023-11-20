@@ -4,6 +4,7 @@
 export ZSH="/Users/ersanisik/.oh-my-zsh"
 
 ZSH_THEME="eastwood"
+
 export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
     --color=fg:#e5e9f0,bg:#3b4252,hl:#81a1c1
     --color=fg+:#e5e9f0,bg+:#3b4252,hl+:#81a1c1
