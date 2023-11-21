@@ -1,131 +1,43 @@
 
+"$schema" = 'https://starship.rs/config-schema.json'
+
 format = """
-[](#5E81AC)\
+$username\
 $directory\
-[](bg:#81A1C1 fg:#5E81AC)\
 $git_branch\
-[](fg:#81A1C1 bg:#88C0D0)\
 $git_status\
-[](fg:#8FBCBB)\
-$line_break\
-$character\
-"""
+$time\
+$line_break$character"""
 
-# Disable the blank line at the start of the prompt
-add_newline = false
-
-# You can also replace your username with a neat symbol like  to save some space
 [username]
-show_always = false
-style_user = "bg:#EE99A0"
-style_root = "bg:#EE99A0"
-format = '[$user ]($style)'
+style_user="fg:#98c379"
+show_always = true
 
 [directory]
-style = "bg:#5E81AC fg:#2E3440"
-format = "[ $path ]($style)"
-truncation_length = 5
+style="fg:#56b6c2"
+truncate_to_repo = false
+truncation_length = 3
 truncation_symbol = "…/"
 
-# Here is how you can shorten some long paths by text replacement
-# similar to mapped_locations in Oh My Posh:
-[directory.substitutions]
-"Documents" = ""
-"Downloads" = ""
-"Music" = "ﱘ"
-"Pictures" = ""
-"Projects" = ""
-# Keep in mind that the order matters. For example:
-# "Important Documents" = "  "
-# will not be replaced, because "Documents" was already substituted before.
-# So either put "Important Documents" before "Documents" or use the substituted version:
-# "Important  " = "  "
+# git
 
-# Git
 [git_branch]
-symbol = ""
-style = "fg:#2E3440 bg:#81A1C1"
-format = '[ $symbol $branch ]($style)'
+style="fg:#e5c07b"
+symbol = "\uE0A0"
+
+[git_metrics]
+disabled = false
 
 [git_status]
-style = "fg:#2E3440 bg:#88C0D0"
-format = '[$all_status$ahead_behind]($style)'
-conflicted = "👿 $count "
-ahead = "⇡ $count "
-behind = "⇣ $count "
-diverged = " $count "
-untracked = "🤷 $count "
-stashed = "‍📦 $count "
-modified = " $count"
-staged = "[ $count ]"
-renamed = " $count "
+style="fg:#e06c75"
+conflicted = " 👿 $count "
+ahead = " ⇡ $count"
+behind = " ⇣ $count"
+diverged = "  $count"
+untracked = " 󰅗 $count"
+stashed =  " 󰘷 $count"
+modified = "  $count"
+staged = " [ $count]"
+renamed = "  $count "
 deleted = "🗑 $count "
-
-# Programming languages
-[c]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[elixir]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[elm]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[golang]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-[haskell]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[java]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[julia]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[nodejs]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[nim]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[rust]
-symbol = ""
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-[scala]
-symbol = " "
-style = "fg:#2E3440 bg:#D8DEE9"
-format = '[$symbol ($version) ]($style)'
-
-# Docker
-[docker_context]
-symbol = " "
-style = "bg:#8FBCBB"
-format = '[$symbol $context ]($style) $path'
-
-# Time
-[time]
-disabled = true
-time_format = "%R" # Hour:Minute Format
-style = "bg:#33658A"
-format = '[ ♥ $time ]($style)'
 
