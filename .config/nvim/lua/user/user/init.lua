@@ -18,7 +18,7 @@ return {
   },
   -- Set colorscheme to use
   -- colorscheme = "astrodark",
-  colorscheme = "nordfox",
+  colorscheme = "onedark_vivid",
   -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
   diagnostics = {
     virtual_text = true,
