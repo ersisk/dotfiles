@@ -5,7 +5,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     -- overrides `require("mason-lspconfig").setup(...)`
     opts = {
-      ensure_installed = { "intelephense", "gopls", "pyright", "eslint" },
+      ensure_installed = { "tsserver", "intelephense", "gopls", "pyright", "eslint" },
     },
   },
   -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
@@ -14,7 +14,6 @@ return {
     -- overrides `require("mason-null-ls").setup(...)`
     opts = {
       ensure_installed = {
-        "prettier",
         "prettierd",
         "stylua",
         "phpcsfixer",
@@ -23,7 +22,7 @@ return {
         "iferr",
         "impl",
         "black",
-        "isort"
+        "isort",
       },
     },
   },

@@ -5,4 +5,4 @@
  cp ~/.aws-fzf ~/workspace/personal/dotfiles/.aws-fzf
  cp ~/.tmux.conf ~/workspace/personal/dotfiles/.tmux.conf
  cp ~/.config/starship.toml ~/workspace/personal/dotfiles/.config/starship.toml
-
+ cp -r ~/.config/wezterm/ ~/workspace/personal/dotfiles/.config/wezterm/

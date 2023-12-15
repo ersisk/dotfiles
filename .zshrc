@@ -78,3 +78,5 @@ bindkey '^N' down-history
 
 bindkey '^[[a' up-history
 source ~/.aws-fzf
+
+source /Users/ersanisik/.config/broot/launcher/bash/br
