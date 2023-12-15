@@ -17,15 +17,6 @@ return {
       "sql",
       "rust",
       "cpp"
-    },
-    indent = {
-      enable = true,
-    },
-    highlight = {
-      enable = true,
-    },
-    autotag = {
-      enable = true,
-    },
+    } 
   },
 }
