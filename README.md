@@ -1,26 +1,19 @@
-# My dotfiles
+# Erşan Işık's Dotfiles
 
-Warning: If you want to give these dotfiles a try, you should first fork this repository, review the code, and remove things you don’t want or need. Don’t blindly use my settings unless you know what that entails. Use at your own risk!
+This is the home of all my dotfiles. These are files that add custom configurations to my computer and applications, primarily the terminal.
 
-# What you will need
+**Warning:** If you want to give these dotfiles a try, you should first fork this repository, review the code, and remove things you don’t want or need. Don’t blindly use my settings unless you know what that entails. Use at your own risk!
 
-** [alacritty](https://github.com/alacritty/alacritty)
-** [Oh My Zsh](https://ohmyz.sh/)
-** [zsh](https://www.zsh.org/)
-** [raycast](https://www.raycast.com/)
-** [nvim](https://neovim.io/)
+# Software
 
-## Nvim Distro
+- Terminal: [alacritty](https://github.com/alacritty/alacritty)
+- Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
+- Colors: [onedark](https://onedarktheme.com/)
+- Shell: [zsh](https://www.zsh.org/)
+- Multiplexer: [tmux](https://github.com/tmux/tmux/wiki)
+- Editor: [Neovim](https://neovim.io)
+- Editor Distro: [AstroNvim](https://astronvim.github.io/)
+- Git: [lazygit](https://github.com/jesseduffield/lazygit)
+- macOS package manager: [Homebrew](https://brew.sh)
+- npm package manager: [pnpm](https://pnpm.io/)
 
-[AstroNvim](https://astronvim.github.io/)
-
-## Mac
-
-```
-     brew install fzf
-     brew install zoxide
-```
-
-# License
-
-[MIT](https://choosealicense.com/licenses/mit/)
