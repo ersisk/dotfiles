@@ -6,7 +6,7 @@ This is the home of all my dotfiles. These are files that add custom configurati
 
 # Software
 
-- Terminal: [alacritty](https://github.com/alacritty/alacritty)
+- Terminal: [wezterm](https://wezfurlong.org/wezterm/index.html)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
 - Colors: [onedark](https://onedarktheme.com/)
 - Shell: [zsh](https://www.zsh.org/)
