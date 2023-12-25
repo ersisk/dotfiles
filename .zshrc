@@ -37,10 +37,10 @@ eval "$(starship init zsh)"
 
 # ALIAS
 alias dc=docker-compose  
-alias dc=docker-compose  
 alias vim="nvim"
 alias vi="nvim"
 alias v="nvim"
+alias vf="nvim ."
 alias nv="nvim"
 alias l='lsd -lah'
 alias ls=lsd
@@ -51,13 +51,13 @@ alias pdup="docker-compose -f docker-compose-local.yml up -d"
 alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias e=exit
-alias deletelocalbranch='git branch --merged | grep -v "\*" | grep -v "test" grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
-alias fvi="fzf --print0 | xargs -0 -o nvim"
-alias vf="nvim ."
+alias dlbranch='git branch --merged | grep -v "\*" | grep -v "test" grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
+alias fzfv="fzf --print0 | xargs -0 -o nvim"
+alias fzfc="fzf --preview 'cat {}'"
 alias pr='php /Users/ersanisik/bitbucket-pull-request.php'
-alias lgcfn='loghub-cli search -P 28'
+alias loghubFN='loghub-cli search -P 28'
 alias notes="cd $NOTES_DIR && nvim ."
-alias zn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
+alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 # Tmux
 # Attaches tmux to a session (example: ta portal)
 alias ta='tmux attach -t'

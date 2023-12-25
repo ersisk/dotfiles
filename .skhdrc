@@ -9,5 +9,5 @@
 
 #cmd - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty --args -e tmux attach 
 #ctrl + alt - return: open -na  /Applications/Alacritty.app/Contents/MacOS/alacritty 
-alt + cmd  - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm 
-#cmd - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm --args -e tmux 
+alt + cmd  - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm --args -e tmux
+ctrl + alt - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm  

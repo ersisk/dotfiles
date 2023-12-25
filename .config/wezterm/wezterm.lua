@@ -15,14 +15,12 @@ local config = {
 		b.get_background(),
 	},
 
-
 	-- font
 	font = f.get_font(),
 	font_size = 18,
 
 	-- colors
 	color_scheme = cs.get_color_scheme(),
-
 	-- padding
 	window_padding = {
 		left = 0,
@@ -47,18 +45,18 @@ local config = {
 
 	-- keys
 	keys = {
-		k.cmd_key(".", k.multiple_actions(":ZenMode")),
+		--k.cmd_key(".", k.multiple_actions(":ZenMode")),
 		k.cmd_key("[", act.SendKey({ mods = "CTRL", key = "o" })),
 		k.cmd_key("]", act.SendKey({ mods = "CTRL", key = "i" })),
-		k.cmd_key("f", k.multiple_actions(":Grep")),
+	--	k.cmd_key("f", k.multiple_actions(":Grep")),
 		k.cmd_key("H", act.SendKey({ mods = "CTRL", key = "h" })),
-		k.cmd_key("i", k.multiple_actions(":SmartGoTo")),
-		k.cmd_key("J", act.SendKey({mods = "CTRL",key = "j" })),
+		--k.cmd_key("i", k.multiple_actions(":SmartGoTo")),
+		k.cmd_key("J", act.SendKey({ mods = "CTRL", key = "j" })),
 		k.cmd_key("K", act.SendKey({ mods = "CTRL", key = "k" })),
 		k.cmd_key("L", act.SendKey({ mods = "CTRL", key = "l" })),
-		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
-		k.cmd_key("p", k.multiple_actions(":GoToFile")),
-		k.cmd_key("q", k.multiple_actions(":qa!")),
+		k.cmd_key("P", k.multiple_actions(":Telescope buffers")),
+		k.cmd_key("p", k.multiple_actions(":Telescope find_files")),
+		-- k.cmd_key("q", k.multiple_actions(":qa!")),
 		k.cmd_to_tmux_prefix("1", "1"),
 		k.cmd_to_tmux_prefix("2", "2"),
 		k.cmd_to_tmux_prefix("3", "3"),
@@ -107,7 +105,7 @@ local config = {
 			mods = "CMD|SHIFT",
 			key = "}",
 			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "b" }),
+				act.SendKey({ mods = "CTRL", key = "a" }),
 				act.SendKey({ key = "n" }),
 			}),
 		},
@@ -115,7 +113,7 @@ local config = {
 			mods = "CMD|SHIFT",
 			key = "{",
 			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "b" }),
+				act.SendKey({ mods = "CTRL", key = "a" }),
 				act.SendKey({ key = "p" }),
 			}),
 		},
@@ -124,7 +122,7 @@ local config = {
 			mods = "CTRL",
 			key = "Tab",
 			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "b" }),
+				act.SendKey({ mods = "CTRL", key = "a" }),
 				act.SendKey({ key = "n" }),
 			}),
 		},
@@ -133,7 +131,7 @@ local config = {
 			mods = "CTRL|SHIFT",
 			key = "Tab",
 			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "b" }),
+				act.SendKey({ mods = "CTRL", key = "a" }),
 				act.SendKey({ key = "n" }),
 			}),
 		},
@@ -152,7 +150,7 @@ local config = {
 			mods = "CMD",
 			key = "~",
 			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "b" }),
+				act.SendKey({ mods = "CTRL", key = "a" }),
 				act.SendKey({ key = "p" }),
 			}),
 		},
