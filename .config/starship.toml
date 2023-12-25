@@ -30,14 +30,14 @@ disabled = false
 
 [git_status]
 style="fg:#e06c75"
-conflicted = " 👿 $count "
+conflicted = " 󰽪 $count "
 ahead = " ⇡ $count"
 behind = " ⇣ $count"
 diverged = "  $count"
 untracked = " 󰅗 $count"
 stashed =  " 󰘷 $count"
 modified = "  $count"
-staged = " [ $count]"
+staged = "  $count"
 renamed = "  $count "
-deleted = "🗑 $count "
+deleted = " 󰚃 $count "
 
