@@ -20,6 +20,7 @@ return {
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
+    ["<leader>bB"] = { "<cmd>Telescope buffers<cr>", desc="Search buffers" },
     ["<leader>lF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
     ["<leader>bF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with Pint" },
 
