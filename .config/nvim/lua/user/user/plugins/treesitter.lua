@@ -16,7 +16,7 @@ return {
       "typescript",
       "sql",
       "rust",
-      "cpp"
-    } 
+      "cpp",
+    },
   },
 }

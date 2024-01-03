@@ -16,7 +16,7 @@ return {
       ensure_installed = {
         "prettierd",
         "stylua",
-        "phpcsfixer",
+        "pint",
         "gofumpt",
         "sonarlint-language-server",
         "iferr",
