@@ -30,21 +30,23 @@ return {
     formatting = {
       -- control auto formatting on save
       format_on_save = {
-        enabled = false, -- enable or disable format on save globally
+        enabled = true, -- enable or disable format on save globally
         allow_filetypes = { -- enable format on save for specified filetypes only
           "go",
           "python",
           "lua",
           "javascript",
+          "php",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
-          "php",
+          "blade",
         },
       },
       disabled = { -- disable formatting capabilities for the listed language servers
         -- "sumneko_lua",
         "lua_ls",
+        "phpactor",
         "intelephense",
         "eslint",
         "tsserver",
