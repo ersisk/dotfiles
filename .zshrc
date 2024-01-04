@@ -56,7 +56,8 @@ alias fzfv="fzf --print0 | xargs -0 -o nvim"
 alias fzfc="fzf --preview 'cat {}'"
 alias pr='php /Users/ersanisik/bitbucket-pull-request.php'
 alias loghubFN='loghub-cli search -P 28'
-alias notes="cd $NOTES_DIR && nvim ."
+#alias notes="cd $NOTES_DIR && nvim ."
+alias notes=" find obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 # Tmux
 # Attaches tmux to a session (example: ta portal)
