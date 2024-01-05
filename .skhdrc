@@ -77,5 +77,5 @@ alt - tab : yabai -m space --focus recent
 shift + alt - n : yabai -m window --display next; yabai -m display --focus next
 shift + alt - p : yabai -m window --display previous; yabai -m display --focus previous
 
-alt + cmd  - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm --args -e tmux
-ctrl + alt - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm  
+# alt + cmd  - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm --args -e tmux
+alt - return: open -na  /Applications/WezTerm.app/Contents/MacOS/wezterm --args -e tmux 
