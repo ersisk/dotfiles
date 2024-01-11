@@ -1,5 +1,5 @@
 return {
-  { "EmranMR/tree-sitter-blade", lazy=false},
+  { "EmranMR/tree-sitter-blade", lazy = false },
   { "ekalinin/Dockerfile.vim", event = "VeryLazy" },
   { "mg979/vim-visual-multi", event = "VeryLazy", enabled = true },
   { "christoomey/vim-tmux-navigator", lazy = false },

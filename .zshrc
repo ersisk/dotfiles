@@ -36,7 +36,7 @@ export NOTES_DIR=~/obsidian-vault
 eval "$(starship init zsh)"
 
 # ALIAS
-alias dbneo="NVIM_APPNAME=DBNeo nvim -c 'DBUI'"
+alias ersvi="NVIM_APPNAME=ErsVi nvim"
 alias dc=docker-compose  
 alias vim="nvim"
 alias vi="nvim"
