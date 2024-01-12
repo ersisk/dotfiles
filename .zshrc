@@ -27,39 +27,44 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"\
 " --color=fg:$color04,header:$color0D,info:$color0A,pointer:$color0C"\
 " --color=marker:$color0C,fg+:$color06,prompt:$color0A,hl+:$color0D"
 
-plugins=(git zsh-z zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search jsontools history zsh-shift-select)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search jsontools history zsh-shift-select)
 
 source $ZSH/oh-my-zsh.sh
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
   
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
 
 # ALIAS
-alias ersvi="NVIM_APPNAME=ErsVi nvim"
 alias dc=docker-compose  
+alias pdup="docker-compose -f docker-compose-local.yml up -d"
+alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
+
+alias ev="NVIM_APPNAME=ErsVi nvim"
+alias dbv="NVIM_APPNAME=ErsVi nvim -c 'DBUI'"
 alias vim="nvim"
 alias vi="nvim"
 alias v="nvim"
-alias vf="nvim ."
-alias nv="nvim"
+
 alias l='lsd -lah'
 alias ls=lsd
-alias sl=lsd
-alias c='clear'
-alias lg='lazygit'
-alias pdup="docker-compose -f docker-compose-local.yml up -d"
-alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
+
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
+alias c='clear'
 alias e=exit
-alias dlbranch='git branch --merged | grep -v "\*" | grep -v "test" grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
+alias lg='lazygit'
+
+alias dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
+
 alias fzfv="fzf --print0 | xargs -0 -o nvim"
 alias fzfc="fzf --preview 'cat {}'"
+
 alias pr='php /Users/ersanisik/bitbucket-pull-request.php'
 alias loghubFN='loghub-cli search -P 28'
-#alias notes="cd $NOTES_DIR && nvim ."
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
+
 # Tmux
 # Attaches tmux to a session (example: ta portal)
 alias ta='tmux attach -t'
