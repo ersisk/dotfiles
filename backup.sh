@@ -1,4 +1,5 @@
  cp -r ~/.config/nvim/lua/user  ~/workspace/personal/dotfiles/.config/nvim/lua/
+ cp -r ~/.config/sketchybar/  ~/workspace/personal/dotfiles/.config/sketchybar/
  cp  ~/.zshrc  ~/workspace/personal/dotfiles/.zshrc
  cp ~/.skhdrc ~/workspace/personal/dotfiles/.skhdrc
  cp ~/.yabairc ~/workspace/personal/dotfiles/.yabairc

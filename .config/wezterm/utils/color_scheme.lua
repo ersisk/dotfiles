@@ -15,7 +15,8 @@ end
 
 M.get_color_scheme = function()
 	-- return get_color_scheme()
-	return "One Dark (Gogh)"
+	--return "One Dark (Gogh)"
+	return "OneDark (base16)"
 	--return h.is_dark() and "Catppuccin Mocha" or "Catppuccin Latte"
 end
 
