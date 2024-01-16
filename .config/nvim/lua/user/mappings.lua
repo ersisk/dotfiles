@@ -20,9 +20,8 @@ return {
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     ["<leader>b"] = { name = "Buffers" },
-    ["<leader>bB"] = { "<cmd>Telescope buffers<cr>", desc = "Search buffers" },
     ["<leader>lF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
-    ["<leader>bF"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with Pint" },
+    ["<leader>rP"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>", desc = "Format Buffer with Pint" },
 
     ---CodeRunner
     ["<leader>r"] = { desc = "󰐍 Code runner" },
@@ -35,8 +34,6 @@ return {
     --- Markdown Preview
     ["<leader>m"] = { desc = "󰽛 Markdown" },
     ["<leader>mm"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
-    -- Next Tab
-    ["<S-Tab>"] = { "<CMD>bnext<CR>", desc = "Next Tab" },
   },
   t = {
     -- setting a mapping to false will disable it
