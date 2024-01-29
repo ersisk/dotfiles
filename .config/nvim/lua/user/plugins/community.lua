@@ -13,7 +13,7 @@ return {
   },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
-  { import = "astrocommunity.colorscheme.mini-base16" },
+  { import = "astrocommunity.colorscheme.gruvbox-nvim" },
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   { import = "astrocommunity.programming-language-support.rest-nvim" },
   { import = "astrocommunity.pack.json" },
@@ -21,6 +21,7 @@ return {
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
+  { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   -- { import = "astrocommunity.completion.copilot-lua-cmp" },
 }
