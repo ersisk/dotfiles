@@ -5,6 +5,7 @@ export ZSH="/Users/ersanisik/.oh-my-zsh"
 
 ZSH_THEME="eastwood"
 
+
 local color00='#282c34'
 local color01='#353b45'
 local color02='#3e4451'

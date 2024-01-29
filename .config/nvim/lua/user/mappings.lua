@@ -34,6 +34,7 @@ return {
     --- Markdown Preview
     ["<leader>m"] = { desc = "󰽛 Markdown" },
     ["<leader>mm"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
+    ["<leader>rjf"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
   },
   t = {
     -- setting a mapping to false will disable it

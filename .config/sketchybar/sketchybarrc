@@ -1,6 +1,7 @@
 #!/bin/bash
-
+source ./sketchybar-app-font/generate_icon_map_fn.sh
 source "$CONFIG_DIR/colors.sh" # Loads all defined colors
+source "$CONFIG_DIR/icons.sh" # Loads all defined icons
 
 # This is a demo config to show some of the most important commands more easily.
 # This is meant to be changed and configured, as it is intentionally kept sparse.
@@ -17,6 +18,7 @@ ITEM_DIR="$CONFIG_DIR/items"
 # If you are looking for other colors, see the color picker:
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 FONT_FACE="JetBrainsMono Nerd Font"
+
 sketchybar --bar height=20        \
                  blur_radius=30   \
                  position=top     \
@@ -30,11 +32,12 @@ sketchybar --bar height=20        \
 # For a full list of all available item properties see:
 # https://felixkratz.github.io/SketchyBar/config/items
 
-sketchybar --default icon.font="$FONT_FACE:Semibold:12.0"  \
+sketchybar --default icon.font="$FONT_FACE:Semibold:16.0"  \
                      icon.color=$WHITE                 \
-                     label.font="$FONT_FACE:Semibold:12.0" \
+                     label.font="$FONT_FACE:Semibold:14.0" \
                      label.color=$WHITE                \
                      background.color=$ITEM_BG_COLOR       \
+                     border_color=$BAR_BORDER_COLOR      \
                      background.corner_radius=5            \
                      background.height=20                  \
                      padding_left=5                        \
@@ -45,7 +48,9 @@ sketchybar --default icon.font="$FONT_FACE:Semibold:12.0"  \
                      icon.padding_right=4
 
 # -- Left Side Items --
+source "$ITEM_DIR/apple.sh"
 source $ITEM_DIR/spaces.sh
+source "$ITEM_DIR/yabai.sh"
 source $ITEM_DIR/front_app.sh
 
 # -- Right Side Of Notch Items --
@@ -55,11 +60,12 @@ source $ITEM_DIR/media.sh
 source $ITEM_DIR/calendar.sh
 source $ITEM_DIR/volume.sh
 source $ITEM_DIR/battery.sh
+source $ITEM_DIR/wifi.sh
 #source $ITEM_DIR/cpu.sh
 
 
 ##### Finalizing Setup #####
 # The below command is only needed at the end of the initial configuration to
 # force all scripts to run the first time, it should never be run in an item script.
-
+sketchybar --hotload on
 sketchybar --update
