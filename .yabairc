@@ -39,7 +39,7 @@ yabai -m config mouse_drop_action swap
 # general space settings
 yabai -m config layout bsp
 yabai -m config window_placement second_child
-yabai -m config external_bar all:21:0
+yabai -m config external_bar all:30:0
 
 # apps to not manage (ignore)
 yabai -m rule --add app="^System Settings$" manage=off
