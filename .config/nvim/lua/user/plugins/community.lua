@@ -11,6 +11,10 @@ return {
       colorcolumn = "118",
     },
   },
+  {
+    "rest.nvim",
+    config = function() end,
+  },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
   { import = "astrocommunity.colorscheme.gruvbox-nvim" },
@@ -23,5 +27,5 @@ return {
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
-  -- { import = "astrocommunity.completion.copilot-lua-cmp" },
+  { import = "astrocommunity.editing-support.cloak-nvim" },
 }
