@@ -4,6 +4,10 @@ return {
   { "mg979/vim-visual-multi", event = "VeryLazy", enabled = true },
   { "christoomey/vim-tmux-navigator", lazy = false },
   {
+    "Exafunction/codeium.vim",
+    event = "BufEnter",
+  },
+  {
     url = "https://gitlab.com/schrieveslaach/sonarlint.nvim",
     ft = { "python", "php" },
     dependencies = {
