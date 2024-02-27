@@ -11,6 +11,7 @@ return {
     termguicolors = true,
     autoindent = true,
     smartindent = true,
+    conceallevel = 2,
   },
   g = {
     mapleader = " ", -- sets vim.g.mapleader

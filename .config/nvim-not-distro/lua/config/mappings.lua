@@ -87,6 +87,7 @@ maps.n["\\"] = { "<cmd>split<cr>", desc = "Horizontal Split" }
 -- end
 
 -- Plugin Manager
+maps.n["<leader>pv"] = {"vim.cmd.Ex", desc = "Ex mode"}
 maps.n["<leader>p"] = sections.p
 maps.n["<leader>pi"] = {
   function()
