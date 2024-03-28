@@ -1,12 +1,7 @@
 return {
   { "EmranMR/tree-sitter-blade", lazy = false },
-  { "ekalinin/Dockerfile.vim", event = "VeryLazy" },
   { "mg979/vim-visual-multi", event = "VeryLazy", enabled = true },
   { "christoomey/vim-tmux-navigator", lazy = false },
-  {
-    "Exafunction/codeium.vim",
-    event = "BufEnter",
-  },
   {
     url = "https://gitlab.com/schrieveslaach/sonarlint.nvim",
     ft = { "python", "php" },

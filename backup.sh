@@ -1,3 +1,4 @@
+ rm -rf ~/workspace/personal/dotfiles/.config/nvim/lua/user/*
  cp -r ~/.config/nvim/lua/user  ~/workspace/personal/dotfiles/.config/nvim/lua/
  cp -r ~/.config/sketchybar/  ~/workspace/personal/dotfiles/.config/sketchybar/
  cp  ~/.zshrc  ~/workspace/personal/dotfiles/.zshrc

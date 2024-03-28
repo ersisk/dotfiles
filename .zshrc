@@ -26,7 +26,6 @@ alias pdup="docker-compose -f docker-compose-local.yml up -d"
 alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
 
 alias ev="NVIM_APPNAME=ErsVi nvim"
-alias dbv="NVIM_APPNAME=ErsVi nvim -c 'DBUI'"
 alias vim="nvim"
 alias vi="nvim"
 alias v="nvim"
@@ -44,8 +43,11 @@ alias dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master
 alias fzfv="fzf --print0 | xargs -0 -o nvim"
 alias fzfc="fzf --preview 'cat {}'"
 
-alias pr='php /Users/ersanisik/bitbucket-pull-request.php'
+alias bb='/Users/ersanisik/bin/bb'
+alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
+alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias loghubFN='loghub-cli search -P 28'
+alias loghub='loghub-cli'
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 
@@ -68,6 +70,5 @@ bindkey '^P' up-history
 bindkey '^N' down-history
 
 bindkey '^[[a' up-history
-source ~/.aws-fzf
 
 source /Users/ersanisik/.config/broot/launcher/bash/br
