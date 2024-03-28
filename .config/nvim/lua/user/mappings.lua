@@ -43,4 +43,7 @@ return {
     -- setting a mapping to false will disable it
     -- ["<esc>"] = false,
   },
+  i = {
+    ["<C-g>"] = function() return vim.fn["codeium#Accept"]() end,
+  },
 }

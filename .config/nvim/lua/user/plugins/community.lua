@@ -23,9 +23,28 @@ return {
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
+  { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   { import = "astrocommunity.editing-support.cloak-nvim" },
+  { import = "astrocommunity.file-explorer.oil-nvim" },
+  {
+    "oil.nvim",
+    opts = {
+      view_options = {
+        -- Show files and directories that start with "."
+        show_hidden = true,
+      },
+    },
+    keys = {
+      {
+        "-",
+        function() return require("oil").open() end,
+        desc = "Open parent directory",
+      },
+    },
+  },
+  { import = "astrocommunity.completion.codeium-vim" },
 }
