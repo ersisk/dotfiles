@@ -40,8 +40,8 @@ local config = {
 
 	-- keys
 	keys = {
-		k.cmd_key("P", k.multiple_actions(":Telescope buffers")),
-		k.cmd_key("p", k.multiple_actions(":Telescope find_files")),
+		k.cmd_key("p", k.multiple_actions(":Telescope buffers")),
+		k.cmd_key("P", k.multiple_actions(":Telescope find_files")),
 		k.cmd_to_tmux_prefix("1", "1"),
 		k.cmd_to_tmux_prefix("2", "2"),
 		k.cmd_to_tmux_prefix("3", "3"),

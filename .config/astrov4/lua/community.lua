@@ -1,9 +1,12 @@
+-- AstroCommunity: import any community modules here
+-- We import this file in `lazy_setup.lua` before the `plugins/` folder.
+-- This guarantees that the specs are processed before any user plugins.
+
+---@type LazySpec
 return {
-  -- Add the community repository of plugin specifications
   "AstroNvim/astrocommunity",
-  -- example of imporing a plugin, comment out to use it or add your own
+  { import = "astrocommunity.pack.lua" },
   -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
-  { import = "astrocommunity.bars-and-lines.heirline-vscode-winbar" },
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   {
     "m4xshen/smartcolumn.nvim",
@@ -33,6 +36,9 @@ return {
   {
     "oil.nvim",
     opts = {
+      skip_confirm_for_simple_edits = true,
+      delete_to_trash = false,
+      trash_command = "trash",
       view_options = {
         -- Show files and directories that start with "."
         show_hidden = true,
@@ -47,4 +53,6 @@ return {
     },
   },
   { import = "astrocommunity.completion.codeium-vim" },
+  { import = "astrocommunity.note-taking.obsidian-nvim" },
+  -- import/override with your plugins folder
 }
