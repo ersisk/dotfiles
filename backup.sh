@@ -1,5 +1,7 @@
  rm -rf ~/workspace/personal/dotfiles/.config/nvim/lua/user
- cp -r ~/.config/nvim/  ~/workspace/personal/dotfiles/.config/astrov4
+ rm -rf ~/workspace/personal/dotfiles/.config/nvim-not-distro
+ rm -rf ~/workspace/personal/dotfiles/.config/astrov4
+ cp -r ~/.config/nvim/  ~/workspace/personal/dotfiles/.config/nvim-astrov4
  cp -r ~/.config/sketchybar/  ~/workspace/personal/dotfiles/.config/sketchybar/
  cp  ~/.zshrc  ~/workspace/personal/dotfiles/.zshrc
  cp ~/.skhdrc ~/workspace/personal/dotfiles/.skhdrc
@@ -9,4 +11,4 @@
  cp ~/.tmux.conf ~/workspace/personal/dotfiles/.tmux.conf
  cp ~/.config/starship.toml ~/workspace/personal/dotfiles/.config/starship.toml
  cp -r ~/.config/wezterm/ ~/workspace/personal/dotfiles/.config/wezterm/
- cp -r ~/.config/ErsVi/  ~/workspace/personal/dotfiles/.config/nvim-not-distro
+ cp -r ~/.config/envim/  ~/workspace/personal/dotfiles/.config/nvim

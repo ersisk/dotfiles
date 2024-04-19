@@ -19,19 +19,25 @@ export NOTES_DIR=~/obsidian-vault
   
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
+eval "$(fzf --zsh)"
 
 # ALIAS
 alias dc=docker-compose  
 alias pdup="docker-compose -f docker-compose-local.yml up -d"
 alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
 
-alias ev="NVIM_APPNAME=ErsVi nvim"
+alias evi="NVIM_APPNAME=envim nvim"
 alias vim="nvim"
 alias vi="nvim"
 alias v="nvim"
 
-alias l='lsd -lah'
-alias ls=lsd
+alias ld='eza -lD'
+alias lf='eza -lf --color=always | grep -v /'
+alias lh='eza -dl .* --group-directories-first'
+alias ll='eza -al --group-directories-first'
+alias ls='eza -alf --color=always --sort=size | grep -v /'
+alias lt='eza -al --sort=modified'
+alias l='eza -lah'
 
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias c='clear'
