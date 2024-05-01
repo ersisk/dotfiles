@@ -1,0 +1,135 @@
+"" Source your .vimrc
+"source ~/.vimrc
+
+Plug 'easymotion/vim-easymotion'
+Plug 'preservim/nerdtree'
+Plug 'https://github.com/preservim/nerdtree'
+Plug 'https://github.com/scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
+Plug 'nerdtree'
+
+" Set leader
+let mapleader = " "
+set clipboard+=unnamed
+
+" Plugins
+set commentary
+" set NERDTree
+set ideajoin
+set highlightedyank
+set argtextobj
+
+" Configs
+set number
+set relativenumber
+set ignorecase
+set smartcase
+set incsearch
+set visualbell
+set noerrorbells
+set which-key
+set NERDTree
+
+"" -- Suggested options --
+" Show a few lines of context around the cursor. Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+set scrolloff=5
+
+" Do incremental searching.
+set incsearch
+
+" disable the timeout option
+set notimeout
+
+" increase the timeoutlen (default: 1000), don't add space around the equal sign
+set timeoutlen=5000
+
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+" Reload
+nnoremap <leader>so :source ~/.ideavimrc<CR>
+
+" Better indentation
+vnoremap < <gv
+vnoremap > >gv
+
+map <leader>w :w<CR>
+
+" Navigation
+nmap <C-h> <c-w>h
+nmap <C-j> <c-w>j
+nmap <C-k> <c-w>k
+nmap <C-l> <c-w>l
+
+nmap <C-o> <Action>(Back)
+nmap <C-i> <Action>(Forward)
+
+nmap <C-\> <Action>(ActivateProjectToolWindow)
+
+" Finds
+nmap <leader>fa <Action>(GotoAction)
+nmap <leader>fe <Plug>(easymotion-s)
+nmap <leader>ff <Action>(GotoFile)
+nmap <leader>fo <Action>(RecentFiles)
+nmap <leader>fd <Action>(ShowNavBar)
+nmap <leader>fs <Action>(FileStructurePopup)
+nmap <leader>fw <Action>(FindInPath)
+nmap <leader>fr <Action>(ReplaceInPath)
+
+" nmap <C-\> <Action>(ActivateTerminalToolWindow)
+
+nmap [d <Action>(GotoPreviousError)
+nmap ]d <Action>(GotoNextError)
+
+nmap [f <Action>(MethodUp)
+nmap ]f <Action>(Methdown)
+
+nmap [c <Action>(VcsShowPrevChangeMarker)
+nmap ]c <Action>(VcsShowNextChangeMarker)
+
+nmap zc <Action>(CollapseRegion)
+nmap zo <Action>(ExpandRegion)
+
+nmap H <Action>(PreviousTab)
+nmap L <Action>(NextTab)
+
+" Git
+nmap <leader>gg <Action>(VcsGroups)
+nmap <leader>gc <Action>(CheckinProject)
+nmap <leader>gb <Action>(Git.Branches)
+nmap <leader>gd <Action>(Compare.SameVersion)
+nmap <leader>gB <Action>(Git.CompareWithBranch)
+
+" Code navigation
+map gd <Action>(GotoDeclaration)
+map gi <Action>(GotoImplementation)
+map gt <Action>(GotoTest)
+map g; <Action>(JumpToLastChange)
+
+map <leader>t <Action>(ActivateTerminalToolWindow)
+map - :call ToggleNERDTree()<CR>
+
+" Code Actions
+map <leader>lr <Action>(RenameElement)
+map <leader>la <Action>(ShowIntentionActions)
+map <leader>lf <Action>(ReformatCode)
+
+function ToggleNERDTree()
+  normal! <Esc>
+  :NERDTreeToggle
+endfunction
+
+"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
+"" Map \r to the Reformat Code action
+"map \r <Action>(ReformatCode)
+
+"" Map <leader>d to start debug
+"map <leader>d <Action>(Debug)
+
+"" Map \b to toggle the breakpoint on the current line
+"map \b <Action>(ToggleLineBreakpoint)
+
+
+:map <leader>d <Action>(Debug)

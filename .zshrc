@@ -22,6 +22,7 @@ eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 
 # ALIAS
+alias code=codium
 alias dc=docker-compose  
 alias pdup="docker-compose -f docker-compose-local.yml up -d"
 alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
