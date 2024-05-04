@@ -1,5 +1,3 @@
-
-
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/ersanisik/.oh-my-zsh"
 
@@ -22,23 +20,22 @@ eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 
 # ALIAS
-alias code=codium
 alias dc=docker-compose  
-alias pdup="docker-compose -f docker-compose-local.yml up -d"
-alias ddup="docker-compose -f docker-compose-dev.yml  up -d"
+alias dceapp="docker-compose exec app"
+alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
+alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
 
 alias evi="NVIM_APPNAME=envim nvim"
 alias vim="nvim"
 alias vi="nvim"
-alias v="nvim"
 
 alias ld='eza -lD'
 alias lf='eza -lf --color=always | grep -v /'
 alias lh='eza -dl .* --group-directories-first'
 alias ll='eza -al --group-directories-first'
-alias ls='eza -alf --color=always --sort=size | grep -v /'
+alias ls='eza --icons=always --color=always --sort=size | grep -v /'
 alias lt='eza -al --sort=modified'
-alias l='eza -lah'
+alias la='eza -a --icons=always --color=always'
 
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias c='clear'
@@ -47,14 +44,19 @@ alias lg='lazygit'
 
 alias dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
-alias fzfv="fzf --print0 | xargs -0 -o nvim"
+alias fzfnv="fzf --print0 | xargs -0 -o nvim"
 alias fzfc="fzf --preview 'cat {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
+alias prm='/Users/ersanisik/bin/pr.sh'
+alias prc='/Users/ersanisik/bin/pr-create.sh'
+
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
+
 alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
+
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 
