@@ -14,3 +14,5 @@
  cp -r ~/.config/wezterm/ ~/workspace/personal/dotfiles/.config/wezterm/
  cp -r ~/.config/envim/  ~/workspace/personal/dotfiles/.config/nvim
  cp ~/.ideavimrc ~/workspace/personal/dotfiles/.ideavimrc
+ rm ~/workspace/personal/dotfiles/Brewfile
+ brew bundle dump --file=~/workspace/personal/dotfiles/Brewfile
