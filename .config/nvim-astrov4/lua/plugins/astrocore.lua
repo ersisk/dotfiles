@@ -63,6 +63,7 @@ return {
         ["<Leader>b"] = { desc = "Buffers" },
         ["<leader>lF"] = { desc = "Format other tools" },
         ["<leader>lFj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
+        ["<leader>lFm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
         ["<leader>lFp"] = { "<cmd>!docker-compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
         ["<leader>lFb"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",

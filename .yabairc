@@ -39,19 +39,18 @@ yabai -m config mouse_drop_action swap
 # general space settings
 yabai -m config layout bsp
 yabai -m config window_placement second_child
-#yabai -m config external_bar all:26:0
+#yabai -m config external_bar all:21:0
 
 # apps to not manage (ignore)
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^FortiClient$" manage=off
 yabai -m rule --add app="^Archive Utility$" manage=off
-yabai -m rule --add app="^Wally$" manage=off
-yabai -m rule --add app="^Pika$" manage=off
-yabai -m rule --add app="^balenaEtcher$" manage=off
-yabai -m rule --add app="^Creative Cloud$" manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Alfred Preferences$" manage=off
 yabai -m rule --add app="Raycast" manage=off
 yabai -m rule --add app="Slack" manage=off
+yabai -m rule --add app="Spotify" manage=off
+yabai -m rule --add app="Thunderbird" manage=off
+yabai -m rule --add app="Mail" manage=off  
 
 echo "yabai configuration loaded.."

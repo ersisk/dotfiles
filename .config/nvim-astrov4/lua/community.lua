@@ -16,11 +16,13 @@ return {
   },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
+  { import = "astrocommunity.colorscheme.gruvbox-baby" },
   { import = "astrocommunity.programming-language-support.rest-nvim" },
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.pack.docker" },
+  { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
@@ -42,7 +44,7 @@ return {
     keys = {
       {
         "-",
-        function() return require("oil").open() end,
+        function() return require("oil").open_float() end,
         desc = "Open parent directory",
       },
     },

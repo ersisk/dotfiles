@@ -68,6 +68,7 @@ local config = {
 		k.cmd_to_tmux_prefix("t", "c"),
 		k.cmd_to_tmux_prefix("w", "x"),
 		k.cmd_to_tmux_prefix("z", "z"),
+		k.cmd_to_tmux_prefix("ş", "ş"),
 
 		k.cmd_key(
 			"s",
