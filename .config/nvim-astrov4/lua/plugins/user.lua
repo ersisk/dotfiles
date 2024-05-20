@@ -73,7 +73,6 @@ return {
       )
     end,
   },
-  { "EmranMR/tree-sitter-blade", lazy = false },
   { "mg979/vim-visual-multi", event = "VeryLazy", enabled = true },
   { "christoomey/vim-tmux-navigator", lazy = false },
   {

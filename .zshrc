@@ -27,6 +27,7 @@ alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
 
 alias evi="NVIM_APPNAME=envim nvim"
 alias vim="nvim"
+alias nv="nvim"
 alias vi="nvim"
 
 alias ld='eza -lD'
