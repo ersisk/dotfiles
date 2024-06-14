@@ -17,6 +17,7 @@ return {
       -- null_ls.builtins.formatting.stylua,
       -- null_ls.builtins.formatting.prettier,
     }
+    config.on_attach = require("astrolsp").on_attach -- or a custom on_attach function
     return config -- return final config table
   end,
 }

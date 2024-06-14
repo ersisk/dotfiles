@@ -26,6 +26,7 @@ alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
 alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
 
 alias evi="NVIM_APPNAME=envim nvim"
+alias dbvi='NVIM_APPNAME=envim nvim -c "Dbee"'
 alias vim="nvim"
 alias nv="nvim"
 alias vi="nvim"
@@ -59,7 +60,12 @@ alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
+alias nn='nv $NOTES_DIR/'
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
+
+alias taco="tail -f xargs -0 | sed  \
+    -e 's/\(.*INFO.*\)/\x1B[32m\1\x1B[39m/' \
+    -e 's/\(.*ERROR.*\)/\x1B[31m\1\x1B[39m/'" 
 
 # Tmux
 # Attaches tmux to a session (example: ta portal)
