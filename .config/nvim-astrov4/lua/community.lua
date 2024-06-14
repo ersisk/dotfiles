@@ -16,7 +16,6 @@ return {
   },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
-  { import = "astrocommunity.colorscheme.gruvbox-baby" },
   { import = "astrocommunity.programming-language-support.rest-nvim" },
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
@@ -27,7 +26,6 @@ return {
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
-  { import = "astrocommunity.editing-support.cloak-nvim" },
   { import = "astrocommunity.file-explorer.oil-nvim" },
   {
     "oil.nvim",
@@ -44,12 +42,23 @@ return {
     keys = {
       {
         "-",
-        function() return require("oil").open_float() end,
+        function() return require("oil").open() end,
         desc = "Open parent directory",
       },
     },
   },
+  -- { import = "astrocommunity.completion.codeium-nvim" },
   { import = "astrocommunity.completion.codeium-vim" },
   { import = "astrocommunity.note-taking.obsidian-nvim" },
+  { import = "astrocommunity.recipes.telescope-lsp-mappings" },
   -- import/override with your plugins folder
+  {
+    "Exafunction/codeium.vim",
+    enabled = true,
+    version = "1.8.37",
+    event = "InsertEnter",
+    config = function()
+      vim.keymap.set("i", "<C-g>", function() return vim.fn["codeium#Accept"]() end, { expr = true, silent = true })
+    end,
+  },
 }

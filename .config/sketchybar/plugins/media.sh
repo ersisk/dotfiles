@@ -11,7 +11,6 @@ update_media() {
     sketchybar --set $NAME drawing=off
   fi
 }
-
 case "$SENDER" in
   "media_change") update_media
   ;;

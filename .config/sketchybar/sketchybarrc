@@ -49,15 +49,16 @@ defaults=(
   label.padding_right=$PADDINGS
   padding_right=$PADDINGS
   padding_left=$PADDINGS
-  background.height=26
   background.corner_radius=9
   background.border_width=2
+  background.clip=0.9
   popup.background.border_width=2
   popup.background.corner_radius=9
   popup.background.border_color=$POPUP_BORDER_COLOR
   popup.background.color=$POPUP_BACKGROUND_COLOR
+  popup.background.clip=0.9
   popup.blur_radius=20
-  popup.background.shadow.drawing=on
+  popup.background.shadow.drawing=off
   scroll_texts=on
 )
 
@@ -66,20 +67,23 @@ sketchybar --default "${defaults[@]}"
 # Left
 source "$ITEM_DIR/apple.sh"
 source "$ITEM_DIR/spaces.sh"
-source "$ITEM_DIR/yabai.sh"
+#source "$ITEM_DIR/yabai.sh"
 source "$ITEM_DIR/front_app.sh"
 
 # Center
-source "$ITEM_DIR/spotify.sh"
-# source "$ITEM_DIR/media.sh"
 
 # Right
 source "$ITEM_DIR/calendar.sh"
 #source "$ITEM_DIR/brew.sh"
+source "$ITEM_DIR/media.sh"
 #source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/wifi.sh"
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/volume.sh"
+#source "$ITEM_DIR/diskmonitor.sh"
+source "$ITEM_DIR/spotify.sh"
+
+
 #source "$ITEM_DIR/cpu.sh"
 #source "$ITEM_DIR/svim.sh"
 

@@ -6,8 +6,9 @@ media=(
   label.max_chars=15
   scroll_texts=on
   updates=on
+  icon.color=$GREEN
 )
 
-sketchybar --add item media center \
-           --set media "${media[@]}" \
+sketchybar --add item media right \
+           --set media "${media[@]}" icon=󰝚 \
            --subscribe media media_change
