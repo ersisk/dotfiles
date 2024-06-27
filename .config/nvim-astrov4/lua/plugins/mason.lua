@@ -34,8 +34,12 @@ return {
         "impl",
         "black",
         "isort",
+        "phpstan",
+        "selene",
         -- add more arguments for adding more null-ls sources
       })
+
+      opts.automatic_setup = true
     end,
   },
   {

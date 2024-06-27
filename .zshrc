@@ -26,6 +26,7 @@ alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
 alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
 
 alias evi="NVIM_APPNAME=envim nvim"
+alias lvi="NVIM_APPNAME=lnvim nvim"
 alias dbvi='NVIM_APPNAME=envim nvim -c "Dbee"'
 alias vim="nvim"
 alias nv="nvim"
