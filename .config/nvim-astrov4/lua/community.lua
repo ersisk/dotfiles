@@ -8,15 +8,9 @@ return {
   { import = "astrocommunity.pack.lua" },
   -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
-  {
-    "m4xshen/smartcolumn.nvim",
-    opts = {
-      colorcolumn = "118",
-    },
-  },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
-  { import = "astrocommunity.programming-language-support.rest-nvim" },
+  --{ import = "astrocommunity.programming-language-support.rest-nvim" },
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
@@ -26,7 +20,13 @@ return {
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
+  { import = "astrocommunity.lsp.nvim-lint", enabled = true },
   { import = "astrocommunity.file-explorer.oil-nvim" },
+  -- { import = "astrocommunity.completion.codeium-nvim" },
+  { import = "astrocommunity.completion.codeium-vim" },
+  { import = "astrocommunity.note-taking.obsidian-nvim" },
+  { import = "astrocommunity.recipes.telescope-lsp-mappings" },
+  -- import/override with your plugins folder
   {
     "oil.nvim",
     lazy = false,
@@ -47,11 +47,12 @@ return {
       },
     },
   },
-  -- { import = "astrocommunity.completion.codeium-nvim" },
-  { import = "astrocommunity.completion.codeium-vim" },
-  { import = "astrocommunity.note-taking.obsidian-nvim" },
-  { import = "astrocommunity.recipes.telescope-lsp-mappings" },
-  -- import/override with your plugins folder
+  {
+    "m4xshen/smartcolumn.nvim",
+    opts = {
+      colorcolumn = "118",
+    },
+  },
   {
     "Exafunction/codeium.vim",
     enabled = true,
