@@ -15,6 +15,7 @@ return {
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.pack.docker" },
+  { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
@@ -42,7 +43,7 @@ return {
     keys = {
       {
         "-",
-        function() return require("oil").open() end,
+        function() return require("oil").open_float() end,
         desc = "Open parent directory",
       },
     },
