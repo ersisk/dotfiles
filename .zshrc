@@ -20,6 +20,7 @@ eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 
 # ALIAS
+alias docker-compose="docker compose"
 alias dc=docker-compose  
 alias dceapp="docker-compose exec app"
 alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
@@ -87,5 +88,19 @@ bindkey '^P' up-history
 bindkey '^N' down-history
 
 bindkey '^[[a' up-history
+
+eb-status-getlocation() {
+    export AWS_PAGER=""
+    aws elasticbeanstalk describe-environments \
+        --region us-east-1 | jq -c '.Environments[] | select( .EnvironmentName | contains("GetLocation") ) | {EnvironmentName: .EnvironmentName, HealthStatus: .HealthStatus, VersionLabel: .VersionLabel}' \
+        | jq
+}
+
+eb-status-desk-360-v2() {
+    export AWS_PAGER=""
+    aws elasticbeanstalk describe-environments \
+        --region eu-central-1 | jq -c '.Environments[] | select( .EnvironmentName | contains("Desk360v2") and (contains("WebSite") | not) ) | {EnvironmentName: .EnvironmentName, HealthStatus: .HealthStatus, VersionLabel: .VersionLabel}' \
+        | jq
+}
 
 source /Users/ersanisik/.config/broot/launcher/bash/br

@@ -7,6 +7,8 @@ return {
       linters_by_ft = {
         lua = { "selene" },
         php = { "php" },
+        javascript = { "eslint" },
+        typescript = { "eslint" },
       },
     },
   },

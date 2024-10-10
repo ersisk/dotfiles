@@ -35,7 +35,7 @@ return {
         "phpactor",
         "intelephense",
         "eslint",
-        "tsserver",
+        "ts_ls",
       },
       timeout_ms = 1000, -- default format timeout
       -- filter = function(client) -- fully override the default formatting function
@@ -45,10 +45,12 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
+      --
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
     config = {
+      "ts_ls",
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
     },
     -- customize how language servers are attached
