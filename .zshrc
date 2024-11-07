@@ -1,6 +1,23 @@
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/ersanisik/.oh-my-zsh"
 
+function sesh-sessions() {
+  {
+    exec </dev/tty
+    exec <&1
+    local session
+    session=$(sesh list | fzf --height 40% --reverse --border-label ' sesh ' --border --prompt '⚡  ')
+    zle reset-prompt > /dev/null 2>&1 || true
+    [[ -z "$session" ]] && return
+    sesh connect $session
+  }
+}
+
+zle     -N             sesh-sessions
+bindkey -M emacs '\es' sesh-sessions
+bindkey -M vicmd '\es' sesh-sessions
+bindkey -M viins '\es' sesh-sessions
+
 ZSH_THEME="eastwood"
 
 export FZF_DEFAULT_OPTS='
@@ -9,7 +26,7 @@ export FZF_DEFAULT_OPTS='
   --color pointer:#adc896,info:#abb2bf,border:#565c64
   --border'
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search jsontools history zsh-shift-select)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search jsontools history zsh-shift-select wd)
 
 source $ZSH/oh-my-zsh.sh
 export PATH=/opt/homebrew/bin:$PATH
@@ -103,4 +120,3 @@ eb-status-desk-360-v2() {
         | jq
 }
 
-source /Users/ersanisik/.config/broot/launcher/bash/br
