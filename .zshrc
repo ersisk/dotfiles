@@ -31,7 +31,7 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search 
 source $ZSH/oh-my-zsh.sh
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
-  
+export EZA_CONFIG_DIR=~/.config/eza/  
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
@@ -54,7 +54,7 @@ alias ld='eza -lD'
 alias lf='eza -lf --color=always | grep -v /'
 alias lh='eza -dl .* --group-directories-first'
 alias ll='eza -al --group-directories-first'
-alias ls='eza --icons=always --color=always --sort=size | grep -v /'
+alias ls='eza'
 alias lt='eza -al --sort=modified'
 alias la='eza -a --icons=always --color=always'
 
