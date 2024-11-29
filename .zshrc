@@ -100,6 +100,11 @@ alias td='tmux detach'
 # Tmux Clear pane
 alias tc='clear; tmux clear-history; clear'
 
+alias txses='sesh connect $(sesh list | fzf)'
+alias ts='sesh connect $(sesh list | fzf)'
+
+alias dev-pipe= 'bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check"'
+
 export EDITOR="nvim"
 bindkey '^P' up-history
 bindkey '^N' down-history

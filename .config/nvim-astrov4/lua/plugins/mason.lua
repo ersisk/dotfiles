@@ -29,12 +29,10 @@ return {
         "stylua",
         "pint",
         "gofumpt",
-        "sonarlint-language-server",
         "iferr",
         "impl",
         "black",
         "isort",
-        "phpstan",
         "selene",
         -- add more arguments for adding more null-ls sources
       })
