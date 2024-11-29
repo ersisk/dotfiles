@@ -98,3 +98,4 @@ nmap <silent><Leader>K :call phpactor#Hover()<CR>
 let g:phpactorPhpBin = 'php' " php executable to use
 let g:phpactorBranch = 'master' " phpactor branch to use
 let g:phpactorOmniAutoClassImport = v:true " automatically import classes with omnicomplete
+
