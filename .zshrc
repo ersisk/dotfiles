@@ -1,6 +1,12 @@
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/ersanisik/.oh-my-zsh"
 
+source $ZSH/oh-my-zsh.sh
+
+# Starship 
+eval "$(starship init zsh)"
+
+#sesh
 function sesh-sessions() {
   {
     exec </dev/tty
@@ -18,23 +24,48 @@ bindkey -M emacs '\es' sesh-sessions
 bindkey -M vicmd '\es' sesh-sessions
 bindkey -M viins '\es' sesh-sessions
 
-ZSH_THEME="eastwood"
+#zoxide
+eval "$(zoxide init zsh)"
 
-export FZF_DEFAULT_OPTS='
+# FZF
+eval "$(fzf --zsh)"
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+export FZF_DEFAULT_OPTS='--height 50% --layout=default
   --color fg:#6f737b,bg:#21252d
   --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
   --color pointer:#adc896,info:#abb2bf,border:#565c64
   --border'
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search jsontools history zsh-shift-select wd)
+# Setup fzf previews
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
 
-source $ZSH/oh-my-zsh.sh
+# fzf preview for tmux
+export FZF_TMUX_OPTS=" -p90%,70% "
+
+#Editor
+export EDITOR="nvim"
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  zsh-fzf-history-search
+  web-search
+  jsontools
+  history 
+  zsh-shift-select
+  wd
+)
+
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
-export EZA_CONFIG_DIR=~/.config/eza/  
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-eval "$(fzf --zsh)"
+export EZA_CONFIG_DIR=~/.config/eza/
+
 
 # ALIAS
 alias docker-compose="docker compose"
@@ -43,20 +74,13 @@ alias dceapp="docker-compose exec app"
 alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
 alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
 
-alias evi="NVIM_APPNAME=envim nvim"
-alias lvi="NVIM_APPNAME=lnvim nvim"
-alias dbvi='NVIM_APPNAME=envim nvim -c "Dbee"'
 alias vim="nvim"
 alias nv="nvim"
 alias vi="nvim"
 
-alias ld='eza -lD'
-alias lf='eza -lf --color=always | grep -v /'
-alias lh='eza -dl .* --group-directories-first'
-alias ll='eza -al --group-directories-first'
-alias ls='eza'
-alias lt='eza -al --sort=modified'
-alias la='eza -a --icons=always --color=always'
+
+alias ll='eza -al --icons=always --group-directories-first'
+alias ls='eza --no-filesize --long --icons=always --color=always --no-user'
 
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias c='clear'
@@ -66,11 +90,11 @@ alias lg='lazygit'
 alias dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
 alias fzfnv="fzf --print0 | xargs -0 -o nvim"
-alias fzfc="fzf --preview 'cat {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
 alias prm='/Users/ersanisik/bin/pr.sh'
 alias prc='/Users/ersanisik/bin/pr-create.sh'
+alias bb-dev='bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check"'
 
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
@@ -79,7 +103,7 @@ alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
-alias nn='nv $NOTES_DIR/'
+alias notesnv='nv $NOTES_DIR/'
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 
 alias taco="tail -f xargs -0 | sed  \
@@ -99,13 +123,8 @@ alias tl='tmux list-sessions'
 alias td='tmux detach'
 # Tmux Clear pane
 alias tc='clear; tmux clear-history; clear'
-
-alias txses='sesh connect $(sesh list | fzf)'
 alias ts='sesh connect $(sesh list | fzf)'
 
-alias dev-pipe= 'bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check"'
-
-export EDITOR="nvim"
 bindkey '^P' up-history
 bindkey '^N' down-history
 
