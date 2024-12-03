@@ -5,6 +5,7 @@
 ---@type LazySpec
 return {
   "AstroNvim/astrocommunity",
+  -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
@@ -12,12 +13,10 @@ return {
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
-  -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
-  { import = "astrocommunity.colorscheme.monokai-pro-nvim" },
-  --{ import = "astrocommunity.programming-language-support.rest-nvim" },
+  { import = "astrocommunity.colorscheme.catppuccin" },
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
@@ -32,12 +31,6 @@ return {
   { import = "astrocommunity.recipes.telescope-lsp-mappings" },
   { import = "astrocommunity.recipes.heirline-nvchad-statusline" },
   -- import/override with your plugins folder
-  {
-    "m4xshen/smartcolumn.nvim",
-    opts = {
-      colorcolumn = "118",
-    },
-  },
   -- {
   --   "Exafunction/codeium.vim",
   --   enabled = true,
