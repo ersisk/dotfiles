@@ -1,4 +1,2 @@
 [flavor]
-use = "catppuccin-frappe"
-# For upcoming Yazi 0.4 (nightly version):
-dark = "catppuccin-frappe"
+use = "onedark"
