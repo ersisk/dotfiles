@@ -50,17 +50,7 @@ export FZF_TMUX_OPTS=" -p90%,70% "
 #Editor
 export EDITOR="nvim"
 
-plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  zsh-fzf-history-search
-  web-search
-  jsontools
-  history 
-  zsh-shift-select
-  wd
-)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search)
 
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
