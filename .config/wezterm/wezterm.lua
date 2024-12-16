@@ -40,7 +40,6 @@ local config = {
 
 	-- keys
 	keys = {
-		k.cmd_key("p", k.multiple_actions(":Telescope find_files")),
 		k.cmd_to_tmux_prefix("1", "1"),
 		k.cmd_to_tmux_prefix("2", "2"),
 		k.cmd_to_tmux_prefix("3", "3"),
@@ -50,26 +49,26 @@ local config = {
 		k.cmd_to_tmux_prefix("7", "7"),
 		k.cmd_to_tmux_prefix("8", "8"),
 		k.cmd_to_tmux_prefix("9", "9"),
-		k.cmd_to_tmux_prefix("`", "n"),
-		k.cmd_to_tmux_prefix("b", "B"),
 		k.cmd_to_tmux_prefix("C", "C"),
 		k.cmd_to_tmux_prefix("d", "D"),
 		k.cmd_to_tmux_prefix("E", "%"),
-		k.cmd_to_tmux_prefix("e", '"'),
-		k.cmd_to_tmux_prefix("G", "G"),
-		k.cmd_to_tmux_prefix("g", "g"),
-		k.cmd_to_tmux_prefix("j", "O"),
+		k.cmd_to_tmux_prefix('"', '"'),
 		k.cmd_to_tmux_prefix("k", "T"),
 		k.cmd_to_tmux_prefix("l", "L"),
-		k.cmd_to_tmux_prefix("n", '"'),
-		k.cmd_to_tmux_prefix("N", "%"),
-		k.cmd_to_tmux_prefix("o", "u"),
-		k.cmd_to_tmux_prefix("T", "!"),
 		k.cmd_to_tmux_prefix("t", "c"),
-		--k.cmd_to_tmux_prefix("w", "x"),
-		k.cmd_to_tmux_prefix("z", "z"),
 		k.cmd_to_tmux_prefix("ş", "ş"),
+		k.cmd_to_tmux_prefix("ğ", ","),
+		k.cmd_to_tmux_prefix("Ğ", "$"),
+		k.cmd_to_tmux_prefix("w", "&"),
+		k.cmd_to_tmux_prefix("x", "x"),
 
+		k.cmd_key(
+			"p",
+			act.Multiple({
+				act.SendKey({ key = "\x1b" }), -- escape
+				k.multiple_actions(":Telescope find_files hidden=true no_ignore=true"),
+			})
+		),
 		k.cmd_key(
 			"s",
 			act.Multiple({
