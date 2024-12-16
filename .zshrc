@@ -1,4 +1,5 @@
 # Path to your oh-my-zsh installation.
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search)
 export ZSH="/Users/ersanisik/.oh-my-zsh"
 
 source $ZSH/oh-my-zsh.sh
@@ -50,7 +51,6 @@ export FZF_TMUX_OPTS=" -p90%,70% "
 #Editor
 export EDITOR="nvim"
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search)
 
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
@@ -103,15 +103,10 @@ alias taco="tail -f xargs -0 | sed  \
 # Tmux
 # Attaches tmux to a session (example: ta portal)
 alias ta='tmux attach -t'
-# Creates a new session
 alias tn='tmux new-session -s '
-# Kill session
 alias tk='tmux kill-session -t '
-# Lists all ongoing sessions
 alias tl='tmux list-sessions'
-# Detach from session
 alias td='tmux detach'
-# Tmux Clear pane
 alias tc='clear; tmux clear-history; clear'
 alias ts='sesh connect $(sesh list | fzf)'
 
@@ -134,3 +129,28 @@ eb-status-desk-360-v2() {
         | jq
 }
 
+dev-check() {
+    if git branch -avvv 2>&1 | grep -q ': ahead '; then
+        echo "You have unpushed commits. Are you sure you want to continue? (y/n)"
+        read -r response
+        if [ "$response" != "y" ]; then
+            echo "Aborting."
+            return 1
+        fi
+    fi
+
+    if ! git diff-index --quiet HEAD --; then
+        echo "You have uncommitted changes. Are you sure you want to continue? (y/n)"
+        read -r response
+        if [ "$response" != "y" ]; then
+            echo "Aborting."
+            return 1
+        fi
+    fi
+
+    local response=$(bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check" | xargs)
+    local pipelineId=$(echo ${response##*/} | sed 's/\x1b\[[0-9;]*m//g' | tr -d '[:space:]')
+
+    echo "$response"
+    bb pipeline wait "$pipelineId"
+}
