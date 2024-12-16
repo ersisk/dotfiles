@@ -21,7 +21,7 @@
     "dark": "One Dark Pro"
   },
   "autosave": "on_window_change",
-  "format_on_save": "language_server",
+  "format_on_save": "on",
   "scrollbar": {
     "show": "never"
   },
@@ -39,6 +39,16 @@
     "Go": {
       "language_servers": [
         "gopls"
+      ]
+    },
+    "JavaScript": {
+      "language_servers": [
+        "tsserver"
+      ]
+    },
+    "Python": {
+      "language_servers": [
+        "pyright"
       ]
     }
   },

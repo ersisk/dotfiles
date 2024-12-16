@@ -7,7 +7,10 @@ M.get_font = function()
 		"JetBrainsMono NFM",
 	}
 	local family = h.get_random_entry(fonts)
-	return wezterm.font_with_fallback({ { family = family, weight = "Bold" }, { family = "JetBrainsMono NFM" } })
+	return wezterm.font_with_fallback({
+		{ family = family, weight = "Bold" },
+		{ family = "JetBrainsMono NFM" },
+	})
 end
 
 return M
