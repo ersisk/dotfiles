@@ -6,28 +6,38 @@
 return {
   "AstroNvim/astrocommunity",
   -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
-  { import = "astrocommunity.pack.lua" },
+  --
+  -- packs
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
+  --ui
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
   { import = "astrocommunity.colorscheme.nord-nvim" },
+  --markdown
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
+  --motion
   { import = "astrocommunity.motion.vim-matchup" },
   { import = "astrocommunity.motion.harpoon" },
+  --lsp
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   { import = "astrocommunity.lsp.nvim-lint", enabled = true },
+  --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
+
+  --Copilot
   -- { import = "astrocommunity.completion.codeium-nvim" },
   -- { import = "astrocommunity.completion.codeium-vim" },
   { import = "astrocommunity.completion.copilot-cmp" },
   { import = "astrocommunity.editing-support.copilotchat-nvim" },
+  -- Note
   { import = "astrocommunity.note-taking.obsidian-nvim" },
+  --Keymap
   { import = "astrocommunity.recipes.telescope-lsp-mappings" },
   -- import/override with your plugins folder
   -- {

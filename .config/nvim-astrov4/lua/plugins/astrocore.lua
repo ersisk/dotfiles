@@ -62,20 +62,16 @@ return {
         },
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
-        ["<Leader>b"] = { desc = "Buffers" },
-        ["<leader>lF"] = { desc = "Format other tools" },
+        ["<leader>lF"] = { desc = "󰽛 Tools" },
         ["<leader>lFj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>lFm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>lFp"] = { "<cmd>!docker compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
-        ["<leader>lFb"] = {
+        ["<leader>lFa"] = { "<cmd>!docker compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
+        ["<leader>lFf"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
         },
-        --- Markdown Preview
-        ["<leader>r"] = { desc = "󰽛 Tools" },
-        ["<leader>rm"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
-        -- quick save
-        -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
+        ["<leader>lFp"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
+        ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
       },
       t = {
         -- setting a mapping to false will disable it
