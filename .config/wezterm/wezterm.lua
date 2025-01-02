@@ -2,7 +2,7 @@ local b = require("utils/background")
 local cs = require("utils/color_scheme")
 local f = require("utils/font")
 local k = require("utils/keys")
-local w = require("utils/wallpaper")
+-- local w = require("utils/wallpaper")
 
 local wezterm = require("wezterm")
 local act = wezterm.action
@@ -10,13 +10,13 @@ local act = wezterm.action
 local config = {
 	-- background
 	background = {
-		w.get_wallpaper(),
+		--w.get_wallpaper(),
 		b.get_background(),
 	},
 
 	-- font
 	font = f.get_font(),
-	font_size = 18,
+	font_size = 19,
 
 	-- colors
 	color_scheme = cs.get_color_scheme(),
@@ -37,6 +37,7 @@ local config = {
 	native_macos_fullscreen_mode = false,
 	window_close_confirmation = "NeverPrompt",
 	window_decorations = "RESIZE",
+	window_background_opacity = 0.65,
 
 	-- keys
 	keys = {
@@ -60,7 +61,7 @@ local config = {
 		k.cmd_to_tmux_prefix("ğ", ","),
 		k.cmd_to_tmux_prefix("Ğ", "$"),
 		k.cmd_to_tmux_prefix("w", "&"),
-		k.cmd_to_tmux_prefix("x", "x"),
+		k.cmd_to_tmux_prefix("W", "x"),
 
 		k.cmd_key(
 			"p",
