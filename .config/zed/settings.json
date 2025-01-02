@@ -28,28 +28,34 @@
   "buffer_line_height": {
     "custom": 1.7
   },
+  "language_overrides": {
+    "PHP": {
+      "formatter": {
+        "external": {
+          "command": "pint",
+          "arguments": ["{buffer_path}"]
+        }
+      }
+    }
+  },
   "languages": {
     "PHP": {
-      "language_servers": [
-        "intelephense",
-        "!phpactor",
-        "..."
-      ]
+      "language_servers": ["intelephense", "!phpactor", "..."]
+
+      //"formatter": {
+      //  "external": {
+      //  "command": "pint",
+      // "arguments": ["{buffer_path}"]
+      // }
     },
     "Go": {
-      "language_servers": [
-        "gopls"
-      ]
+      "language_servers": ["gopls"]
     },
     "JavaScript": {
-      "language_servers": [
-        "tsserver"
-      ]
+      "language_servers": ["tsserver"]
     },
     "Python": {
-      "language_servers": [
-        "pyright"
-      ]
+      "language_servers": ["pyright"]
     }
   },
   "lsp": {

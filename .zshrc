@@ -58,6 +58,7 @@ export EZA_CONFIG_DIR=~/.config/eza/
 
 
 # ALIAS
+alias dbang="gobang"
 alias docker-compose="docker compose"
 alias dc=docker-compose  
 alias dceapp="docker-compose exec app"
@@ -109,6 +110,8 @@ alias tl='tmux list-sessions'
 alias td='tmux detach'
 alias tc='clear; tmux clear-history; clear'
 alias ts='sesh connect $(sesh list | fzf)'
+
+alias copilot="gh copilot explain"
 
 bindkey '^P' up-history
 bindkey '^N' down-history

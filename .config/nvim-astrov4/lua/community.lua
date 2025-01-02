@@ -18,7 +18,7 @@ return {
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
-  { import = "astrocommunity.colorscheme.nord-nvim" },
+  { import = "astrocommunity.colorscheme.dracula-nvim" },
   --markdown
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   --motion
