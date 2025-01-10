@@ -78,7 +78,8 @@ alias c='clear'
 alias e=exit
 alias lg='lazygit'
 
-alias dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
+alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
+alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
 alias fzfnv="fzf --print0 | xargs -0 -o nvim"
 
@@ -157,3 +158,6 @@ dev-check() {
     echo "$response"
     bb pipeline wait "$pipelineId"
 }
+
+# Added by Windsurf
+export PATH="/Users/ersanisik/.codeium/windsurf/bin:$PATH"
