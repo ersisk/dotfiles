@@ -1,6 +1,6 @@
 # By default Reload config with shft + cmd + , 
 
-theme = rose-pine
+theme = OneHalfDark
 background = #272a32
 background-opacity = 0.65
 background-blur-radius = 20
@@ -28,39 +28,114 @@ auto-update-channel = stable
 shell-integration-features = no-cursor 
 copy-on-select = clipboard
 
-# Custom Keybinds & Config (super represents cmd key on mac)
-# For Simple Keybinds
-# keybind = super+r=reload_config 
-keybind = super+i=inspector:toggle
+#################
+## keybindings ##
+#################
+# Some useful encoded characters:
+# \x0a = Enter/Return
+# \x1b = Esc
+# \x02 = <C-b> (tmux prefix)
+macos-option-as-alt = true
 
-# Similar Tmux but with Ghostty
-# (ctrl b for tmux -> cmb b for ghostty)
-keybind = super+b>r=reload_config
-keybind = super+b>x=close_surface
-# this only works if you have `macos-titlebar-style = tabs or native or transparent`
-# else it behaves like new window
-keybind = super+b>c=new_tab 
-keybind = super+b>n=new_window
+# switch to window by index (1-based)
+keybind = super+physical:one=text:\x021
+keybind = super+physical:two=text:\x022
+keybind = super+physical:three=text:\x023
+keybind = super+physical:four=text:\x024
+keybind = super+physical:five=text:\x025
+keybind = super+physical:six=text:\x026
+keybind = super+physical:seven=text:\x027
+keybind = super+physical:eight=text:\x028
+keybind = super+physical:nine=text:\x029
 
-# tab nav
-keybind = super+b>1=goto_tab:1
-keybind = super+b>2=goto_tab:2
-keybind = super+b>3=goto_tab:3
-keybind = super+b>4=goto_tab:4
-keybind = super+b>5=goto_tab:5
-keybind = super+b>6=goto_tab:6
-keybind = super+b>7=goto_tab:7
-keybind = super+b>8=goto_tab:8
-keybind = super+b>9=goto_tab:9
+# a-z
+# select all?
+# keybind = super+a= 
+# build?
+# keybind = super+b= 
+# copy
+# Change to tmux copy mode
+keybind = super+c=text:\x01[
+# keybind = super+d=
+# keybind = super+e=
+# :Grep (find)
+keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
+# <perfix>+g (open lazygit window)
+keybind = super+g=text:\x02\x67
+# hide?
+# keybind = super+h= 
+# keybind = super+i=
+# keybind = super+j=
+# <perfix>+k (open sesh picker)
+keybind = super+k=text:\x01\x54
+# <perfix>+l (switch to last session)
+keybind = super+l=text:\x01\x4c
+# minimize?
+# keybind = super+m= 
+# new?
+# keybind = super+n= 
+# <perfix>+u (open url)
+keybind = super+o=text:\x01\x75
+# :GotoFile
+keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
+# :qa!
+#keybind = super+q=text:\x3a\x1b\x1b\x3a\x71\x61\x21\x0a
+# :w (write buffer)
+keybind = super+r=reload_config
+keybind = super+s=text:\x3a\x77\x0a
+# <perfix>+c (new window)
+keybind = super+t=text:\x01\x63
+# keybind = super+u=
+# paste
+# keybind = super+v= 
+# <perfix>+x (close window)
+keybind = super+w=text:\x01\x78
+# cut
+# keybind = super+x= 
+# keybind = super+y=
+# undo?
+# keybind = super+z= 
 
-# splitting
-keybind = super+b>\=new_split:right
-keybind = super+b>-=new_split:down
-keybind = super+b>e=equalize_splits
+# A-Z
+# keybind = super+shift+a=
+# keybind = super+shift+b=
+# keybind = super+shift+c=
+# keybind = super+shift+d=
+# keybind = super+shift+e=
+# keybind = super+shift+f=
+# keybind = super+shift+g=
+# keybind = super+shift+h=
+# keybind = super+shift+i=
+# secondary sesh
+# keybind = super+shift+j=
+# keybind = super+shift+k=
+# keybind = super+shift+l=
+# keybind = super+shift+m=
+# keybind = super+shift+n=
+# :GotoSymbol
+keybind = super+shift+o=text:\x3a\x47\x6f\x54\x6f\x53\x79\x6d\x62\x6f\x6c\x0a
+# :GotoCommand
+keybind = super+shift+p=text:\x3a\x47\x6f\x54\x6f\x43\x6f\x6d\x6d\x61\x6e\x64\x0a
+# keybind = super+shift+q=
+# keybind = super+shift+r=
+# keybind = super+shift+s=
+# keybind = super+shift+t=
+# keybind = super+shift+u=
+# keybind = super+shift+v=
+# keybind = super+shift+w= (undo close?)
+# keybind = super+shift+x=
+# keybind = super+shift+y=
+# keybind = super+shift+z= (redo?)
 
-# split nav (setting this to control will not work if tmux already uses it)
-keybind = super+b>h=goto_split:left
-keybind = super+b>j=goto_split:bottom
-keybind = super+b>k=goto_split:top
-keybind = super+b>l=goto_split:right
+# special characters
+# jump back
+keybind = super+left_bracket=text:<C-o>
+# jump forward
+keybind = super+right_bracket=text:<C-i>
+
+# special characters (shift)
+# <perfix>+n (next window)
+keybind = super+shift+left_bracket=text:\x01\x6e
+# <perfix>+p (previous window)
+keybind = super+shift+right_bracket=text:\x01\x70
 
