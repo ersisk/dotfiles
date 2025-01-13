@@ -159,7 +159,7 @@ dev-check() {
     bb pipeline wait "$pipelineId"
 }
 
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#443f0a'
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
 
 # Added by Windsurf
 export PATH="/Users/ersanisik/.codeium/windsurf/bin:$PATH"

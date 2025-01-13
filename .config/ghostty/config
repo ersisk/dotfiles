@@ -21,9 +21,10 @@ window-padding-balance = true
 auto-update = check
 auto-update-channel = stable
 
+#extras
 shell-integration-features = no-cursor
 copy-on-select = clipboard
-
+cursor-style-blink = false
 #################
 ## keybindings ##
 #################

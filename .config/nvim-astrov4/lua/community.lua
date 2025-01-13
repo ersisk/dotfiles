@@ -40,6 +40,8 @@ return {
   --Keymap
   { import = "astrocommunity.recipes.telescope-lsp-mappings" },
   { import = "astrocommunity.recipes.neovide" },
+  --git
+  { import = "astrocommunity.git.diffview-nvim" },
   -- import/override with your plugins folder
   -- {
   --   "Exafunction/codeium.vim",
