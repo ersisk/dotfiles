@@ -1,5 +1,6 @@
  rm -rf ~/workspace/dotfiles/.config/nvim-astrov4
- cp -r ~/.config/nvim/  ~/workspace/dotfiles/.config/nvim-astrov4
+ rm -rf ~/workspace/dotfiles/.config/nvim
+ cp -r ~/.config/nvim/  ~/workspace/dotfiles/.config/nvim
  cp  ~/.zshrc  ~/workspace/dotfiles/.zshrc
  cp ~/.vimrc ~/workspace/dotfiles/.vimrc
  cp ~/.tmux.conf ~/workspace/dotfiles/.tmux.conf

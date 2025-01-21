@@ -79,3 +79,4 @@ keybind = super+shift+left_bracket=text:\x01\x6e
 # <perfix>+p (previous window)
 keybind = super+shift+right_bracket=text:\x01\x70
 
+keybind = super+ş=text:\x01\x15F
