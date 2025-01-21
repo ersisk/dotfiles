@@ -109,6 +109,7 @@ alias tn='tmux new-session -s '
 alias tk='tmux kill-session -t '
 alias tl='tmux list-sessions'
 alias td='tmux detach'
+alias th='tmux new-session -d -c ~/ -s home'
 alias tc='clear; tmux clear-history; clear'
 alias ts='sesh connect $(sesh list | fzf)'
 
