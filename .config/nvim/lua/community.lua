@@ -23,7 +23,6 @@ return {
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   --motion
   { import = "astrocommunity.motion.vim-matchup" },
-  { import = "astrocommunity.motion.harpoon" },
   --lsp
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   { import = "astrocommunity.lsp.nvim-lint", enabled = true },
