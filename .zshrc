@@ -8,44 +8,38 @@ source $ZSH/oh-my-zsh.sh
 eval "$(starship init zsh)"
 
 #sesh
-function sesh-sessions() {
+function ts() {
   {
     exec </dev/tty
     exec <&1
     local session
-    session=$(sesh list | fzf --height 40% --reverse --border-label ' sesh ' --border --prompt '⚡  ')
+    session=$(sesh list -i | gum filter --limit 1 --no-sort --fuzzy --placeholder 'Pick a sesh' --height 50 --prompt='⚡')
     zle reset-prompt > /dev/null 2>&1 || true
     [[ -z "$session" ]] && return
     sesh connect $session
   }
 }
 
-zle     -N             sesh-sessions
-bindkey -M emacs '\es' sesh-sessions
-bindkey -M vicmd '\es' sesh-sessions
-bindkey -M viins '\es' sesh-sessions
+zle     -N             ts
+bindkey -M emacs '\es' ts
+bindkey -M vicmd '\es' ts
+bindkey -M viins '\es' ts
 
 #zoxide
 eval "$(zoxide init zsh)"
 
 # FZF
 eval "$(fzf --zsh)"
-
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-
 export FZF_DEFAULT_OPTS='--height 50% --layout=default
   --color fg:#6f737b,bg:#21252d
   --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
   --color pointer:#adc896,info:#abb2bf,border:#565c64
   --border'
-
-# Setup fzf previews
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
-
-# fzf preview for tmux
 export FZF_TMUX_OPTS=" -p90%,70% "
 
 #Editor
@@ -61,32 +55,30 @@ export EZA_CONFIG_DIR=~/.config/eza/
 alias dbang="gobang"
 alias docker-compose="docker compose"
 alias dc=docker-compose  
-alias dceapp="docker-compose exec app"
-alias dcuplo="docker-compose -f docker-compose-local.yml up -d"
-alias dcupdev="docker-compose -f docker-compose-dev.yml  up -d"
+alias dce="docker-compose exec app"
+alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
+alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 
-alias vim="nvim"
+#NVIM
 alias nv="nvim"
+alias nvp="nvim ."
+alias nvf="nvim +GoToFile"
 alias vi="nvim"
-
+alias vim="nvim"
 
 alias ll='eza -al --icons=always --group-directories-first'
 alias ls='eza --no-filesize --long --icons=always --color=always --no-user'
 
-alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
-alias c='clear'
-alias e=exit
 alias lg='lazygit'
 
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
 alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
-alias fzfnv="fzf --print0 | xargs -0 -o nvim"
+alias fzf-nv="fzf --print0 | xargs -0 -o nvim"
 
 alias bb='/Users/ersanisik/bin/bb'
 alias prm='/Users/ersanisik/bin/pr.sh'
 alias prc='/Users/ersanisik/bin/pr-create.sh'
-alias bb-dev='bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check"'
 
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
@@ -95,10 +87,10 @@ alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
-alias notesnv='nv $NOTES_DIR/'
+alias notesnv='neovim $NOTES_DIR/'
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 
-alias taco="tail -f xargs -0 | sed  \
+alias tail-json="tail -f xargs -0 | sed  \
     -e 's/\(.*INFO.*\)/\x1B[32m\1\x1B[39m/' \
     -e 's/\(.*ERROR.*\)/\x1B[31m\1\x1B[39m/'" 
 
@@ -111,7 +103,6 @@ alias tl='tmux list-sessions'
 alias td='tmux detach'
 alias th='tmux new-session -d -c ~/ -s home'
 alias tc='clear; tmux clear-history; clear'
-alias ts='sesh connect $(sesh list | fzf)'
 
 alias copilot="gh copilot explain"
 
@@ -134,7 +125,7 @@ eb-status-desk-360-v2() {
         | jq
 }
 
-dev-check() {
+bb-dev-check() {
     if git branch -avvv 2>&1 | grep -q ': ahead '; then
         echo "You have unpushed commits. Are you sure you want to continue? (y/n)"
         read -r response

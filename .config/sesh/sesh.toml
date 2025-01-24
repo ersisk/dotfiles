@@ -1,0 +1,8 @@
+[[session]]
+name = "Notes"
+path = "~/obsidian-vault/"
+startup_command = 'nvf'
+
+[[session]]
+name = "Home"
+path = "~/"
