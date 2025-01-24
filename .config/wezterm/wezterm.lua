@@ -65,6 +65,7 @@ local config = {
 		k.cmd_key("O", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
+		k.cmd_key("T", k.multiple_actions(":GoToBuffer")),
 
 		k.cmd_key(
 			"s",

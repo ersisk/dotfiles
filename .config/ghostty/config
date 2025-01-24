@@ -69,7 +69,9 @@ keybind = super+w=text:\x01\x78
 keybind = super+shift+o=text:\x3a\x47\x6f\x54\x6f\x53\x79\x6d\x62\x6f\x6c\x0a
 # :GotoCommand
 keybind = super+shift+p=text:\x3a\x47\x6f\x54\x6f\x43\x6f\x6d\x6d\x61\x6e\x64\x0a
-# jump back
+# :GoToBuffer
+keybind = super+shift+t=text:\x3a\x47\x6f\x54\x6f\x42\x75\x66\x66\x65\x72\x0a
+#jump back
 keybind = super+left_bracket=text:<C-o>
 # jump forward
 keybind = super+right_bracket=text:<C-i>
@@ -79,4 +81,6 @@ keybind = super+shift+left_bracket=text:\x01\x6e
 # <perfix>+p (previous window)
 keybind = super+shift+right_bracket=text:\x01\x70
 
-keybind = super+ş=text:\x01\x15F
+#ts
+keybind = super+shift+k=text:\x74\x73\x0a
+
