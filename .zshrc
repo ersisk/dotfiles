@@ -111,21 +111,7 @@ bindkey '^N' down-history
 
 bindkey '^[[a' up-history
 
-eb-status-getlocation() {
-    export AWS_PAGER=""
-    aws elasticbeanstalk describe-environments \
-        --region us-east-1 | jq -c '.Environments[] | select( .EnvironmentName | contains("GetLocation") ) | {EnvironmentName: .EnvironmentName, HealthStatus: .HealthStatus, VersionLabel: .VersionLabel}' \
-        | jq
-}
-
-eb-status-desk-360-v2() {
-    export AWS_PAGER=""
-    aws elasticbeanstalk describe-environments \
-        --region eu-central-1 | jq -c '.Environments[] | select( .EnvironmentName | contains("Desk360v2") and (contains("WebSite") | not) ) | {EnvironmentName: .EnvironmentName, HealthStatus: .HealthStatus, VersionLabel: .VersionLabel}' \
-        | jq
-}
-
-bb-dev-check() {
+dev-check() {
     if git branch -avvv 2>&1 | grep -q ': ahead '; then
         echo "You have unpushed commits. Are you sure you want to continue? (y/n)"
         read -r response
