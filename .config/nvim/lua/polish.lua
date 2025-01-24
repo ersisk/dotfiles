@@ -8,6 +8,7 @@ vim.cmd [[command! -nargs=0 GoToFile :Telescope find_files hidden=true no_ignore
 vim.cmd [[command! -nargs=0 GoToSymbol :Telescope lsp_document_symbols]]
 vim.cmd [[command! -nargs=0 Grep :Telescope live_grep]]
 vim.cmd [[command! -nargs=0 SmartGoTo :Telescope smart_goto]]
+vim.cmd [[command! -nargs=0 GoToBuffer :Telescope buffers]]
 -- Set up custom filetypes
 -- vim.filetype.add {
 --   extension = {

@@ -53,6 +53,8 @@ export EZA_CONFIG_DIR=~/.config/eza/
 
 # ALIAS
 alias dbang="gobang"
+
+#Docker
 alias docker-compose="docker compose"
 alias dc=docker-compose  
 alias dce="docker-compose exec app"
@@ -75,6 +77,8 @@ alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
 alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
 alias fzf-nv="fzf --print0 | xargs -0 -o nvim"
+alias fzf-f="fzf --style full \
+    --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
 alias prm='/Users/ersanisik/bin/pr.sh'
@@ -87,7 +91,6 @@ alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
-alias notesnv='neovim $NOTES_DIR/'
 alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
 
 alias tail-json="tail -f xargs -0 | sed  \
