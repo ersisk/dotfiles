@@ -13,7 +13,7 @@ function ts() {
     exec </dev/tty
     exec <&1
     local session
-    session=$(sesh list -i | gum filter --limit 1 --no-sort --fuzzy --placeholder 'Pick a sesh' --height 50 --prompt='⚡')
+    session=$(sesh list -i --hide-duplicates | gum filter --limit 1 --no-sort --fuzzy --placeholder 'Pick a sesh' --height 50 --prompt='⚡')
     zle reset-prompt > /dev/null 2>&1 || true
     [[ -z "$session" ]] && return
     sesh connect $session
@@ -50,7 +50,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
 export EZA_CONFIG_DIR=~/.config/eza/
 
-
+alias al-list="print -rl -- ${(k)aliases} | fzf"
 # ALIAS
 alias dbang="gobang"
 
@@ -87,7 +87,6 @@ alias prc='/Users/ersanisik/bin/pr-create.sh'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 
-alias loghubFN='loghub-cli search -P 28'
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
