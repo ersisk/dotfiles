@@ -1,8 +1,18 @@
 [[session]]
 name = "Notes"
 path = "~/obsidian-vault/"
-startup_command = 'nvf'
+startup_command = 'nvim .'
 
 [[session]]
 name = "Home"
 path = "~/"
+
+[[session]]
+name = "Config"
+path = "~/.config/"
+startup_command = 'nvim +GoToFile'
+
+[[session]]
+name = "Workspace"
+path = "~/workspace/"
+

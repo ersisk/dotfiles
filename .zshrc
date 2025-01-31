@@ -90,7 +90,8 @@ alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash
 alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
-alias notesn='vim $NOTES_DIR/$(date +"%Y%m%d%H%M.md")'
+alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
+
 
 alias tail-json="tail -f xargs -0 | sed  \
     -e 's/\(.*INFO.*\)/\x1B[32m\1\x1B[39m/' \
