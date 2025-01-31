@@ -38,7 +38,6 @@ return {
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   --Keymap
   { import = "astrocommunity.recipes.telescope-lsp-mappings" },
-  { import = "astrocommunity.recipes.neovide" },
   --git
   -- import/override with your plugins folder
   -- {
