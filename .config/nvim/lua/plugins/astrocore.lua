@@ -62,6 +62,7 @@ return {
         },
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
+        ["<Leader>;"] = { ":2ToggleTerm size=30 direction=horizontal<cr>", desc = "Open terminal with tab" },
         ["<leader>lF"] = { desc = "󰽛 Tools" },
         ["<leader>lFj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>lFm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
@@ -71,7 +72,7 @@ return {
           desc = "Format Buffer with Pint",
         },
         ["<leader>lFp"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
-        ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
+        ["+"] = { "<C-a>", desc = "Increment" },
         ["grr"] = {
           function()
             require("telescope.builtin").lsp_references {
@@ -84,6 +85,10 @@ return {
           end,
           desc = "Lsp Buf References",
         },
+        ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
+      },
+      i = {
+        ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command
       },
       t = {
         -- setting a mapping to false will disable it
