@@ -12,7 +12,7 @@ This is the home of all my dotfiles. These are files that add custom configurati
 - Shell: [zsh](https://www.zsh.org/)
 - Multiplexer: [tmux](https://github.com/tmux/tmux/wiki)
 - Editor: [Neovim](https://neovim.io)
-- Editor Distro: [AstroNvim](https://astronvim.github.io/)
+- Editor Config: [AstroNvim](https://astronvim.github.io/)
 - Git: [lazygit](https://github.com/jesseduffield/lazygit)
 - macOS package manager: [Homebrew](https://brew.sh)
 - npm package manager: [pnpm](https://pnpm.io/)
