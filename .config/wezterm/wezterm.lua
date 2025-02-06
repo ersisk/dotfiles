@@ -62,10 +62,19 @@ local config = {
 		k.cmd_to_tmux_prefix("Ğ", "$"),
 		k.cmd_to_tmux_prefix("w", "&"),
 		k.cmd_to_tmux_prefix("W", "x"),
+		k.cmd_to_tmux_prefix("g", "g"),
 		k.cmd_key("O", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
 		k.cmd_key("T", k.multiple_actions(":GoToBuffer")),
+		k.cmd_key(
+			"K",
+			act.Multiple({
+				act.SendKey({ key = "t" }),
+				act.SendKey({ key = "s" }),
+				act.SendKey({ key = "\x0a" }),
+			})
+		),
 
 		k.cmd_key(
 			"s",
