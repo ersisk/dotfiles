@@ -62,7 +62,7 @@ return {
         },
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
-        ["<Leader>;"] = { ":2ToggleTerm size=30 direction=horizontal<cr>", desc = "Open terminal with tab" },
+        ["<Leader>;"] = { "<cmd>GoToSymbol<cr>", desc = "LSP Symbols" },
         ["<leader>lF"] = { desc = "󰽛 Tools" },
         ["<leader>lFj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>lFm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
