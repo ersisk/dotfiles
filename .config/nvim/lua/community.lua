@@ -38,6 +38,8 @@ return {
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   --Keymap
   { import = "astrocommunity.recipes.telescope-lsp-mappings" },
+  --Motion
+  { import = "astrocommunity.motion.harpoon" },
   --git
   -- import/override with your plugins folder
   -- {

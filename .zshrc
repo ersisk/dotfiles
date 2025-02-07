@@ -50,9 +50,9 @@ export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
 export EZA_CONFIG_DIR=~/.config/eza/
 
-alias al-list="print -rl -- ${(k)aliases} | fzf"
 # ALIAS
 alias dbang="gobang"
+alias al-list="print -rl -- ${(k)aliases} | fzf"
 
 #Docker
 alias docker-compose="docker compose"
@@ -62,6 +62,7 @@ alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 
 #NVIM
+alias envim="NVIM_APPNAME=envim nvim"
 alias nv="nvim"
 alias nvp="nvim ."
 alias nvf="nvim +GoToFile"
@@ -141,6 +142,3 @@ dev-check() {
 }
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
-
-# Added by Windsurf
-export PATH="/Users/ersanisik/.codeium/windsurf/bin:$PATH"

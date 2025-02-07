@@ -50,39 +50,19 @@ return {
           function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
           desc = "Previous buffer",
         },
-
-        -- mappings seen under group name "Buffer"
-        ["<Leader>bD"] = {
-          function()
-            require("astroui.status.heirline").buffer_picker(
-              function(bufnr) require("astrocore.buffer").close(bufnr) end
-            )
-          end,
-          desc = "Pick to close",
-        },
-        -- tables with just a `desc` key will be registered with which-key if it's installed
-        -- this is useful for naming menus
-        ["<Leader>;"] = { "<cmd>GoToSymbol<cr>", desc = "LSP Symbols" },
-        ["<leader>lF"] = { desc = "󰽛 Tools" },
-        ["<leader>lFj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
-        ["<leader>lFm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>lFa"] = { "<cmd>!docker compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
-        ["<leader>lFf"] = {
+        ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
+        ["<leader>ltj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
+        ["<leader>ltm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
+        ["<leader>ltf"] = { "<cmd>!docker compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
+        ["<leader>ltF"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
         },
-        ["<leader>lFp"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
+        ["<leader>ltg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
-        ["grr"] = {
-          function()
-            require("telescope.builtin").lsp_references {
-              layout_strategy = "vertical",
-              layout_config = {
-                width = 0.5,
-                height = 0.5,
-              },
-            }
-          end,
+        ["ğ"] = { "<C-x>", desc = "Increment" },
+        ["grR"] = {
+          "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
           desc = "Lsp Buf References",
         },
         ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
