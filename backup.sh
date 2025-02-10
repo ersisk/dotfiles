@@ -1,6 +1,7 @@
- rm -rf ~/workspace/dotfiles/.config/nvim-astrov4
+ rm -rf ~/workspace/dotfiles/.config/envim
  rm -rf ~/workspace/dotfiles/.config/nvim
  cp -r ~/.config/nvim/  ~/workspace/dotfiles/.config/nvim
+ cp -r ~/.config/envim/  ~/workspace/dotfiles/.config/envim
  cp -r ~/.config/sesh/  ~/workspace/dotfiles/.config/sesh
  cp  ~/.zshrc  ~/workspace/dotfiles/.zshrc
  cp ~/.vimrc ~/workspace/dotfiles/.vimrc
