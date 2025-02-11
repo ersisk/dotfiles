@@ -64,6 +64,8 @@ local config = {
 		k.cmd_to_tmux_prefix("W", "x"),
 		k.cmd_to_tmux_prefix("g", "g"),
 		k.cmd_to_tmux_prefix("o", "u"),
+		k.cmd_to_tmux_prefix("LeftArrow", "p"),
+		k.cmd_to_tmux_prefix("RightArrow", "n"),
 		k.cmd_key("O", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
@@ -84,22 +86,6 @@ local config = {
 				k.multiple_actions(":w"),
 			})
 		),
-		{
-			mods = "CTRL",
-			key = "Tab",
-			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "a" }),
-				act.SendKey({ key = "n" }),
-			}),
-		},
-		{
-			mods = "CMD",
-			key = "~",
-			action = act.Multiple({
-				act.SendKey({ mods = "CTRL", key = "a" }),
-				act.SendKey({ key = "p" }),
-			}),
-		},
 	},
 }
 
