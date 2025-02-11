@@ -63,6 +63,7 @@ local config = {
 		k.cmd_to_tmux_prefix("w", "&"),
 		k.cmd_to_tmux_prefix("W", "x"),
 		k.cmd_to_tmux_prefix("g", "g"),
+		k.cmd_to_tmux_prefix("o", "u"),
 		k.cmd_key("O", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),

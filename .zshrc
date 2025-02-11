@@ -33,7 +33,7 @@ eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_DEFAULT_OPTS='--height 50% --layout=default
+export FZF_DEFAULT_OPTS='--height 85% --layout=default
   --color fg:#6f737b,bg:#21252d
   --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
   --color pointer:#adc896,info:#abb2bf,border:#565c64
@@ -74,19 +74,15 @@ alias ls='eza --no-filesize --long --icons=always --color=always --no-user'
 
 alias lg='lazygit'
 
-alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
-alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
-
-alias fzf-nv="fzf --print0 | xargs -0 -o nvim"
-alias fzf-f="fzf --style full \
+alias fzn="fzf --print0 | xargs -0 -o nvim"
+alias fzp="fzf --style full \
     --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
-alias prm='/Users/ersanisik/bin/pr.sh'
-alias prc='/Users/ersanisik/bin/pr-create.sh'
-
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
+alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
+alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 
 alias loghub='loghub-cli'
 
@@ -112,8 +108,6 @@ alias copilot="gh copilot explain"
 
 bindkey '^P' up-history
 bindkey '^N' down-history
-
-bindkey '^[[a' up-history
 
 dev-check() {
     if git branch -avvv 2>&1 | grep -q ': ahead '; then
@@ -142,3 +136,5 @@ dev-check() {
 }
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
+
+. "$HOME/.local/bin/env"
