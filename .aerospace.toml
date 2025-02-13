@@ -94,8 +94,8 @@ outer.right =      0
 # '''
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-alt-slash = 'layout tiles horizontal vertical'
-alt-comma = 'layout accordion horizontal vertical'
+ctrl-minus = 'layout tiles horizontal vertical'
+ctrl-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 alt-h = 'focus left'
@@ -119,6 +119,8 @@ ctrl-2 = 'workspace 2'
 ctrl-3 = 'workspace 3'
 ctrl-4 = 'workspace 4'
 ctrl-5 = 'workspace 5'
+ctrl-6 = 'workspace 6'
+ctrl-7 = 'workspace 7'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
@@ -127,9 +129,12 @@ alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
 alt-shift-4 = 'move-node-to-workspace 4'
 alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
 
-ctrl-left = 'workspace prev'
-ctrl-right = 'workspace next'
+
+alt-left = 'workspace prev'
+alt-right = 'workspace next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -137,7 +142,7 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-shift-semicolon = 'mode service'
+ctrl-alt-0= 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -161,16 +166,8 @@ if.app-id = 'com.apple.systempreferences'
 run = ['layout floating', 'move-node-to-workspace 1']  # The callback itself
 
 [[on-window-detected]]
-if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'layout floating'
-
-[[on-window-detected]]
 if.app-id = 'com.fortinet.FortiClient'
 run = 'layout floating' 
-
-[[on-window-detected]]
-if.app-id = 'com.apple.mail'
-run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.calculator'
@@ -179,3 +176,15 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.alienator88.Pearcleaner'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.firefox'
+if.window-title-regex-substring = 'Picture-in-Picture'
+run = 'layout floating'
+check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.com.zen.browser'
+if.window-title-regex-substring = 'Picture-in-Picture'
+run = 'layout floating'
+check-further-callbacks = true

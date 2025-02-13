@@ -6,6 +6,7 @@
  cp  ~/.zshrc  ~/workspace/dotfiles/.zshrc
  cp ~/.vimrc ~/workspace/dotfiles/.vimrc
  cp ~/.tmux.conf ~/workspace/dotfiles/.tmux.conf
+ cp ~/.aerospace.toml ~/workspace/dotfiles/.aerospace.toml
  cp ~/.config/starship.toml ~/workspace/dotfiles/.config/starship.toml
  cp -r ~/.config/wezterm/ ~/workspace/dotfiles/.config/wezterm/
  cp -r ~/.config/ghostty/ ~/workspace/dotfiles/.config/ghostty/
