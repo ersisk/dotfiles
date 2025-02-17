@@ -2,7 +2,7 @@ local b = require("utils/background")
 local cs = require("utils/color_scheme")
 local f = require("utils/font")
 local k = require("utils/keys")
--- local w = require("utils/wallpaper")
+local w = require("utils/wallpaper")
 
 local wezterm = require("wezterm")
 local act = wezterm.action
@@ -10,7 +10,7 @@ local act = wezterm.action
 local config = {
 	-- background
 	background = {
-		--w.get_wallpaper(),
+		w.get_wallpaper(),
 		b.get_background(),
 	},
 
@@ -37,7 +37,7 @@ local config = {
 	native_macos_fullscreen_mode = false,
 	window_close_confirmation = "NeverPrompt",
 	window_decorations = "RESIZE",
-	window_background_opacity = 0.65,
+	--window_background_opacity = 0.65,
 
 	-- keys
 	keys = {
