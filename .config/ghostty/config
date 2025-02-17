@@ -47,13 +47,13 @@ keybind = super+physical:nine=text:\x019
 keybind = super+c=text:\x01[
 # :Grep (find)
 keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
-# <perfix>+g (open lazygit window)
+# <prefix>+g (open lazygit window)
 keybind = super+g=text:\x01\x67
-# <perfix>+k (open sesh picker)
+# <prefix>+k (open sesh picker)
 keybind = super+k=text:\x01\x54
-# <perfix>+l (switch to last session)
+# <prefix>+l (switch to last session)
 keybind = super+l=text:\x01\x4c
-# <perfix>+u (open url)
+# <prefix>+u (open url)
 keybind = super+o=text:\x01\x75
 # :GotoFile
 keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
@@ -61,10 +61,12 @@ keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
 keybind = super+r=reload_config
 #:w
 keybind = super+s=text:\x3a\x77\x0a
-# <perfix>+c (new window)
+# <prefix>+c (new window)
 keybind = super+t=text:\x01\x63
-# <perfix>+x (close window)
-keybind = super+w=text:\x01\x78
+# <prefix>+x (close window)
+keybind = super+shift+w=text:\x01\x78
+# <prefix>+& (kill pane)
+keybind = super+w=text:\x01&
 # :GotoSymbol
 keybind = super+shift+o=text:\x3a\x47\x6f\x54\x6f\x53\x79\x6d\x62\x6f\x6c\x0a
 # :GotoCommand
