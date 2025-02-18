@@ -138,3 +138,5 @@ dev-check() {
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
 
 . "$HOME/.local/bin/env"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
