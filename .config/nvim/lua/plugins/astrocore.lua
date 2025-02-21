@@ -30,7 +30,7 @@ return {
         -- configure global vim variables (vim.g)
         -- NOTE: `mapleader` and `maplocalleader` must be set in the AstroNvim opts or before `lazy.setup`
         -- This can be found in the `lua/lazy_setup.lua` file
-        neovide_transparency = 0.8,
+        neovide_transparency = 0.1,
         neovide_window_blurred = true,
       },
     },
