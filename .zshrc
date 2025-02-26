@@ -90,11 +90,6 @@ alias loghub='loghub-cli'
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
 
-
-alias tail-json="tail -f xargs -0 | sed  \
-    -e 's/\(.*INFO.*\)/\x1B[32m\1\x1B[39m/' \
-    -e 's/\(.*ERROR.*\)/\x1B[31m\1\x1B[39m/'" 
-
 # Tmux
 # Attaches tmux to a session (example: ta portal)
 alias ta='tmux attach -t'
