@@ -4,8 +4,6 @@
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdtree'
 Plug 'https://github.com/preservim/nerdtree'
-Plug 'https://github.com/scrooloose/nerdtree'
-Plug 'scrooloose/nerdtree'
 Plug 'nerdtree'
 
 " Set leader
@@ -26,7 +24,6 @@ set ignorecase
 set smartcase
 set incsearch
 set visualbell
-set noerrorbells
 set which-key
 set NERDTree
 
@@ -77,6 +74,7 @@ nmap <leader>fd <Action>(ShowNavBar)
 nmap <leader>fs <Action>(FileStructurePopup)
 nmap <leader>fw <Action>(FindInPath)
 nmap <leader>fr <Action>(ReplaceInPath)
+map <leader>e :call ToggleNERDTree()<CR>
 
 " nmap <C-\> <Action>(ActivateTerminalToolWindow)
 
@@ -115,21 +113,25 @@ map - :call ToggleNERDTree()<CR>
 map <leader>lr <Action>(RenameElement)
 map <leader>la <Action>(ShowIntentionActions)
 map <leader>lf <Action>(ReformatCode)
+map <leader>d <Action>(Debug)
+let g:WhichKeyDesc_debug        = "<Space>d Debug"
+let g:WhichKeyDesc_rename       = "<Space>lr Rename"
+let g:WhichKeyDesc_intentions   = "<Space>la Show Intention Actions"
+let g:WhichKeyDesc_reformat     = "<Space>lf Reformat Code"
+let g:WhichKeyDesc_terminal     = "<Space>t Terminal"
+let g:WhichKeyDesc_nerdtree     = "<Space>e NERDTree"
+let g:WhichKeyDesc_finds        = "<Space>f Finds"
+let g:WhichKeyDesc_findfiles        = "<Space>ff Find Files"
+let g:WhichKeyDesc_findrecent        = "<Space>fo Find Recent"
+let g:WhichKeyDesc_findstructure        = "<Space>fs Find Structure"
+let g:WhichKeyDesc_findpath        = "<Space>fw Find Path"
+let g:WhichKeyDesc_findreplace        = "<Space>fr Find Replace"
+let g:WhichKeyDesc_findaction        = "<Space>fa Find Action"
+let g:WhichKeyDesc_findeasymotion        = "<Space>fe Find EasyMotion"
+let g:WhichKeyDesc_codeaction        = "<Space>l Code Action"
+let g:WhichKeyDesc_save        = "<Space>w Save"
+let g:WhichKeyDesc_config        = "<Space>s Config"
+let g:WhichKeyDesc_configreload        = "<Space>so Reload"
+let g:WhichKeyDesc_git        = "<Space>g Git"
 
-function ToggleNERDTree()
-  normal! <Esc>
-  :NERDTreeToggle
-endfunction
 
-"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
-"" Map \r to the Reformat Code action
-"map \r <Action>(ReformatCode)
-
-"" Map <leader>d to start debug
-"map <leader>d <Action>(Debug)
-
-"" Map \b to toggle the breakpoint on the current line
-"map \b <Action>(ToggleLineBreakpoint)
-
-
-:map <leader>d <Action>(Debug)
