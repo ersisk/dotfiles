@@ -51,7 +51,6 @@ export NOTES_DIR=~/obsidian-vault
 export EZA_CONFIG_DIR=~/.config/eza/
 
 # ALIAS
-alias dbang="gobang"
 alias al-list="print -rl -- ${(k)aliases} | fzf"
 
 #Docker
@@ -74,6 +73,7 @@ alias ll='eza -al --icons=always --group-directories-first'
 alias ls='eza --no-filesize --long --icons=always --color=always --no-user'
 
 alias lg='lazygit'
+alias lsql='lazysql'
 
 alias fzn="fzf --print0 | xargs -0 -o nvim"
 alias fzp="fzf --style full \
