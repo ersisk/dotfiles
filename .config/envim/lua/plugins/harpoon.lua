@@ -35,11 +35,23 @@ return {
 				desc = "Goto previous mark",
 			},
 			{
-				"<C-n>",
+				"<C-b>",
 				function()
 					require("harpoon"):list():next()
 				end,
 				desc = "Goto next mark",
+			},
+			{
+				"<C-x>",
+				function()
+					vim.ui.input({ prompt = "Harpoon mark index: " }, function(input)
+						local num = tonumber(input)
+						if num then
+							require("harpoon"):list():select(num)
+						end
+					end)
+				end,
+				desc = "Select mark index",
 			},
 		},
 	},

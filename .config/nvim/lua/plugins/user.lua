@@ -24,7 +24,6 @@ return {
       },
     },
   },
-  { "mg979/vim-visual-multi", event = "VeryLazy", enabled = true },
   { "christoomey/vim-tmux-navigator", lazy = false },
   {
     "goolord/alpha-nvim",
