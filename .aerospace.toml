@@ -186,7 +186,7 @@ run = 'layout floating'
 check-further-callbacks = true
 
 [[on-window-detected]]
-if.app-id = 'org.mozilla.com.zen.browser'
+if.app-id = 'app.zen-browser.zen'
 if.window-title-regex-substring = 'Picture-in-Picture'
 run = 'layout floating'
 check-further-callbacks = true

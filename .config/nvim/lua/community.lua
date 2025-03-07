@@ -34,6 +34,7 @@ return {
   -- { import = "astrocommunity.completion.codeium-vim" },
   { import = "astrocommunity.completion.copilot-cmp" },
   { import = "astrocommunity.editing-support.copilotchat-nvim" },
+  { import = "astrocommunity.editing-support.vim-visual-multi" },
   -- Note
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   --Keymap
