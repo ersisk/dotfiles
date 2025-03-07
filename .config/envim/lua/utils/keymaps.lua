@@ -58,3 +58,54 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+local function mason_notify(msg, type)
+	require("noice").notify(msg, type)
+end
+vim.keymap.set("n", "<leader>pa", function()
+	require("lazy").sync()
+	local registry_avail, registry = pcall(require, "mason-registry")
+	if not registry_avail then
+		vim.api.nvim_err_writeln("Unable to access mason registry")
+		return
+	end
+
+	mason_notify("Checking for package updates...")
+	registry.update(vim.schedule_wrap(function(success, updated_registries)
+		if success then
+			local installed_pkgs = registry.get_installed_packages()
+			local running = #installed_pkgs
+			local no_pkgs = running == 0
+
+			if no_pkgs then
+				mason_notify("No updates available")
+			else
+				local updated = false
+				for _, pkg in ipairs(installed_pkgs) do
+					pkg:check_new_version(function(update_available, version)
+						if update_available then
+							updated = true
+							mason_notify(("Updating `%s` to %s"):format(pkg.name, version.latest_version))
+							pkg:install():on("closed", function()
+								running = running - 1
+								if running == 0 then
+									mason_notify("Update Complete")
+								end
+							end)
+						else
+							running = running - 1
+							if running == 0 then
+								if updated then
+									mason_notify("Update Complete")
+								else
+									mason_notify("No updates available")
+								end
+							end
+						end
+					end)
+				end
+			end
+		else
+			mason_notify(("Failed to update registries: %s"):format(updated_registries), vim.log.levels.ERROR)
+		end
+	end))
+end, { desc = "Update packages" })
