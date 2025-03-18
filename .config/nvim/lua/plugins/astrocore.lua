@@ -60,12 +60,11 @@ return {
         },
         ["<leader>ltg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
-        ["ğ"] = { "<C-x>", desc = "Increment" },
+        ["^"] = { "<C-x>", desc = "Decrement" },
         ["grR"] = {
           "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
           desc = "Lsp Buf References",
         },
-        ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
       },
       i = {
         ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command

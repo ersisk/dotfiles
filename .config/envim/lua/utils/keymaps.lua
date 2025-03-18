@@ -33,6 +33,9 @@ vim.keymap.set("n", "N", "Nzz")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
+vim.keymap.set("n", "+", "<C-a>")
+vim.keymap.set("n", "^", "<C-x>")
+
 -- folds
 --vim.keymap.set("n", "<leader>z", "<cmd>normal! zMzv<cr>", { desc = "Fold all others" })
 
