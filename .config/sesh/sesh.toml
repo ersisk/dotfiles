@@ -4,7 +4,7 @@ path = "~/obsidian-vault/"
 startup_command = 'nvim .'
 
 [[session]]
-name = "Home"
+name = "Home (~)"
 path = "~/"
 
 [[session]]
@@ -16,3 +16,23 @@ startup_command = 'nvim +GoToFile'
 name = "Workspace"
 path = "~/workspace/"
 
+[[session]]
+name = "Downloads"
+path = "~/Downloads"
+startup_command = "yazi"
+
+
+[[session]]
+name = "Sesh Config"
+path = "~/.config/sesh/"
+startup_command = "nvim sesh.toml"
+
+[[session]]
+name = "Nvim Config"
+path = "~/.config/nvim/"
+startup_command = "nvim +GoToFile"
+
+[[session]]
+name = "Dotfiles"
+path = "~/workspace/dotfiles/"
+startup_command = "nvim +GoToFile"

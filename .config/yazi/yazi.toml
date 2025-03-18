@@ -152,9 +152,9 @@ cd_origin = "top-center"
 cd_offset = [ 0, 2, 50, 3 ]
 
 # create
-create_title  = "Create (dir):" 
-create_origin = "top-center"
-create_offset = [ 0, 2, 50, 3 ]
+#create_title  = "Create (dir):" 
+#create_origin = "top-center"
+#create_offset = [ 0, 2, 50, 3 ]
 
 # rename
 rename_title  = "Rename:"
