@@ -129,17 +129,6 @@ return {
 		},
 	},
 	keys = function()
-		return {
-			{ "<leader>fW", "<cmd>Telescope grep_string<cr>", { silent = true, desc = "Grep Word Under Cursor" } },
-			{ "<leader>fw", "<cmd>Telescope live_grep<cr>", { silent = true, desc = "Grep project" } },
-			{ "<leader>fc", "<cmd>Telescope commands<cr>", { silent = true, desc = "Find Commands" } },
-			{
-				"<leader>ff",
-				"<cmd>Telescope find_files hidden=true no_ignore=true<cr>",
-				{ silent = true, desc = "Find files" },
-			},
-			{ "<leader>fr", "<cmd>Telescope resume<cr>", { silent = true, desc = "Resume Telescope" } },
-			{ "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", { silent = true, desc = "Symbols" } },
-		}
+		return {}
 	end,
 }

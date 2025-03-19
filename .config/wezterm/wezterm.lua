@@ -64,6 +64,7 @@ local config = {
 		k.cmd_to_tmux_prefix("w", "&"),
 		k.cmd_to_tmux_prefix("W", "x"),
 		k.cmd_to_tmux_prefix("g", "g"),
+		k.cmd_to_tmux_prefix("G", "m"),
 		k.cmd_to_tmux_prefix("o", "u"),
 		k.cmd_to_tmux_prefix("LeftArrow", "p"),
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
