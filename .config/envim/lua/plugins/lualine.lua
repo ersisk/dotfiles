@@ -52,6 +52,27 @@ return {
 			end,
 		}
 
+		local mode = {
+			"mode",
+			separator = { left = "" },
+			right_padding = 1,
+			fmt = function()
+				local mode = vim.fn.mode()
+				local mode_map = {
+					n = "N",
+					i = "I",
+					c = "C",
+					V = "V",
+					[""] = "V",
+					v = "V",
+					R = "R",
+					t = "T",
+				}
+				return mode_map[mode]
+			end,
+			colored = true,
+		}
+
 		local function show_macro_recording()
 			local recording_register = vim.fn.reg_recording()
 			if recording_register == "" then
@@ -70,7 +91,7 @@ return {
 				component_separators = { left = "", right = "" },
 			},
 			tabline = {
-				lualine_a = {},
+				lualine_a = { mode },
 				lualine_b = {},
 				lualine_c = {
 					{
@@ -95,12 +116,13 @@ return {
 					diff,
 					diagnostics,
 				},
-				lualine_x = { "mode" },
+				lualine_x = {},
 				lualine_y = {},
 				lualine_z = {
 					{
 						"branch",
 						icon = "",
+						color = { gui = "bold" },
 					},
 				},
 			},
