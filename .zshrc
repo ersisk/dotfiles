@@ -63,10 +63,9 @@ alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:
 #NVIM
 alias envim="NVIM_APPNAME=envim nvim"
 alias evi="NVIM_APPNAME=envim nvim"
-alias nv="nvim"
-alias nvp="nvim ."
-alias nvf="nvim +GoToFile"
+alias evf="NVIM_APPNAME=envim nvim +GoToFile"
 alias vi="nvim"
+alias vf="nvim +GoToFile"
 alias vim="nvim"
 
 alias ll='eza -al --icons=always --color=always --group-directories-first'
