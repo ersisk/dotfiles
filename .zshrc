@@ -69,8 +69,8 @@ alias nvf="nvim +GoToFile"
 alias vi="nvim"
 alias vim="nvim"
 
-alias ll='eza -al --icons=always --group-directories-first'
-alias ls='eza --no-filesize --long --icons=always --color=always --no-user'
+alias ll='eza -al --icons=always --color=always --group-directories-first'
+alias ls='eza --long --icons=always --color=always --no-user'
 
 alias lg='lazygit'
 alias lsql='lazysql'

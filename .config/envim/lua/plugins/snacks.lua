@@ -1,24 +1,42 @@
----@module 'snacks'
 return {
 	"folke/snacks.nvim",
-	enabled = false,
+	enabled = true,
 	lazy = false,
 	---@type snacks.Config
 	opts = {
-		picker = {},
-		notifier = {},
-		bigfile = {},
+		picker = { enabled = true },
+		notifier = { enabled = true },
+		input = { enabled = true },
+		bigfile = { enabled = true },
+		zen = {
+			---@type table<string, boolean>
+			toggles = {
+				dim = false,
+				git_signs = false,
+				mini_diff_signs = false,
+				diagnostics = false,
+				inlay_hints = false,
+			},
+			---@type table<string, boolean>
+			show = {
+				statusline = false,
+				tabline = false,
+			},
+			---@type snacks.win.Config
+			win = { style = "zen", relative = "editor" },
+			zoom = {
+				toggles = {},
+				show = { statusline = true, tabline = true },
+				win = {
+					backdrop = false,
+					-- width = 0, -- full width
+				},
+			},
+		},
 	},
 	keys = {
 		{
-			"<leader>,",
-			function()
-				Snacks.picker.buffers()
-			end,
-			desc = "Buffers",
-		},
-		{
-			"<leader>/",
+			"<leader>fw",
 			function()
 				---@diagnostic disable-next-line: missing-fields
 				Snacks.picker.grep({
@@ -27,13 +45,13 @@ return {
 			end,
 			desc = "Grep",
 		},
-		{
-			"<leader>:",
-			function()
-				Snacks.picker.command_history()
-			end,
-			desc = "Command History",
-		},
+		-- {
+		-- 	"<leader>/",
+		-- 	function()
+		-- 		Snacks.picker.command_history()
+		-- 	end,
+		-- 	desc = "Command History",
+		-- },
 		-- find
 		{
 			"<leader>fb",
@@ -64,20 +82,20 @@ return {
 			end,
 			desc = "Find Git Files",
 		},
-		{
-			"<leader>fr",
-			function()
-				Snacks.picker.recent()
-			end,
-			desc = "Recent",
-		},
+		-- {
+		-- 	"<leader>fr",
+		-- 	function()
+		-- 		Snacks.picker.recent()
+		-- 	end,
+		-- 	desc = "Recent",
+		-- },
 		-- git
 		{
-			"<leader>gc",
+			"<leader>gl",
 			function()
 				Snacks.picker.git_log()
 			end,
-			desc = "Git Log",
+			desc = "[g]it [l]og",
 		},
 		{
 			"<leader>gs",
@@ -88,140 +106,104 @@ return {
 		},
 		-- Grep
 		{
-			"<leader>sb",
-			function()
-				Snacks.picker.lines()
-			end,
-			desc = "Buffer Lines",
-		},
-		{
-			"<leader>sB",
+			"<leader>f/",
 			function()
 				Snacks.picker.grep_buffers()
 			end,
 			desc = "Grep Open Buffers",
 		},
 		{
-			"<leader>sg",
-			function()
-				Snacks.picker.grep()
-			end,
-			desc = "Grep",
-		},
-		{
-			"<leader>sw",
+			"<leader>fW",
 			function()
 				Snacks.picker.grep_word()
 			end,
 			desc = "Visual selection or word",
 			mode = { "n", "x" },
 		},
-		-- search
 		{
-			'<leader>s"',
-			function()
-				Snacks.picker.registers()
-			end,
-			desc = "Registers",
-		},
-		{
-			"<leader>sa",
-			function()
-				Snacks.picker.autocmds()
-			end,
-			desc = "Autocmds",
-		},
-		{
-			"<leader>sc",
-			function()
-				Snacks.picker.command_history()
-			end,
-			desc = "Command History",
-		},
-		{
-			"<leader>sC",
+			"<leader>fC",
 			function()
 				Snacks.picker.commands()
 			end,
 			desc = "Commands",
 		},
 		{
-			"<leader>sd",
+			"<leader>fd",
 			function()
 				Snacks.picker.diagnostics()
 			end,
 			desc = "Diagnostics",
 		},
 		{
-			"<leader>sh",
+			"<leader>fh",
 			function()
 				Snacks.picker.help()
 			end,
 			desc = "Help Pages",
 		},
 		{
-			"<leader>sH",
+			"<leader>fH",
 			function()
 				Snacks.picker.highlights()
 			end,
 			desc = "Highlights",
 		},
 		{
-			"<leader>sj",
+			"<leader>fj",
 			function()
 				Snacks.picker.jumps()
 			end,
 			desc = "Jumps",
 		},
 		{
-			"<leader>sk",
+			"<leader>fk",
 			function()
 				Snacks.picker.keymaps()
 			end,
 			desc = "Keymaps",
 		},
 		{
-			"<leader>sl",
+			"<leader>fl",
 			function()
 				Snacks.picker.loclist()
 			end,
 			desc = "Location List",
 		},
 		{
-			"<leader>sM",
+			"<leader>fM",
 			function()
 				Snacks.picker.man()
 			end,
 			desc = "Man Pages",
 		},
 		{
-			"<leader>sm",
+			"<leader>f'",
 			function()
 				Snacks.picker.marks()
 			end,
 			desc = "Marks",
 		},
 		{
-			"<leader>sR",
+			"<leader>fR",
 			function()
 				Snacks.picker.resume()
 			end,
 			desc = "Resume",
 		},
 		{
-			"<leader>sq",
+			"<leader>fq",
 			function()
 				Snacks.picker.qflist()
 			end,
 			desc = "Quickfix List",
 		},
-		{
-			"<leader>uC",
-			function()
-				Snacks.picker.colorschemes()
-			end,
-			desc = "Colorschemes",
-		},
+		-- {
+		-- 	"<leader>uC",
+		-- 	function()
+		-- 		Snacks.picker.colorschemes()
+		-- 	end,
+		-- 	desc = "Colorschemes",
+		-- },
 		{
 			"<leader>fp",
 			function()
@@ -260,7 +242,7 @@ return {
 			desc = "Goto T[y]pe Definition",
 		},
 		{
-			"<leader>ss",
+			"<leader>fs",
 			function()
 				Snacks.picker.lsp_symbols()
 			end,
