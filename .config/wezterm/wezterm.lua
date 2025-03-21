@@ -59,7 +59,7 @@ local config = {
 		k.cmd_to_tmux_prefix("l", "L"),
 		k.cmd_to_tmux_prefix("t", "c"),
 		k.cmd_to_tmux_prefix("B", "b"),
-		k.cmd_to_tmux_prefix("c", "["),
+		k.cmd_to_tmux_prefix("C", "["),
 		k.cmd_to_tmux_prefix("ğ", ","),
 		k.cmd_to_tmux_prefix("Ğ", "$"),
 		k.cmd_to_tmux_prefix("w", "&"),
