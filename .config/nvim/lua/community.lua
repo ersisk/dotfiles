@@ -15,6 +15,7 @@ return {
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
   --ui
+  { import = "astrocommunity.recipes.disable-tabline" },
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.onedarkpro-nvim" },
@@ -25,31 +26,16 @@ return {
   { import = "astrocommunity.motion.vim-matchup" },
   --lsp
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
-  { import = "astrocommunity.lsp.nvim-lint", enabled = true },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
 
   --Copilot
-  -- { import = "astrocommunity.completion.codeium-nvim" },
-  -- { import = "astrocommunity.completion.codeium-vim" },
   { import = "astrocommunity.completion.copilot-cmp" },
   { import = "astrocommunity.editing-support.copilotchat-nvim" },
+  -- Visual Multi
   { import = "astrocommunity.editing-support.vim-visual-multi" },
   -- Note
   { import = "astrocommunity.note-taking.obsidian-nvim" },
-  --Keymap
-  { import = "astrocommunity.recipes.telescope-lsp-mappings" },
   --Motion
   { import = "astrocommunity.motion.harpoon" },
-  --git
-  -- import/override with your plugins folder
-  -- {
-  --   "Exafunction/codeium.vim",
-  --   enabled = true,
-  --   version = "1.8.37",
-  --   event = "InsertEnter",
-  --   config = function()
-  --     vim.keymap.set("i", "<C-g>", function() return vim.fn["codeium#Accept"]() end, { expr = true, silent = true })
-  --   end,
-  -- },
 }
