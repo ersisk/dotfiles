@@ -17,82 +17,6 @@ Alternatives:
 - [ChatGPT.nvim](https://github.com/jackMort/ChatGPT.nvim) Effortless natural language generation
 
 --]]
-
--- return {
---   'CopilotC-Nvim/CopilotChat.nvim',
---   branch = 'main',
---   cmd = 'CopilotChat',
---   opts = {
---     model = 'o1-mini',
---     auto_insert_mode = true,
---     question_header = ' ',
---     answer_header = ' ',
---     error_header = '🚨',
---     chat_autocomplete = true,
---     window = {
---       width = 0.4,
---     },
---     close = {
---       normal = 'q',
---       insert = '<C-c>',
---     },
---   },
---   keys = {
---     { '<c-s>', '<CR>', ft = 'copilot-chat', desc = 'Submit Prompt', remap = true },
---     { '<leader>a', '', desc = '+ai', mode = { 'n', 'v' } },
---     {
---       '<leader>ap',
---       function()
---         local actions = require 'CopilotChat.actions'
---         require('CopilotChat.integrations.snacks').pick(actions.prompt_actions())
---       end,
---       desc = 'CopilotChat - Prompt actions',
---     },
---     {
---       '<leader>aa',
---       function()
---         return require('CopilotChat').toggle()
---       end,
---       desc = 'Toggle (CopilotChat)',
---       mode = { 'n', 'v' },
---     },
---     {
---       '<leader>ax',
---       function()
---         return require('CopilotChat').reset()
---       end,
---       desc = 'Clear (CopilotChat)',
---       mode = { 'n', 'v' },
---     },
---     {
---       '<leader>aq',
---       function()
---         local input = vim.fn.input 'Quick Chat: '
---         if input ~= '' then
---           require('CopilotChat').ask(input)
---         end
---       end,
---       desc = 'Quick Chat (CopilotChat)',
---       mode = { 'n', 'v' },
---     },
---     -- Show prompts actions with telescope
---     -- { '<leader>ap', M.pick 'prompt', desc = 'Prompt Actions (CopilotChat)', mode = { 'n', 'v' } },
---   },
---   config = function(_, opts)
---     local chat = require 'CopilotChat'
---
---     vim.api.nvim_create_autocmd('BufEnter', {
---       pattern = 'copilot-chat',
---       callback = function()
---         vim.opt_local.relativenumber = false
---         vim.opt_local.number = false
---       end,
---     })
---
---     chat.setup(opts)
---   end,
--- }
-
 return {
 	{
 		"zbirenbaum/copilot-cmp",
@@ -127,7 +51,7 @@ return {
 				error_header = "🚨",
 				auto_follow_cursor = true, -- Don't follow the cursor after getting response
 				auto_insert_mode = true,
-				show_help = true, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
+				show_help = true,      -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
 				mappings = {
 					-- Use tab for completion
 					complete = {
@@ -252,10 +176,10 @@ return {
 					desc = "CopilotChat - Prompt actions",
 				},
 				-- Code related commands
-				{ "<leader>me", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
-				{ "<leader>mt", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
-				{ "<leader>mr", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
-				{ "<leader>mR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
+				{ "<leader>me", "<cmd>CopilotChatExplain<cr>",       desc = "CopilotChat - Explain code" },
+				{ "<leader>mt", "<cmd>CopilotChatTests<cr>",         desc = "CopilotChat - Generate tests" },
+				{ "<leader>mr", "<cmd>CopilotChatReview<cr>",        desc = "CopilotChat - Review code" },
+				{ "<leader>mR", "<cmd>CopilotChatRefactor<cr>",      desc = "CopilotChat - Refactor code" },
 				{ "<leader>mn", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
 				-- Chat with Copilot in visual mode
 				{
@@ -300,13 +224,13 @@ return {
 				-- Debug
 				{ "<leader>md", "<cmd>CopilotChatDebugInfo<cr>", desc = "CopilotChat - Debug Info" },
 				-- Fix the issue with diagnostic
-				{ "<leader>mf", "<cmd>CopilotChatFix<cr>", desc = "CopilotChat - Fix Diagnostic" },
+				{ "<leader>mf", "<cmd>CopilotChatFix<cr>",       desc = "CopilotChat - Fix Diagnostic" },
 				-- Clear buffer and chat history
-				{ "<leader>ml", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - Clear buffer and chat history" },
+				{ "<leader>ml", "<cmd>CopilotChatReset<cr>",     desc = "CopilotChat - Clear buffer and chat history" },
 				-- Toggle Copilot Chat Vsplit
-				{ "<leader>mv", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle" },
+				{ "<leader>mv", "<cmd>CopilotChatToggle<cr>",    desc = "CopilotChat - Toggle" },
 				-- Copilot Chat Models
-				{ "<leader>m?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
+				{ "<leader>m?", "<cmd>CopilotChatModels<cr>",    desc = "CopilotChat - Select Models" },
 			},
 		},
 	},
