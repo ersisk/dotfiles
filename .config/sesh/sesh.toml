@@ -21,11 +21,15 @@ name = "Downloads"
 path = "~/Downloads"
 startup_command = "yazi"
 
-
 [[session]]
 name = "Sesh Config"
 path = "~/.config/sesh/"
 startup_command = "nvim sesh.toml"
+
+[[session]]
+name = "WezTerm Config"
+path = "~/.config/wezterm/"
+startup_command = "nvim +GoToFile"
 
 [[session]]
 name = "Nvim Config"
@@ -36,10 +40,6 @@ startup_command = "nvim +GoToFile"
 name = "Dotfiles Backup"
 path = "~/workspace/dotfiles/"
 startup_command = "./backup.sh"
-
-[[session]]
-name = "Dotfiles"
-path = "~/workspace/dotfiles/"
 
 [[session]]
 name = "LazySQL Config"
