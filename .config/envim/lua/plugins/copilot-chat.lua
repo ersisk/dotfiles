@@ -51,7 +51,7 @@ return {
 				error_header = "🚨",
 				auto_follow_cursor = true, -- Don't follow the cursor after getting response
 				auto_insert_mode = true,
-				show_help = true,      -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
+				show_help = true, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
 				mappings = {
 					-- Use tab for completion
 					complete = {
@@ -176,10 +176,10 @@ return {
 					desc = "CopilotChat - Prompt actions",
 				},
 				-- Code related commands
-				{ "<leader>me", "<cmd>CopilotChatExplain<cr>",       desc = "CopilotChat - Explain code" },
-				{ "<leader>mt", "<cmd>CopilotChatTests<cr>",         desc = "CopilotChat - Generate tests" },
-				{ "<leader>mr", "<cmd>CopilotChatReview<cr>",        desc = "CopilotChat - Review code" },
-				{ "<leader>mR", "<cmd>CopilotChatRefactor<cr>",      desc = "CopilotChat - Refactor code" },
+				{ "<leader>me", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
+				{ "<leader>mt", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
+				{ "<leader>mr", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
+				{ "<leader>mR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
 				{ "<leader>mn", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
 				-- Chat with Copilot in visual mode
 				{
@@ -224,13 +224,13 @@ return {
 				-- Debug
 				{ "<leader>md", "<cmd>CopilotChatDebugInfo<cr>", desc = "CopilotChat - Debug Info" },
 				-- Fix the issue with diagnostic
-				{ "<leader>mf", "<cmd>CopilotChatFix<cr>",       desc = "CopilotChat - Fix Diagnostic" },
+				{ "<leader>mf", "<cmd>CopilotChatFix<cr>", desc = "CopilotChat - Fix Diagnostic" },
 				-- Clear buffer and chat history
-				{ "<leader>ml", "<cmd>CopilotChatReset<cr>",     desc = "CopilotChat - Clear buffer and chat history" },
+				{ "<leader>ml", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - Clear buffer and chat history" },
 				-- Toggle Copilot Chat Vsplit
-				{ "<leader>mv", "<cmd>CopilotChatToggle<cr>",    desc = "CopilotChat - Toggle" },
+				{ "<leader>mv", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle" },
 				-- Copilot Chat Models
-				{ "<leader>m?", "<cmd>CopilotChatModels<cr>",    desc = "CopilotChat - Select Models" },
+				{ "<leader>m?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
 			},
 		},
 	},

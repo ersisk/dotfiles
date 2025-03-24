@@ -29,9 +29,9 @@ return {
   { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
-
   --Copilot
   { import = "astrocommunity.completion.copilot-cmp" },
+  { import = "astrocommunity.completion.avante-nvim" },
   { import = "astrocommunity.editing-support.copilotchat-nvim" },
   -- Visual Multi
   { import = "astrocommunity.editing-support.vim-visual-multi" },
