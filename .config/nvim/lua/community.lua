@@ -30,7 +30,7 @@ return {
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
-  { import = "astrocommunity.completion.copilot-cmp" },
+  { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.completion.avante-nvim" },
   { import = "astrocommunity.editing-support.copilotchat-nvim" },
   -- Visual Multi
