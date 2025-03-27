@@ -14,7 +14,25 @@ return {
 		end
 		-- local icons = require 'config.icons'
 		local lspIcons = require("utils.icons").lsp
-
+		local colors = {
+			bg = "#34343b",
+			fg = "#7b7b7b",
+			mbg = "#262537",
+			yellow = "#ff6300",
+			cyan = "#477bde",
+			darkblue = "#081633",
+			green = "#86dd7f",
+			orange = "#ffb684",
+			violet = "#c678dd",
+			magenta = "#c678dd",
+			blue = "#5f96ca",
+			red = "#ffa3be",
+			grey = "#3e3d50",
+			lsp = "#97ff8f",
+			diff_green = "#98be65",
+			diff_orange = "#ff8800",
+			diff_red = "#ec5f67",
+		}
 		local diagnostics = {
 			"diagnostics",
 			sources = { "nvim_diagnostic" },
@@ -124,13 +142,50 @@ return {
 						icon = "",
 						color = { gui = "bold" },
 					},
+					{ "macro-recording", fmt = show_macro_recording },
 				},
 			},
 			sections = {
 				lualine_a = {},
 				lualine_b = {},
-				lualine_c = { { "macro-recording", fmt = show_macro_recording } },
-				lualine_x = {},
+				lualine_c = {},
+				lualine_x = {
+					{
+						function()
+							local msg = ""
+							-- local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
+							local clients = vim.lsp.get_clients()
+							if next(clients) == nil then
+								return msg
+							end
+							for _, client in ipairs(clients) do
+								if client.name == "copilot" then
+									return ""
+								end
+							end
+							return msg
+						end,
+					},
+					{
+						function()
+							local msg = "No Active Lsp"
+							-- local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
+							local clients = vim.lsp.get_clients()
+							if next(clients) == nil then
+								return msg
+							end
+							for _, client in ipairs(clients) do
+								if client.name ~= "null-ls" and client.name ~= "copilot" then
+									return (vim.o.columns > 100 and client.name) or "LSP"
+								end
+							end
+							return msg
+						end,
+						icon = "󰄭 ",
+						-- color = { fg = colors.lsp, bg = colors.mbg },
+						color = { fg = colors.lsp },
+					},
+				},
 				lualine_y = {},
 				lualine_z = {},
 			},

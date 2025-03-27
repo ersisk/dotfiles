@@ -4,6 +4,9 @@ return {
 	lazy = false,
 	---@type snacks.Config
 	opts = {
+		dashboard = {
+			enabled = true,
+		},
 		picker = { enabled = true },
 		notifier = { enabled = true },
 		input = { enabled = true },
@@ -257,6 +260,32 @@ return {
 				Snacks.picker.lsp_symbols()
 			end,
 			desc = "LSP Symbols",
+		},
+		{
+			"<leader>cc",
+			function()
+				Snacks.bufdelete()
+			end,
+			desc = "Close Buffer",
+		},
+		{
+			"<leader>ca",
+			function()
+				Snacks.bufdelete.other()
+			end,
+			desc = "Close All Buffers Except Current",
+		},
+		{
+			"<leader>cs",
+			"<CMD>on<CR>",
+			desc = "Close Split Windows Except Current",
+		},
+		{
+			"<leader>gg",
+			function()
+				Snacks.lazygit()
+			end,
+			desc = "LazyGit",
 		},
 	},
 }

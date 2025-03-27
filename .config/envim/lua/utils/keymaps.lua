@@ -12,6 +12,8 @@
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
+vim.keymap.set("n", "H", "<cmd>bprevious<CR>")
+vim.keymap.set("n", "L", "<cmd>bnext<CR>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>w", "<cmd>w<CR>")
 vim.keymap.set("n", "<leader>q", "<cmd>q<CR>")
@@ -35,6 +37,8 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 vim.keymap.set("n", "+", "<C-a>")
 vim.keymap.set("n", "^", "<C-x>")
+
+vim.keymap.set("n", "<leader>n", "<cmd>enew<cr>", { desc = "New file" })
 
 -- folds
 --vim.keymap.set("n", "<leader>z", "<cmd>normal! zMzv<cr>", { desc = "Fold all others" })

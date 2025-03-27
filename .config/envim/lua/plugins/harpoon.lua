@@ -5,12 +5,6 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope.nvim",
-			{
-				"catppuccin",
-				optional = true,
-				---@type CatppuccinOptions
-				opts = { integrations = { harpoon = true } },
-			},
 		},
 		keys = {
 			{
