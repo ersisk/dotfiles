@@ -53,7 +53,10 @@ return {
         ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
         ["<leader>ltj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>ltm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>ltf"] = { "<cmd>!docker compose exec app ./vendor/bin/pint<cr>", desc = "Format project with Pint" },
+        ["<leader>ltf"] = {
+          "<cmd>!docker compose exec app ./vendor/bin/pint<cr>",
+          desc = "Format project with Pint",
+        },
         ["<leader>ltF"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
