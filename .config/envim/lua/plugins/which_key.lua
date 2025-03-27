@@ -58,6 +58,7 @@ return {
 			{ "<leader><leader>", group = "[H]arpoon", mode = { "n" } },
 			{ "<leader>x", group = "[T]rouble", mode = { "n" } },
 			{ "<leader>p", group = "[P]acker", mode = { "n" } },
+			{ "<leader>c", group = "[C]lose", mode = { "n" } },
 		},
 	},
 }

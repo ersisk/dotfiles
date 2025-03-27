@@ -41,6 +41,7 @@ return {
 			typescript = { "prettierd", "prettier", stop_after_first = true },
 			typescriptreact = { "prettierd", "prettier", stop_after_first = true },
 			graphql = { "prettierd", "prettier", stop_after_first = true },
+			php = { "pint" },
 		},
 	},
 }
