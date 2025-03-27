@@ -25,30 +25,6 @@ return {
     },
   },
   { "christoomey/vim-tmux-navigator", lazy = false },
-  {
-    "goolord/alpha-nvim",
-    opts = function(_, opts)
-      -- customize the dashboard header
-      opts.section.header.val = {
-        [[  ███       ███  ]],
-        [[  ████      ████ ]],
-        [[  ████     █████ ]],
-        [[ █ ████    █████ ]],
-        [[ ██ ████   █████ ]],
-        [[ ███ ████  █████ ]],
-        [[ ████ ████ ████ ]],
-        [[ █████  ████████ ]],
-        [[ █████   ███████ ]],
-        [[ █████    ██████ ]],
-        [[ █████     █████ ]],
-        [[ ████      ████ ]],
-        [[  ███       ███  ]],
-        [[                    ]],
-        [[  N  E  O  V  I  M  ]],
-      }
-      return opts
-    end,
-  },
   { "mbbill/undotree", lazy = false },
   { "akinsho/git-conflict.nvim", version = "*", config = true },
 }
