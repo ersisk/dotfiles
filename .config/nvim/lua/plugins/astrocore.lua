@@ -65,6 +65,25 @@ return {
           "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
           desc = "Lsp Buf References",
         },
+        ["<leader>c"] = false,
+        ["<leader>C"] = false,
+        ["<leader>ca"] = {
+          -- "<cmd>%bd <bar> e# <bar> bd# <CR>",
+          function() require("astrocore.buffer").close_all(true) end,
+          desc = "Close all buffers except current and delete all buffers",
+        },
+        ["<leader>cc"] = {
+          function() require("astrocore.buffer").close() end,
+          desc = "Close current buffer",
+        },
+        ["<leader>cf"] = {
+          function() require("astrocore.buffer").close(0, true) end,
+          desc = "Force close current buffer",
+        },
+        ["<leader>cs"] = {
+          "<CMD>on<CR>",
+          desc = "Close all split buffers except current",
+        },
       },
       i = {
         ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command
