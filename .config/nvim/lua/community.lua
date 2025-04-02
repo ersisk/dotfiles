@@ -16,6 +16,7 @@ return {
   { import = "astrocommunity.pack.blade" },
   --ui
   { import = "astrocommunity.recipes.disable-tabline" },
+  { import = "astrocommunity.recipes.ai" },
   { import = "astrocommunity.recipes.heirline-vscode-winbar" },
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
@@ -25,8 +26,6 @@ return {
   { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   --motion
   { import = "astrocommunity.motion.vim-matchup" },
-  --lsp
-  { import = "astrocommunity.lsp.lsp-signature-nvim", enabled = true },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
