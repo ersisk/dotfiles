@@ -33,14 +33,15 @@ eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_DEFAULT_OPTS='--height 85% --layout=default
+export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
   --color fg:#6f737b,bg:#21252d
   --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
   --color pointer:#adc896,info:#abb2bf,border:#565c64
-  --border'
+  --border=rounded
+  --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
-export FZF_TMUX_OPTS=" -p90%,70% "
+export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#21252d,fg:#6f737b,border:#565c64 --border=rounded"
 
 #Editor
 export EDITOR="nvim"
@@ -79,6 +80,8 @@ alias fzp="fzf --style full \
     --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
+alias sesh_start='/Users/ersanisik/bin/sesh_start'
+alias seshs='/Users/ersanisik/bin/sesh_start'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'

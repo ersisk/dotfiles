@@ -75,8 +75,7 @@ local config = {
 		k.cmd_key(
 			"K",
 			act.Multiple({
-				act.SendKey({ key = "t" }),
-				act.SendKey({ key = "s" }),
+				k.multiple_actions("sesh_start"),
 				act.SendKey({ key = "\x0a" }),
 			})
 		),
