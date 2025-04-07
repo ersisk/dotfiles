@@ -68,18 +68,12 @@ local config = {
 		k.cmd_to_tmux_prefix("o", "u"),
 		k.cmd_to_tmux_prefix("LeftArrow", "p"),
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
+		k.cmd_key("K", k.multiple_actions("sesh_start")),
+		--k.cmd_key("K", act.SendKey({ key = "s", mods = "OPT" })),
 		k.cmd_key("O", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("P", k.multiple_actions(":GoToCommand")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
 		k.cmd_key("T", k.multiple_actions(":GoToBuffer")),
-		k.cmd_key(
-			"K",
-			act.Multiple({
-				k.multiple_actions("sesh_start"),
-				act.SendKey({ key = "\x0a" }),
-			})
-		),
-
 		k.cmd_key(
 			"s",
 			act.Multiple({

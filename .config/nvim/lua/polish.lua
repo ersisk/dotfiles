@@ -8,7 +8,7 @@
 -- vim.cmd [[command! -nargs=0 SmartGoTo :Telescope smart_goto]]
 -- vim.cmd [[command! -nargs=0 GoToBuffer :Telescope buffers]]
 vim.cmd [[command! -nargs=0 GoToCommand :lua Snacks.picker.command_history()]]
-vim.cmd [[command! -nargs=0 GoToFile :lua Snacks.picker.files()]]
+vim.cmd [[command! -nargs=0 GoToFile :lua Snacks.picker.files({ hidden = true, ignored = true })]]
 vim.cmd [[command! -nargs=0 GoToSymbol :lua Snacks.picker.lsp_symbols()]]
 vim.cmd [[command! -nargs=0 GoToBuffer :lua Snacks.picker.buffers()]]
 vim.cmd [[command! -nargs=0 Grep :lua Snacks.picker.grep()]]
