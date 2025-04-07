@@ -32,7 +32,6 @@ eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
   --color fg:#6f737b,bg:#21252d
   --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
@@ -40,9 +39,7 @@ export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
   --border=rounded
   --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
-export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | head -200'"
 export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#21252d,fg:#6f737b,border:#565c64 --border=rounded"
-
 #Editor
 export EDITOR="nvim"
 
@@ -68,6 +65,7 @@ alias evf="NVIM_APPNAME=envim nvim +GoToFile"
 alias vi="nvim"
 alias vf="nvim +GoToFile"
 alias vim="nvim"
+alias nvide="open -a Neovide.app"
 
 alias ll='eza -al --icons=always --color=always --group-directories-first'
 alias ls='eza --long --icons=always --color=always --no-user'
@@ -81,7 +79,6 @@ alias fzp="fzf --style full \
 
 alias bb='/Users/ersanisik/bin/bb'
 alias sesh_start='/Users/ersanisik/bin/sesh_start'
-alias seshs='/Users/ersanisik/bin/sesh_start'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
@@ -138,3 +135,4 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
 . "$HOME/.local/bin/env"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+bindkey -r '\ec'

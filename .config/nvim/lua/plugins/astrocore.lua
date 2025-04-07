@@ -30,7 +30,7 @@ return {
         -- configure global vim variables (vim.g)
         -- NOTE: `mapleader` and `maplocalleader` must be set in the AstroNvim opts or before `lazy.setup`
         -- This can be found in the `lua/lazy_setup.lua` file
-        neovide_transparency = 0.1,
+        neovide_opacity = 0.1,
         neovide_window_blurred = true,
       },
     },
@@ -51,6 +51,10 @@ return {
           desc = "Previous buffer",
         },
         ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
+        ["<leader>c"] = {
+          "",
+          desc = " Close Buffers",
+        },
         ["<leader>ltj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>ltm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
         ["<leader>ltf"] = {
@@ -68,7 +72,6 @@ return {
           "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
           desc = "Lsp Buf References",
         },
-        ["<leader>c"] = false,
         ["<leader>C"] = false,
         ["<leader>ca"] = {
           -- "<cmd>%bd <bar> e# <bar> bd# <CR>",

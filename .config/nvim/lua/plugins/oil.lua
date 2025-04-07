@@ -8,7 +8,7 @@ return {
       --trash_command = "trash",
       view_options = {
         -- Show files and directories that start with "."
-        show_hidden = true,
+        show_hidden = false,
       },
     },
     keys = {

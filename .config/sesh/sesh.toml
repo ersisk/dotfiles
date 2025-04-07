@@ -1,3 +1,6 @@
+[default_session]
+preview_command = "eza -la --all --git --icons --color=always {}"
+
 [[session]]
 name = "Notes"
 path = "~/obsidian-vault/"
@@ -26,10 +29,17 @@ startup_command = "yazi"
 name = "Sesh Config"
 path = "~/.config/sesh/"
 startup_command = "nvim sesh.toml"
+preview_command = "bat --language=bash --style=snip --color=always ~/.config/sesh/sesh.toml"
 
 [[session]]
 name = "WezTerm Config"
 path = "~/.config/wezterm/"
+startup_command = "nvim +GoToFile"
+preview_command = "eza -la --all --git --icons --color=always ~/.config/wezterm/"
+
+[[session]]
+name ="Envim Config"
+path = "~/.config/envim/"
 startup_command = "nvim +GoToFile"
 
 [[session]]
@@ -46,5 +56,5 @@ startup_command = "./backup.sh"
 name = "LazySQL Config"
 path = "~/Library/Application Support/lazysql"
 startup_command = "nvim config.toml"
-
+preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
