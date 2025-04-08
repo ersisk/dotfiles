@@ -4,6 +4,10 @@ export ZSH="/Users/ersanisik/.oh-my-zsh"
 
 source $ZSH/oh-my-zsh.sh
 
+ZSH_WEB_SEARCH_ENGINES=(
+    ddc "https://duckduckgo.com/?q=DuckDuckGo%20AI%20Chat&ia=chat&duckai=1&atb=v452-1"
+    grok "https://grok.com?q="
+)
 # Starship 
 eval "$(starship init zsh)"
 
@@ -66,6 +70,7 @@ alias vi="nvim"
 alias vf="nvim +GoToFile"
 alias vim="nvim"
 alias nvide="open -a Neovide.app"
+alias rssn="newsboat -r"
 
 alias ll='eza -al --icons=always --color=always --group-directories-first'
 alias ls='eza --long --icons=always --color=always --no-user'

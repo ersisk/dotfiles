@@ -58,3 +58,9 @@ path = "~/Library/Application Support/lazysql"
 startup_command = "nvim config.toml"
 preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
+[[session]]
+name = "Rss Feeds"
+path = "~/.newsboat/"
+startup_command = "newsboat -r"
+preview_command = "bat --language=bash --style=snip --color=always ~/.newsboat/urls"
+

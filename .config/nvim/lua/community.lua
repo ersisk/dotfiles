@@ -14,6 +14,7 @@ return {
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
+  { import = "astrocommunity.pack.go" },
   --ui
   { import = "astrocommunity.recipes.disable-tabline" },
   { import = "astrocommunity.recipes.ai" },
