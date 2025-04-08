@@ -11,7 +11,6 @@ return {
         "lua-language-server",
         "intelephense",
         "gopls",
-        "pyright",
 
         -- install formatters
         "stylua",
