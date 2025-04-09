@@ -6,12 +6,8 @@ $directory\
 $git_branch\
 $git_status\
 $fill\
-([ ](mono4)\
-$time\
-$battery\
-[](mono4))\
 $line_break$character"""
-
+# time and battery ([ ](mono4)\$time\$battery\[](mono4))\
 # Sets the palette to "one_dark".
 palette = 'one_dark'
 
@@ -55,7 +51,7 @@ symbol = "\uE0A0"
 disabled = false
 
 [git_status]
-style="fg:color_red1"
+style="fg:color_purple"
 conflicted = " 󰽪 $count "
 ahead = " ⇡ $count"
 behind = " ⇣ $count"
