@@ -12,7 +12,7 @@
       "ctrl-w z": "workspace::ToggleZoom",
       "ctrl-w t": "terminal_panel::ToggleFocus",
       "g ]": "editor::GoToDiagnostic",
-      "g [": "editor::GoToPreviousDiagnostic",
+      "g [": "editor::GoToPrevDiagnostic",
       "g r": "editor::FindAllReferences",
       "shift-k": "editor::Hover",
       "space l a": "editor::ToggleCodeActions",
@@ -20,22 +20,12 @@
       "space l f": "editor::Format",
       "space l l": "diagnostics::Deploy",
       "space s t": "pane::DeploySearch",
-      "space c a": "pane::CloseInactiveItems",
       "g c c": "editor::ToggleComments",
       "space f f": "file_finder::Toggle",
       "space f b": "tab_switcher::Toggle",
-      "space f w": "project_search::ToggleFocus",
       "space e": "workspace::ToggleLeftDock",
       "space p": "outline::Toggle",
-      "g d": "editor::GoToDefinitionSplit",
-      "space t t": "terminal_panel::ToggleFocus"
-    }
-  },
-  {
-    "context": "vim_mode == normal",
-    "bindings": {
-      "H": "pane::ActivatePreviousItem",
-      "L": "pane::ActivateNextItem"
+      "g d": "editor::GoToDefinitionSplit"
     }
   },
   {
@@ -123,7 +113,7 @@
       "cmd-u": "editor::UndoSelection",
       "cmd-shift-u": "editor::RedoSelection",
       "f8": "editor::GoToDiagnostic",
-      "shift-f8": "editor::GoToPreviousDiagnostic",
+      "shift-f8": "editor::GoToPrevDiagnostic",
       "f2": "editor::Rename",
       "g d": "editor::GoToDefinition",
       "alt-f12": "editor::GoToDefinitionSplit",
@@ -134,13 +124,14 @@
       "alt-cmd-[": "editor::Fold",
       "alt-cmd-]": "editor::UnfoldLines",
       "ctrl-space": "editor::ShowCompletions",
-      "cmd-.": "editor::ToggleCodeActions"
+      "cmd-.": "editor::ToggleCodeActions",
+      "alt-cmd-r": "editor::RevealInFinder"
     }
   },
   {
     "context": "TabSwitcher",
     "bindings": {
-      "shift-k": "menu::SelectPrevious",
+      "shift-k": "menu::SelectPrev",
       "shift-j": "menu::SelectNext",
       "ctrl-d": "tab_switcher::CloseSelectedItem"
     }
