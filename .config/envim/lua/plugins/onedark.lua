@@ -30,6 +30,7 @@ return {
 			},
 			integrations = {
 				cmp = true,
+				blink_cmp = true,
 				copilot_vim = true,
 				fidget = true,
 				gitsigns = true,

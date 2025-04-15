@@ -23,6 +23,8 @@ return {
 		dependencies = { "zbirenbaum/copilot.lua" },
 		event = "InsertEnter",
 		config = true,
+		enabled = false,
+		optinal = true,
 		init = function()
 			require("copilot").setup({
 				suggestion = {
