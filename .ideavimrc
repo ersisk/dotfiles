@@ -3,8 +3,7 @@
 
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdtree'
-Plug 'https://github.com/preservim/nerdtree'
-Plug 'nerdtree'
+Plug 'terryma/vim-multiple-cursors'
 
 " Set leader
 let mapleader = " "
@@ -12,10 +11,12 @@ set clipboard+=unnamed
 
 " Plugins
 set commentary
-" set NERDTree
 set ideajoin
 set highlightedyank
 set argtextobj
+set which-key
+set NERDTree
+set easymotion
 
 " Configs
 set number
@@ -24,8 +25,7 @@ set ignorecase
 set smartcase
 set incsearch
 set visualbell
-set which-key
-set NERDTree
+
 
 "" -- Suggested options --
 " Show a few lines of context around the cursor. Note that this makes the
@@ -67,14 +67,14 @@ nmap <C-\> <Action>(ActivateProjectToolWindow)
 
 " Finds
 nmap <leader>fa <Action>(GotoAction)
-nmap <leader>fe <Plug>(easymotion-s)
 nmap <leader>ff <Action>(GotoFile)
 nmap <leader>fo <Action>(RecentFiles)
 nmap <leader>fd <Action>(ShowNavBar)
 nmap <leader>fs <Action>(FileStructurePopup)
 nmap <leader>fw <Action>(FindInPath)
 nmap <leader>fr <Action>(ReplaceInPath)
-map <leader>e :call ToggleNERDTree()<CR>
+nmap <leader>e :NERDTree<CR>
+nmap <leader>o :NERDTreeToggle<CR>
 
 " nmap <C-\> <Action>(ActivateTerminalToolWindow)
 
@@ -107,13 +107,29 @@ map gt <Action>(GotoTest)
 map g; <Action>(JumpToLastChange)
 
 map <leader>t <Action>(ActivateTerminalToolWindow)
-map - :call ToggleNERDTree()<CR>
 
 " Code Actions
 map <leader>lr <Action>(RenameElement)
 map <leader>la <Action>(ShowIntentionActions)
 map <leader>lf <Action>(ReformatCode)
 map <leader>d <Action>(Debug)
+" Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+nmap g<C-n> <Plug>NextOccurrence
+xmap g<C-n> <Plug>NextOccurrence
+xmap <C-x> <Plug>SkipOccurrence
+xmap <C-p> <Plug>RemoveOccurrence
+
+" Note that the default <A-n> and g<A-n> shortcuts don't work on Mac due to dead keys.
+" <A-n> is used to enter accented text e.g. ñ
+" Feel free to pick your own mappings that are not affected. I like to use <leader>
+nmap <leader><C-n> <Plug>AllWholeOccurrences
+xmap <leader><C-n> <Plug>AllWholeOccurrences
+nmap <leader>g<C-n> <Plug>AllOccurrences
+xmap <leader>g<C-n> <Plug>AllOccurrences
+let g:WhichKeyDesc_multicursor = "<Space><C-n> Multiple Cursors"
+let g:WhichKeyDesc_easymotion = "<Space><Space> Easymotion"
 let g:WhichKeyDesc_debug        = "<Space>d Debug"
 let g:WhichKeyDesc_rename       = "<Space>lr Rename"
 let g:WhichKeyDesc_intentions   = "<Space>la Show Intention Actions"
@@ -127,7 +143,6 @@ let g:WhichKeyDesc_findstructure        = "<Space>fs Find Structure"
 let g:WhichKeyDesc_findpath        = "<Space>fw Find Path"
 let g:WhichKeyDesc_findreplace        = "<Space>fr Find Replace"
 let g:WhichKeyDesc_findaction        = "<Space>fa Find Action"
-let g:WhichKeyDesc_findeasymotion        = "<Space>fe Find EasyMotion"
 let g:WhichKeyDesc_codeaction        = "<Space>l Code Action"
 let g:WhichKeyDesc_save        = "<Space>w Save"
 let g:WhichKeyDesc_config        = "<Space>s Config"
