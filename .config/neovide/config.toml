@@ -1,0 +1,16 @@
+tabs = true
+theme = "auto"
+title-hidden = true
+vsync = true
+wsl = false
+fork = false
+frame = "full"
+idle = true
+maximized = false
+mouse-cursor-icon = "arrow"
+
+[font]
+normal = [
+  "JetBrainsMono NFM"
+] # Will use the bundled Fira Code Nerd Font by default
+size = 19.0
