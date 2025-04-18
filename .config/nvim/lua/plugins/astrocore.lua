@@ -72,7 +72,6 @@ return {
           "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
           desc = "Lsp Buf References",
         },
-        ["<leader>C"] = false,
         ["<leader>ca"] = {
           -- "<cmd>%bd <bar> e# <bar> bd# <CR>",
           function() require("astrocore.buffer").close_all(true) end,

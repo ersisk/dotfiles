@@ -48,9 +48,9 @@ path = "~/.config/nvim/"
 startup_command = "nvim +GoToFile"
 
 [[session]]
-name = "Dotfiles Backup"
+name = "Dotfiles"
 path = "~/workspace/dotfiles/"
-startup_command = "./backup.sh"
+startup_command = "nvim +GoToFile"
 
 [[session]]
 name = "LazySQL Config"
