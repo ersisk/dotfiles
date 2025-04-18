@@ -1,3 +1,4 @@
 .config/zed/prompts/*
 .config/nvim/lazy-lock.json
 .config/envim/lazy-lock.json
+.config/tmux/plugins
