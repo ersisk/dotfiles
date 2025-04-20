@@ -11,24 +11,6 @@ ZSH_WEB_SEARCH_ENGINES=(
 # Starship 
 eval "$(starship init zsh)"
 
-#sesh
-function ts() {
-  {
-    exec </dev/tty
-    exec <&1
-    local session
-    session=$(sesh list -i --hide-duplicates | gum filter --limit 1 --no-sort --fuzzy --placeholder 'Pick a sesh' --height 50 --prompt='⚡')
-    zle reset-prompt > /dev/null 2>&1 || true
-    [[ -z "$session" ]] && return
-    sesh connect $session
-  }
-}
-
-zle     -N             ts
-bindkey -M emacs '\es' ts
-bindkey -M vicmd '\es' ts
-bindkey -M viins '\es' ts
-
 #zoxide
 eval "$(zoxide init zsh)"
 
@@ -139,5 +121,4 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
 
 . "$HOME/.local/bin/env"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 bindkey -r '\ec'
