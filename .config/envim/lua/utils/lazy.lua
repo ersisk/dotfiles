@@ -1,5 +1,5 @@
-require('lazy').setup({
-  { import = 'plugins' },
+require("lazy").setup({
+	{ import = "plugins" },
 }, {
-  defaults = { lazy = true },
+	defaults = { lazy = true },
 })

@@ -72,7 +72,7 @@ vim.keymap.set("n", "<leader>pa", function()
 	require("lazy").sync()
 	local registry_avail, registry = pcall(require, "mason-registry")
 	if not registry_avail then
-		vim.api.nvim_err_writeln("Unable to access mason registry")
+		vim.notify("Unable to access mason registry", vim.log.levels.ERROR)
 		return
 	end
 
