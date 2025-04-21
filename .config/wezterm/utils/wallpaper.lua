@@ -4,8 +4,7 @@ local M = {}
 
 M.get_wallpaper = function()
 	local wallpapers = {}
-	local wallpapers_glob = os.getenv("HOME")
-		.. "/Pictures/wallpapers/**"
+	local wallpapers_glob = os.getenv("HOME") .. "/.config/wezterm/wallpapers/**"
 	for _, v in ipairs(wezterm.glob(wallpapers_glob)) do
 		table.insert(wallpapers, v)
 	end
