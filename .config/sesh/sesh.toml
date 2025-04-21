@@ -18,34 +18,12 @@ startup_command = 'nvim +GoToFile'
 [[session]]
 name = "Workspace"
 path = "~/workspace/"
-startup_command = 'nvim +GoToFile'
+startup_command = 'nvim .'
 
 [[session]]
 name = "Downloads"
 path = "~/Downloads"
 startup_command = "yazi"
-
-[[session]]
-name = "Sesh Config"
-path = "~/.config/sesh/"
-startup_command = "nvim sesh.toml"
-preview_command = "bat --language=bash --style=snip --color=always ~/.config/sesh/sesh.toml"
-
-[[session]]
-name = "WezTerm Config"
-path = "~/.config/wezterm/"
-startup_command = "nvim +GoToFile"
-preview_command = "eza -la --all --git --icons --color=always ~/.config/wezterm/"
-
-[[session]]
-name ="Envim Config"
-path = "~/.config/envim/"
-startup_command = "nvim +GoToFile"
-
-[[session]]
-name = "Nvim Config"
-path = "~/.config/nvim/"
-startup_command = "nvim +GoToFile"
 
 [[session]]
 name = "Dotfiles"
