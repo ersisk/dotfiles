@@ -5,3 +5,5 @@ Library
 .ssh/config
 .wget-hsts
 alacritty
+README.md
+vscode
