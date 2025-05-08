@@ -2,7 +2,7 @@ return {
 	"olimorris/onedarkpro.nvim",
 	name = "onedarkpro",
 	priority = 1000, -- Make sure to load this before all the other start plugins.
-	enabled = false,
+	enabled = true,
 	dependencies = {
 		{
 			"cormacrelf/dark-notify",
