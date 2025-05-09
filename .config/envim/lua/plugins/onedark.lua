@@ -3,20 +3,7 @@ return {
 	name = "onedarkpro",
 	priority = 1000, -- Make sure to load this before all the other start plugins.
 	enabled = true,
-	dependencies = {
-		{
-			"cormacrelf/dark-notify",
-			init = function()
-				require("dark_notify").run()
-				vim.api.nvim_create_autocmd("OptionSet", {
-					pattern = "background",
-					callback = function()
-						vim.cmd("OneDarkPro " .. (vim.v.option_new == "light" and "onedark_light" or "onedark_dark"))
-					end,
-				})
-			end,
-		},
-	},
+	dependencies = {},
 
 	init = function()
 		vim.cmd.colorscheme("onedark")
