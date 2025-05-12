@@ -59,6 +59,7 @@ return {
 			{ "<leader>x", group = "[T]rouble", mode = { "n" } },
 			{ "<leader>p", group = "[P]acker", mode = { "n" } },
 			{ "<leader>c", group = "[C]lose", mode = { "n" } },
+			{ "<leader>R", group = "[K]ulala", mode = { "n" } },
 		},
 	},
 }
