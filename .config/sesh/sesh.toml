@@ -18,7 +18,6 @@ startup_command = 'nvim +GoToFile'
 [[session]]
 name = "Workspace"
 path = "~/workspace/"
-startup_command = 'nvim .'
 
 [[session]]
 name = "Downloads"
