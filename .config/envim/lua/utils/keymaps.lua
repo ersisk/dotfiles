@@ -69,50 +69,9 @@ local function mason_notify(msg, type)
 	require("snacks").notify(msg, type)
 end
 vim.keymap.set("n", "<leader>pa", function()
-	require("lazy").sync()
-	local registry_avail, registry = pcall(require, "mason-registry")
-	if not registry_avail then
-		vim.notify("Unable to access mason registry", vim.log.levels.ERROR)
-		return
+	require("lazy").sync({ wait = true })
+
+	if vim.fn.exists(":MasonToolsUpdate") > 0 then
+		vim.cmd.MasonToolsUpdate()
 	end
-
-	mason_notify("Checking for package updates...")
-	registry.update(vim.schedule_wrap(function(success, updated_registries)
-		if success then
-			local installed_pkgs = registry.get_installed_packages()
-			local running = #installed_pkgs
-			local no_pkgs = running == 0
-
-			if no_pkgs then
-				mason_notify("No updates available")
-			else
-				local updated = false
-				for _, pkg in ipairs(installed_pkgs) do
-					pkg:check_new_version(function(update_available, version)
-						if update_available then
-							updated = true
-							mason_notify(("Updating `%s` to %s"):format(pkg.name, version.latest_version))
-							pkg:install():on("closed", function()
-								running = running - 1
-								if running == 0 then
-									mason_notify("Update Complete")
-								end
-							end)
-						else
-							running = running - 1
-							if running == 0 then
-								if updated then
-									mason_notify("Update Complete")
-								else
-									mason_notify("No updates available")
-								end
-							end
-						end
-					end)
-				end
-			end
-		else
-			mason_notify(("Failed to update registries: %s"):format(updated_registries), vim.log.levels.ERROR)
-		end
-	end))
 end, { desc = "Update packages" })
