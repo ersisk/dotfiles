@@ -44,16 +44,20 @@ return {
         -- navigate buffer tabs with `H` and `L`
         -- require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1))
         L = {
-          function() require("harpoon"):list():next() end,
-          desc = "Harpoon Next",
+          function() require("astrocore.buffer").nav((vim.v.count > 0 and vim.v.count or 1)) end,
+          desc = "Next",
         },
         H = {
-          function() require("harpoon"):list():prev() end,
-          desc = "Harpoon Previous",
+          function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+          desc = "Previous",
         },
-        ["<leader>F"] = {
+        ["<leader>H"] = {
           function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end,
           desc = "Harpoon Toggle Menu",
+        },
+        ["<leader>F"] = {
+          function() require("snacks").picker.buffers() end,
+          desc = "Find Buffer",
         },
         ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
         ["<leader>c"] = {
