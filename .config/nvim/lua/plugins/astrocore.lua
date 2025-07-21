@@ -51,11 +51,7 @@ return {
           function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
           desc = "Previous",
         },
-        ["<leader>H"] = {
-          function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end,
-          desc = "Harpoon Toggle Menu",
-        },
-        ["<leader>F"] = {
+        ["<leader>B"] = {
           function() require("snacks").picker.buffers() end,
           desc = "Find Buffer",
         },
@@ -77,10 +73,6 @@ return {
         ["<leader>ltg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["^"] = { "<C-x>", desc = "Decrement" },
-        ["grR"] = {
-          "<cmd>lua require('telescope.builtin').lsp_references({})<cr>",
-          desc = "Lsp Buf References",
-        },
         ["<leader>ca"] = {
           -- "<cmd>%bd <bar> e# <bar> bd# <CR>",
           function() require("astrocore.buffer").close_all(true) end,
