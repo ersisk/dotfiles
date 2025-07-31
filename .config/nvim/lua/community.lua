@@ -16,7 +16,6 @@ return {
   { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.pack.go" },
   --ui
-  { import = "astrocommunity.recipes.disable-tabline" },
   { import = "astrocommunity.recipes.ai" },
   { import = "astrocommunity.recipes.heirline-vscode-winbar" },
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },

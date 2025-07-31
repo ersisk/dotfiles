@@ -56,10 +56,6 @@ return {
           desc = "Find Buffer",
         },
         ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
-        ["<leader>c"] = {
-          "",
-          desc = " Close Buffers",
-        },
         ["<leader>ltj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>ltm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
         ["<leader>ltf"] = {
@@ -73,23 +69,6 @@ return {
         ["<leader>ltg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["^"] = { "<C-x>", desc = "Decrement" },
-        ["<leader>ca"] = {
-          -- "<cmd>%bd <bar> e# <bar> bd# <CR>",
-          function() require("astrocore.buffer").close_all(true) end,
-          desc = "Close all buffers except current and delete all buffers",
-        },
-        ["<leader>cc"] = {
-          function() require("astrocore.buffer").close() end,
-          desc = "Close current buffer",
-        },
-        ["<leader>cf"] = {
-          function() require("astrocore.buffer").close(0, true) end,
-          desc = "Force close current buffer",
-        },
-        ["<leader>cs"] = {
-          "<CMD>on<CR>",
-          desc = "Close all split buffers except current",
-        },
       },
       i = {
         ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command
