@@ -1,5 +1,4 @@
 local b = require("utils/background")
-local cs = require("utils/color_scheme")
 local f = require("utils/font")
 local k = require("utils/keys")
 local w = require("utils/wallpaper")
@@ -13,24 +12,18 @@ local config = {
 		w.get_wallpaper(),
 		b.get_background(),
 	},
-
 	-- font
 	font = f.get_font(),
 	font_size = 19,
 
 	-- colors
-	color_scheme = cs.get_color_scheme(),
+	color_scheme = "Kanagawa (Gogh)",
 	-- padding
 	window_padding = {
 		left = 0,
 		right = 0,
 		top = 0,
 		bottom = "0.1cell",
-	},
-	colors = {
-		cursor_bg = "#c8c093",
-		-- Overrides the text color when the current cell is occupied by the cursor
-		cursor_fg = "#1f1f28",
 	},
 
 	-- general options
