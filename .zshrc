@@ -19,11 +19,9 @@ eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
-  --color fg:#C8C093,bg:#1F1F28
-  --color bg+:#76946A,fg+:#282c34,hl:#DCD7BA,hl+:#1F1F28,gutter:#282c34
-  --color pointer:#76946A,info:#DCD7BA,border:#565c64
-  --border=rounded
-  --pointer="👉"'
+--color=bg:-1,bg+:#d3d0c3,fg:-1,fg+:#595b62,hl:#a398bf,hl+:#ac7085
+--color=header:#b8805e,info:#5f8a9b,pointer:#526994
+--color=marker:#526994,prompt:#b35560,spinner:#5f8a9b  --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#1F1F28,fg:#C8C093,border:#565c64 --border=rounded"
 #Editor
