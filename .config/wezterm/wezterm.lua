@@ -28,9 +28,9 @@ local config = {
 		bottom = "0.1cell",
 	},
 	colors = {
-		cursor_bg = "#6A9589",
+		cursor_bg = "#c8c093",
 		-- Overrides the text color when the current cell is occupied by the cursor
-		cursor_fg = "black",
+		cursor_fg = "#1f1f28",
 	},
 
 	-- general options

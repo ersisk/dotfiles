@@ -125,5 +125,5 @@ deleted = " 󰚃 $count "
 symbol = " "
 
 [character]
-success_symbol = '[](bold color_cyan) '
-error_symbol = '[](bold color_red) '
+success_symbol = '[](bold color_bright_green) '
+error_symbol = '[](bold color_bright_red) '
