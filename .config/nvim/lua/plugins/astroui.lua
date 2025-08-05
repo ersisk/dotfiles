@@ -5,13 +5,13 @@ return {
   opts = {
     -- change colorscheme
     -- colorscheme = "night-owl",
-    colorscheme = "onedark",
+    colorscheme = "kanagawa",
     -- colorscheme = "catppuccin-frappe",
     -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
     highlights = {
       init = { -- this table overrides highlights in all themes
         -- Normal = { bg = "#000000" },
-        ColorColumn = { bg = "#8CC570" },
+        -- ColorColumn = { bg = "#C0A36E" },
         notify = { bg = "#000000" },
       },
       astrotheme = { -- a table of overrides/changes when applying the astrotheme theme

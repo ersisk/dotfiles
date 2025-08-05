@@ -14,7 +14,7 @@ return {
     keys = {
       {
         "-",
-        function() return require("oil").open_float() end,
+        function() return require("oil").open() end,
         desc = "Open parent directory",
       },
     },
