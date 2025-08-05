@@ -8,12 +8,10 @@ format = """
 $os\
 [](bg:color_purple fg:color_wave_blue)\
 $username\
-[](bg:color_blue fg:color_purple)\
+[](fg:color_purple)\
 $directory\
-[](bg:color_yellow fg:color_blue)\
 $git_branch\
 $git_status\
-[░▒▓](color_yellow)\
 $fill\
 $line_break$character
 """
@@ -167,31 +165,21 @@ style_root = 'bg:color_cyan fg:color_fg0 bold'
 
 [directory]
 format = '[ $path ]($style)[$read_only]($read_only_style)'
-style = 'bg:color_blue fg:color_fg0'
+style = 'fg:color_yellow'
 read_only = '󰌾 '
-read_only_style = 'bg:color_blue fg:color_bright_red dimmed'
+read_only_style = 'fg:color_bright_red dimmed'
 truncate_to_repo = false
 truncation_length = 3
 truncation_symbol = "…/"
 
-[time]
-disabled = false
-format = '[ $time ]($style)'
-time_format = '%R'
-style = 'bg:color_wave_blue fg:color_fg0'
-
-[cmd_duration]
-format = '[  $duration ]($style)'
-style = 'bg:color_bg3 fg:color_fg0'
-
 [git_branch]
 format = '[ $symbol$branch(:$remote_branch)]($style)'
-style = 'bg:color_yellow fg:color_bg0'
+style = 'fg:color_orange'
 symbol = '󰘬 '
 truncation_length = 30
 
 [git_status]
-style = 'bg:color_yellow fg:color_bg0'
+style = 'fg:color_purple'
 conflicted = " 󰽪 $count "
 ahead = " ⇡ $count"
 behind = " ⇣ $count"
@@ -202,26 +190,6 @@ modified = "  $count"
 staged = "  $count"
 renamed = "  $count "
 deleted = " 󰚃 $count "
-
-[nodejs]
-format = '[ $symbol($version) ]($style)'
-style = 'bg:color_green fg:color_fg0'
-not_capable_style = 'bg:color_red fg:color_fg0'
-
-[php]
-format = '[ $symbol ($version) ]($style)'
-style = 'bg:color_purple fg:color_fg0'
-symbol = ''
-
-[rust]
-format = '[ $symbol ($version) ]($style)'
-style = 'bg:color_orange fg:color_bg0'
-symbol = '󱘗'
-
-[docker_context]
-format = '[ $symbol $context ]($style)'
-style = 'bg:color_cyan fg:color_fg0'
-symbol = '󰡨'
 
 [fill]
 symbol = " "
