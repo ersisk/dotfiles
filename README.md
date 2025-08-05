@@ -21,7 +21,7 @@ stow . -t ~
 
 - Terminal: [wezterm](https://wezfurlong.org/wezterm/index.html)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
-- Colors: [onedark](https://onedarktheme.com/)
+- Colors: [kanagawa](https://github.com/rebelot/kanagawa.nvim)
 - Shell: [zsh](https://www.zsh.org/)
 - Multiplexer: [tmux](https://github.com/tmux/tmux/wiki)
 - Editor: [Neovim](https://neovim.io)
