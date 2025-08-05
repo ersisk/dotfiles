@@ -1,7 +1,6 @@
 local M = {}
-
 M.get_color_scheme = function()
-	return "OneDark (base16)"
+	return "kanagawa"
 end
 
 return M

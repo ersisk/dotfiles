@@ -19,13 +19,13 @@ eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
-  --color fg:#6f737b,bg:#21252d
-  --color bg+:#adc896,fg+:#282c34,hl:#abb2bf,hl+:#1e222a,gutter:#282c34
-  --color pointer:#adc896,info:#abb2bf,border:#565c64
+  --color fg:#C8C093,bg:#1F1F28
+  --color bg+:#76946A,fg+:#282c34,hl:#DCD7BA,hl+:#1F1F28,gutter:#282c34
+  --color pointer:#76946A,info:#DCD7BA,border:#565c64
   --border=rounded
   --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
-export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#21252d,fg:#6f737b,border:#565c64 --border=rounded"
+export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#1F1F28,fg:#C8C093,border:#565c64 --border=rounded"
 #Editor
 export EDITOR="nvim"
 
