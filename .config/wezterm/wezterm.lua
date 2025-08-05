@@ -27,6 +27,11 @@ local config = {
 		top = 0,
 		bottom = "0.1cell",
 	},
+	colors = {
+		cursor_bg = "#6A9589",
+		-- Overrides the text color when the current cell is occupied by the cursor
+		cursor_fg = "black",
+	},
 
 	-- general options
 	adjust_window_size_when_changing_font_size = false,
