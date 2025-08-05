@@ -6,9 +6,9 @@
 format = """
 [░▒▓](color_wave_blue)\
 $os\
-[](bg:color_purple fg:color_wave_blue)\
+[](bg:color_cyan fg:color_wave_blue)\
 $username\
-[](fg:color_purple)\
+[](fg:color_cyan)\
 $directory\
 $git_branch\
 $git_status\
@@ -160,7 +160,7 @@ Pop = ""
 [username]
 show_always = true
 format = '[ $user ]($style)'
-style_user = 'bg:color_purple fg:color_fg0'
+style_user = 'bg:color_cyan fg:color_fg0'
 style_root = 'bg:color_cyan fg:color_fg0 bold'
 
 [directory]

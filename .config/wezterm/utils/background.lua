@@ -5,7 +5,7 @@ M.get_background = function()
 	return {
 		source = {
 			Gradient = {
-				colors = { h.is_dark() and "#272a32" or "#ffffff" },
+				colors = { h.is_dark() and "#1F1F28" or "#ffffff" },
 			},
 		},
 		width = "100%",
