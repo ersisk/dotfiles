@@ -7,9 +7,8 @@ format = """
 [░▒▓](color_wave_blue)\
 $os\
 [](bg:color_cyan fg:color_wave_blue)\
-$username\
-[](fg:color_cyan)\
 $directory\
+[](fg:color_cyan)\
 $git_branch\
 $git_status\
 $fill\
@@ -92,10 +91,11 @@ show_always = true
 format = '[ $user ]($style)'
 style_user = 'bg:color_cyan fg:color_fg0'
 style_root = 'bg:color_cyan fg:color_fg0 bold'
+truncation_length = 5
 
 [directory]
 format = '[ $path ]($style)[$read_only]($read_only_style)'
-style = 'fg:color_blue'
+style = 'bg:color_cyan fg:color_fg0'
 read_only = '󰌾 '
 read_only_style = 'fg:color_bright_red dimmed'
 truncate_to_repo = false
@@ -103,13 +103,13 @@ truncation_length = 3
 truncation_symbol = "…/"
 
 [git_branch]
-format = '[ $symbol$branch(:$remote_branch)]($style)'
+format = '[ $symbol$branch(:$remote_branch) ]($style)'
 style = 'fg:color_orange'
 symbol = '󰘬 '
 truncation_length = 30
 
 [git_status]
-style = 'fg:color_purple'
+style = 'fg:color_git_change'
 conflicted = " 󰽪 $count "
 ahead = " ⇡ $count"
 behind = " ⇣ $count"

@@ -51,22 +51,18 @@ return {
           function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
           desc = "Previous",
         },
-        ["<leader>B"] = {
-          function() require("snacks").picker.buffers() end,
-          desc = "Find Buffer",
-        },
-        ["<leader>lt"] = { desc = "󰽛 Format & Preview Tools" },
-        ["<leader>ltj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
-        ["<leader>ltm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>ltf"] = {
+        ["<leader>L"] = { desc = "󰽛 Format & Preview Tools" },
+        ["<leader>Lj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
+        ["<leader>Lm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
+        ["<leader>Lf"] = {
           "<cmd>!docker compose exec app ./vendor/bin/pint<cr>",
           desc = "Format project with Pint",
         },
-        ["<leader>ltF"] = {
+        ["<leader>LF"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
         },
-        ["<leader>ltg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
+        ["<leader>Lg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["^"] = { "<C-x>", desc = "Decrement" },
       },
