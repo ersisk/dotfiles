@@ -19,14 +19,14 @@ eval "$(fzf --zsh)"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
---color=bg:-1,bg+:#d3d0c3,fg:-1,fg+:#595b62,hl:#a398bf,hl+:#ac7085
+--color=bg:-1,bg+:#2A2A37,fg:-1,fg+:#FFA066,hl:#a398bf,hl+:#ac7085
 --color=header:#b8805e,info:#5f8a9b,pointer:#526994
 --color=marker:#526994,prompt:#b35560,spinner:#5f8a9b  --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#1F1F28,fg:#C8C093,border:#565c64 --border=rounded"
 #Editor
 export EDITOR="nvim"
-
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#54546D'
 
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
@@ -43,8 +43,7 @@ alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 
 #NVIM
-alias envim="NVIM_APPNAME=envim nvim"
-alias evi="NVIM_APPNAME=envim nvim"
+alias ev="NVIM_APPNAME=envim nvim"
 alias evf="NVIM_APPNAME=envim nvim +GoToFile"
 alias vi="nvim"
 alias vf="nvim +GoToFile"
@@ -114,9 +113,5 @@ dev-check() {
     echo "$response"
     bb pipeline wait "$pipelineId"
 }
-
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#55403f'
-
 . "$HOME/.local/bin/env"
-
 bindkey -r '\ec'

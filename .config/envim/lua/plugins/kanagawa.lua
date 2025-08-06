@@ -2,7 +2,7 @@ return {
 	"rebelot/kanagawa.nvim",
 	name = "kanagawa",
 	priority = 1000, -- Make sure to load this before all the other start plugins.
-	enabled = false,
+	enabled = true,
 	dependencies = {},
 
 	init = function()
