@@ -54,17 +54,16 @@ return {
         ["<leader>L"] = { desc = "󰽛 Format & Preview Tools" },
         ["<leader>Lj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>Lm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>Lf"] = {
+        ["<leader>LF"] = {
           "<cmd>!docker compose exec app ./vendor/bin/pint<cr>",
           desc = "Format project with Pint",
         },
-        ["<leader>LF"] = {
+        ["<leader>Lf"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
         },
-        ["<leader>Lg"] = { "<CMD>Glow<CR>", desc = "MarkdownPreview" },
         ["+"] = { "<C-a>", desc = "Increment" },
-        ["^"] = { "<C-x>", desc = "Decrement" },
+        ["_"] = { "<C-x>", desc = "Decrement" },
       },
       i = {
         ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command
