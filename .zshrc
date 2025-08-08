@@ -43,8 +43,6 @@ alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 
 #NVIM
-alias ev="NVIM_APPNAME=envim nvim"
-alias evf="NVIM_APPNAME=envim nvim +GoToFile"
 alias vi="nvim"
 alias vf="nvim +GoToFile"
 alias vim="nvim"
