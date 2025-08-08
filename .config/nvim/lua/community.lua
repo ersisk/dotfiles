@@ -22,16 +22,15 @@ return {
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.kanagawa-nvim" },
   --markdown
-  { import = "astrocommunity.markdown-and-latex.glow-nvim" },
   { import = "astrocommunity.markdown-and-latex.render-markdown-nvim" },
   --motion
   { import = "astrocommunity.motion.vim-matchup" },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
-  { import = "astrocommunity.completion.copilot-lua-cmp" },
+  { import = "astrocommunity.completion.copilot-lua" },
   { import = "astrocommunity.completion.avante-nvim" },
-  -- { import = "astrocommunity.editing-support.copilotchat-nvim" },
+  { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
   { import = "astrocommunity.editing-support.vim-visual-multi" },
   -- Note
