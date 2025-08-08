@@ -28,8 +28,9 @@ return {
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
-  { import = "astrocommunity.completion.copilot-lua" },
+  { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.completion.avante-nvim" },
+  { import = "astrocommunity.editing-support.copilotchat-nvim" },
   { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
   { import = "astrocommunity.editing-support.vim-visual-multi" },
