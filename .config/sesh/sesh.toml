@@ -41,3 +41,8 @@ path = "~/.newsboat/"
 startup_command = "newsboat -r"
 preview_command = "bat --language=bash --style=snip --color=always ~/.newsboat/urls"
 
+
+[[session]]
+name = "Presents"
+path = "~/Documents/presents"
+startup_command = "nvim +GoToFile"
