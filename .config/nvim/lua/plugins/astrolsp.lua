@@ -22,12 +22,12 @@ return {
           "python",
           "lua",
           "javascript",
-          "php",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
           "html",
           "blade",
+          "php",
         },
       },
       disabled = { -- disable formatting capabilities for the listed language servers
@@ -39,9 +39,11 @@ return {
         "ts_ls",
       },
       timeout_ms = 1000, -- default format timeout
-      -- filter = function(client) -- fully override the default formatting function
-      --   return true
-      -- end
+      filter = function(client) -- fully override the default formatting function
+        -- use null-ls for formatting instead of lsp if available
+        if vim.bo.filetype == "php" then return client.name == "null-ls" end
+        return true
+      end,
     },
     -- enable servers that you already have installed without mason
     servers = {
