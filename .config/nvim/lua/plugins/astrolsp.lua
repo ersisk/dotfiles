@@ -48,12 +48,14 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
-      "intelephense",
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
     config = {
       "ts_ls",
+      -- phpactor = {
+      --   filetypes = { "php", "blade", "cucumber" },
+      -- },
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
     },
     -- customize how language servers are attached
