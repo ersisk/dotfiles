@@ -70,6 +70,7 @@ alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
+alias swagger-up='docker run --platform linux/amd64 -d -p 8090:8080 docker.swagger.io/swaggerapi/swagger-editor'
 
 # Tmux
 # Attaches tmux to a session (example: ta portal)

@@ -15,7 +15,8 @@ return {
         -- install formatters
         "stylua",
         "pint",
-        { "php-cs-fixer", filetype = "php" },
+        "php-cs-fixer",
+        -- "phpstan",
         "gofumpt",
         "iferr",
         "impl",

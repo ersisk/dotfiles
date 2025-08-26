@@ -52,15 +52,15 @@ return {
           desc = "Previous",
         },
         ["<leader>L"] = { desc = "󰽛 Format & Preview Tools" },
-        ["<leader>Lj"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
-        ["<leader>Lm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
-        ["<leader>LF"] = {
-          "<cmd>!docker compose exec app ./vendor/bin/pint<cr>",
-          desc = "Format project with Pint",
-        },
-        ["<leader>Lf"] = {
+        ["<leader>Ljp"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
+        ["<leader>Ljm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
+        ["<leader>Lfp"] = {
           "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
+        },
+        ["<leader>Lfc"] = {
+          "<cmd>!./vendor/bin/php-cs-fixer %:.<cr>",
+          desc = "Format Buffer with Php CS Fixer",
         },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["_"] = { "<C-x>", desc = "Decrement" },
