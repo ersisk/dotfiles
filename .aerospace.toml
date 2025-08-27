@@ -123,9 +123,9 @@ alt-shift-0 = 'resize smart +50'
 # ctrl-7 = 'workspace 7'
 # ctrl-8 = 'workspace 8'
 # ctrl-9 = 'workspace 9'
-alt-a = 'workspace A' 
+alt-a = 'workspace A' # Obsidian
 alt-b = 'workspace B' # Browser
-alt-c = 'workspace C' 
+alt-c = 'workspace C' # keymapp
 alt-d = 'workspace D' # Database (Beekeeper studio)
 # alt-e = 'workspace E'
 # alt-f = 'workspace F'
@@ -293,11 +293,11 @@ run = "move-node-to-workspace P"
 if.app-id = 'com.postmanlabs.mac'
 run = "move-node-to-workspace P"
 
-[[[on-window-detected]]
+[[on-window-detected]]
 if.app-id = 'com.jetbrains.intellij'
 run = "move-node-to-workspace I"
 
-[on-window-detected]]
+[[on-window-detected]]
 if.app-id = 'com.jetbrains.PhpStorm'
 run = "move-node-to-workspace I"
 
