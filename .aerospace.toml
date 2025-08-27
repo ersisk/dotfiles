@@ -202,3 +202,19 @@ if.app-id = 'org.mozilla.librewolf'
 if.window-title-regex-substring = 'Picture-in-Picture'
 run = 'layout floating'
 check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+if.window-title-regex-substring = 'Huddle'
+run = 'layout floating'
+check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Music'
+run = 'layout floating'
+check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.client'
+run = 'layout floating'
+check-further-callbacks = true

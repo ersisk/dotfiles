@@ -56,6 +56,24 @@ return {
       -- phpactor = {
       --   filetypes = { "php", "blade", "cucumber" },
       -- },
+      intelephense = {
+        filetypes = { "php", "blade" },
+      },
+      cucumber_language_server = {
+        filetypes = { "cucumber", "gherkin" },
+        settings = {
+          Cucumber = {
+            features = {
+              "tests/acceptance/features/**/*.feature",
+              "tests/acceptance/features/*.feature",
+            },
+            glue = {
+              "tests/acceptance/bootstrap/**/*.php",
+              "tests/acceptance/bootstrap/*.php",
+            },
+          },
+        },
+      },
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
     },
     -- customize how language servers are attached
