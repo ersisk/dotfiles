@@ -59,7 +59,7 @@ return {
           desc = "Format Buffer with Pint",
         },
         ["<leader>Lfc"] = {
-          "<cmd>!./vendor/bin/php-cs-fixer %:.<cr>",
+          "<cmd>!./vendor/bin/php-cs-fixer fix %:.<cr>",
           desc = "Format Buffer with Php CS Fixer",
         },
         ["+"] = { "<C-a>", desc = "Increment" },
