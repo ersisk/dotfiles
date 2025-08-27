@@ -62,15 +62,11 @@ return {
       cucumber_language_server = {
         filetypes = { "cucumber", "gherkin" },
         settings = {
-          Cucumber = {
-            features = {
-              "tests/acceptance/features/**/*.feature",
-              "tests/acceptance/features/*.feature",
-            },
-            glue = {
-              "tests/acceptance/bootstrap/**/*.php",
-              "tests/acceptance/bootstrap/*.php",
-            },
+          features = {
+            "tests/acceptance/**/*.feature",
+          },
+          glue = {
+            "tests/acceptance/**/*.php",
           },
         },
       },
