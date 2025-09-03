@@ -132,7 +132,7 @@ alt-d = 'workspace D' # Database (Beekeeper studio)
 alt-g = 'workspace G' # KeePassXC (Password manager)
 alt-i = 'workspace I' # Intellij
 alt-m = 'workspace M' # messaging /media (texting and spotify) 
-alt-n = 'workspace N' # Notes (Obsidian)
+alt-n = 'workspace N' # Notes (Obsidian, notesnook)
 # alt-o = 'workspace O'
 alt-p = 'workspace P' # Postman and Bruno
 # alt-q = 'workspace Q'
@@ -306,9 +306,21 @@ if.app-id = 'io.beekeeperstudio.beekeeper-studio'
 run = "move-node-to-workspace D"
 
 [[on-window-detected]]
-if.app-id = 'com.dbeaver.DBeaverCommunity'
+if.app-id = 'io.beekeeperstudio.desktop'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
+if.app-id = 'com.tinyapp.TablePlus'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
+if.app-id = 'org.jkiss.dbeaver.core.product'
 run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'org.streetwriters.notesnook'
 run = "move-node-to-workspace N"
