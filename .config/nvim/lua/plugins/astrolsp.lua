@@ -18,6 +18,8 @@ return {
         enabled = true, -- enable or disable format on save globally
         allow_filetypes = { -- enable format on save for specified filetypes only
           -- "go",
+          "markdown",
+          "php",
           "go",
           "python",
           "lua",
@@ -27,7 +29,6 @@ return {
           -- "python",
           "html",
           "blade",
-          "php",
         },
       },
       disabled = { -- disable formatting capabilities for the listed language servers
