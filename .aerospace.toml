@@ -253,6 +253,11 @@ run = 'layout floating'
 check-further-callbacks = true
 
 [[on-window-detected]]
+if.app-id = 'com.neovide.neovide'
+run = 'layout floating'
+check-further-callbacks = true
+
+[[on-window-detected]]
 if.app-id = 'com.apple.Music'
 run = 'layout floating'
 check-further-callbacks = true
@@ -302,6 +307,10 @@ if.app-id = 'com.jetbrains.PhpStorm'
 run = "move-node-to-workspace I"
 
 [[on-window-detected]]
+if.app-id = 'dev.zed.Zed'
+run = "move-node-to-workspace I"
+
+[[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.beekeeper-studio'
 run = "move-node-to-workspace D"
 
@@ -315,6 +324,14 @@ run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'org.jkiss.dbeaver.core.product'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
+if.app-id = 'com.install4j.0526-4458-1435-8154.837'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
+if.app-id = 'com.tinycraft.tinyrdm'
 run = "move-node-to-workspace D"
 
 [[on-window-detected]]
