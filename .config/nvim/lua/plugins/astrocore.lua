@@ -55,7 +55,7 @@ return {
         ["<leader>Ljp"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>Ljm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
         ["<leader>Lfp"] = {
-          "<cmd>!docker-compose exec app ./vendor/bin/pint %:.<cr>",
+          "<cmd>!./vendor/bin/pint %:.<cr>",
           desc = "Format Buffer with Pint",
         },
         ["<leader>Lfc"] = {

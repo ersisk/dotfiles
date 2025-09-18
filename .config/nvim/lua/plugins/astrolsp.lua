@@ -19,7 +19,6 @@ return {
         allow_filetypes = { -- enable format on save for specified filetypes only
           -- "go",
           "markdown",
-          "php",
           "go",
           "python",
           "lua",
@@ -38,12 +37,11 @@ return {
         "intelephense",
         "eslint",
         "ts_ls",
+        "jsonls",
       },
       timeout_ms = 1000, -- default format timeout
       filter = function(client) -- fully override the default formatting function
-        -- use null-ls for formatting instead of lsp if available
-        if vim.bo.filetype == "php" then return client.name == "null-ls" end
-        return true
+        return client.name == "conform"
       end,
     },
     -- enable servers that you already have installed without mason
@@ -64,10 +62,10 @@ return {
         filetypes = { "cucumber", "gherkin" },
         settings = {
           features = {
-            "tests/acceptance/**/*.feature",
+            "tests/acceptance/features/**/*.feature",
           },
           glue = {
-            "tests/acceptance/**/*.php",
+            "tests/acceptance/bootstrap/**/*.php",
           },
         },
       },

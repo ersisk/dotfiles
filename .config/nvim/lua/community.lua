@@ -38,4 +38,7 @@ return {
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   --Motion
   { import = "astrocommunity.motion.harpoon" },
+  -- Formating
+  { import = "astrocommunity.editing-support.conform-nvim" },
+  { import = "astrocommunity.lsp.nvim-lint" },
 }
