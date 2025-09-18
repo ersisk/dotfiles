@@ -214,7 +214,7 @@ alt-shift-f = 'fullscreen'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.systempreferences'
-run = ['layout floating', 'move-node-to-workspace 1']  # The callback itself
+run = ['layout floating', 'move-node-to-workspace C']  # The callback itself
 
 [[on-window-detected]]
 if.app-id = 'com.fortinet.FortiClient'
@@ -311,6 +311,14 @@ if.app-id = 'dev.zed.Zed'
 run = "move-node-to-workspace I"
 
 [[on-window-detected]]
+if.app-id = 'com.vscodium'
+run = "move-node-to-workspace I"
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = "move-node-to-workspace I"
+
+[[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.beekeeper-studio'
 run = "move-node-to-workspace D"
 
@@ -341,3 +349,7 @@ run = "move-node-to-workspace N"
 [[on-window-detected]]
 if.app-id = 'org.streetwriters.notesnook'
 run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = "move-node-to-workspace A"
