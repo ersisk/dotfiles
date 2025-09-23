@@ -38,9 +38,12 @@ alias al-list="print -rl -- ${(k)aliases} | fzf"
 #Docker
 alias docker-compose="docker compose"
 alias dc=docker-compose  
-alias dce="docker-compose exec app"
+alias dce="docker-compose exec"
 alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
+alias dtelcocon='docker exec -it docker-getcontactv2-1 bash'
+alias dtelcoup="docker compose -f docker/docker-compose.yml up -d"
+
 
 #NVIM
 alias vi="nvim"
@@ -70,7 +73,6 @@ alias loghub='loghub-cli'
 
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
-alias swagger-up='docker run --platform linux/amd64 -d -p 8090:8080 docker.swagger.io/swaggerapi/swagger-editor'
 
 # Tmux
 # Attaches tmux to a session (example: ta portal)

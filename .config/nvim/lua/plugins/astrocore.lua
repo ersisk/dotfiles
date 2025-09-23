@@ -52,6 +52,8 @@ return {
           desc = "Previous",
         },
         ["<leader>L"] = { desc = "󰽛 Format & Preview Tools" },
+        ["<leader>Lj"] = { desc = "Json Tools" },
+        ["<leader>Lf"] = { desc = "Format Tools" },
         ["<leader>Ljp"] = { "<cmd>%!jq .<cr>", desc = "Format json" },
         ["<leader>Ljm"] = { "<cmd>%!jq -c .<cr>", desc = "Minify json" },
         ["<leader>Lfp"] = {
