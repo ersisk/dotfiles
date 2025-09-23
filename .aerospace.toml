@@ -57,11 +57,11 @@ preset = 'qwerty'
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
 inner.horizontal = 0
-inner.vertical =   0
-outer.left =       0
-outer.bottom =     0
-outer.top =        0
-outer.right =      0
+inner.vertical = 0
+outer.left = 0
+outer.bottom = 0
+outer.top = 0
+outer.right = 0
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -189,7 +189,7 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-ctrl-alt-0= 'mode service'
+ctrl-alt-0 = 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -200,7 +200,10 @@ h = ['layout horizontal', 'mode main']
 v = ['layout vertical', 'mode main']
 a = ['layout accordion', 'mode main']
 t = ['layout tiles', 'mode main']
-f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
+f = [
+  'layout floating tiling',
+  'mode main',
+] # Toggle between floating and tiling layout
 backspace = ['close-all-windows-but-current', 'mode main']
 
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
@@ -214,11 +217,11 @@ alt-shift-f = 'fullscreen'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.systempreferences'
-run = ['layout floating', 'move-node-to-workspace C']  # The callback itself
+run = ['layout floating', 'move-node-to-workspace C'] # The callback itself
 
 [[on-window-detected]]
 if.app-id = 'com.fortinet.FortiClient'
-run = 'layout floating' 
+run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.calculator'
@@ -272,6 +275,10 @@ check-further-callbacks = true
 # to find the app ids run `aerospace list-apps`
 [[on-window-detected]]
 if.app-id = 'app.zen-browser.zen'
+run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.librewolf'
 run = "move-node-to-workspace B"
 
 [[on-window-detected]]
