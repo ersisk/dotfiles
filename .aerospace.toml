@@ -224,6 +224,10 @@ if.app-id = 'com.fortinet.FortiClient'
 run = 'layout floating'
 
 [[on-window-detected]]
+if.app-id = 'com.raycast.macos'
+run = 'layout floating'
+
+[[on-window-detected]]
 if.app-id = 'com.apple.calculator'
 run = 'layout floating'
 
