@@ -64,6 +64,7 @@ alias fzp="fzf --style full \
 
 alias bb='/Users/ersanisik/bin/bb'
 alias sesh_start='/Users/ersanisik/bin/sesh_start'
+alias hygg='/Users/ersanisik/.cargo/bin/hygg'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
