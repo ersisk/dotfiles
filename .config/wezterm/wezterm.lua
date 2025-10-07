@@ -68,6 +68,7 @@ local config = {
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
 		k.cmd_to_tmux_prefix("a", "a"),
 		k.cmd_to_tmux_prefix("A", "A"),
+		k.cmd_to_tmux_prefix("Z", "Z"),
 		k.cmd_key("K", k.multiple_actions("sesh_start")),
 		k.cmd_key("P", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
