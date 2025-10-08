@@ -30,6 +30,7 @@ return {
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.completion.avante-nvim" },
+  { import = "astrocommunity.editing-support.mcphub-nvim" },
   -- { import = "astrocommunity.editing-support.copilotchat-nvim" },
   { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
@@ -38,6 +39,7 @@ return {
   { import = "astrocommunity.note-taking.obsidian-nvim" },
   --Motion
   { import = "astrocommunity.motion.harpoon" },
+  { import = "astrocommunity.motion.flash-nvim" },
   -- Formating
   { import = "astrocommunity.editing-support.conform-nvim" },
   { import = "astrocommunity.lsp.nvim-lint" },
