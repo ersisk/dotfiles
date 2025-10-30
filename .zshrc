@@ -43,7 +43,7 @@ alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
 alias dtelcocon='docker exec -it docker-getcontactv2-1 bash'
 alias dtelcoup="docker compose -f docker/docker-compose.yml up -d"
-
+alias dtelexec='docker exec -it teli-php'
 
 #NVIM
 alias vi="nvim"
@@ -54,6 +54,8 @@ alias rssn="newsboat -r"
 
 alias ll='eza -al --icons=always --color=always --group-directories-first'
 alias ls='eza --long --icons=always --color=always --no-user'
+
+alias yz='yazi'
 
 alias lg='lazygit'
 alias lsql='lazysql'
