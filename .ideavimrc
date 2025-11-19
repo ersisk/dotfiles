@@ -73,8 +73,8 @@ nmap <leader>fd <Action>(ShowNavBar)
 nmap <leader>fs <Action>(FileStructurePopup)
 nmap <leader>fw <Action>(FindInPath)
 nmap <leader>fr <Action>(ReplaceInPath)
-nmap <leader>e :NERDTree<CR>
-nmap <leader>o :NERDTreeToggle<CR>
+nmap <leader>o :NERDTree<CR>
+nmap <leader>e :NERDTreeToggle<CR>
 nmap <leader>ca <Action>(CloseOtherTabs)
 
 " nmap <C-\> <Action>(ActivateTerminalToolWindow)

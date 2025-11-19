@@ -7,54 +7,51 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "icon_theme": "JetBrains New UI Icons (Dark)",
+  "context_servers": {
+    "mcp-server-context7": {
+      "source": "extension",
+      "enabled": true,
+      "settings": {
+        "context7_api_key": "ctx7sk-bb26c72f-3894-4e25-9a52-50de7b47c395"
+      }
+    }
+  },
+  "restore_on_startup": "none",
+  "disable_ai": false,
+  "ui_font_family": "JetBrainsMono Nerd Font",
+  "minimap": {
+    "show": "never"
+  },
+  "base_keymap": "VSCode",
+  "vim_mode": true,
+  "relative_line_numbers": "enabled",
+  "ui_font_size": 16,
+  "buffer_font_size": 18.0,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "theme": {
+    "mode": "system",
+    "light": "Kanagawa",
+    "dark": "Kanagawa"
+  },
   "features": {
-    "edit_prediction_provider": "zed"
+    "edit_prediction_provider": "copilot"
   },
   "agent": {
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gpt-4o"
-    },
-  },
-  "restore_on_startup": "none",
-  "base_keymap": "JetBrains",
-  "vim_mode": true,
-  "relative_line_numbers": true,
-  "cursor_blink": false,
-  "ui_font_size": 16,
-  "buffer_font_size": 16,
-  "buffer_font_family": "JetBrainsMono Nerd Font",
-  "theme": {
-    "mode": "system",
-    "light": "One Light",
-    "dark": "Kanagawa"
-  },
-  "autosave": "on_window_change",
-  "format_on_save": "on",
-  "scrollbar": {
-    "show": "never"
-  },
-  "buffer_line_height": {
-    "custom": 1.7
+      "model": "claude-sonnet-4.5"
+    }
   },
   "languages": {
     "PHP": {
       "language_servers": ["intelephense", "!phpactor", "..."],
-      "format_on_save": {
-        "external": {
-          "command": "bash",
-          "arguments": [
-            "-c",
-            "temp=$(mktemp) && cat > $temp && ./vendor/bin/pint --quiet $temp && cat $temp"
-          ]
-        }
-      },
       "formatter": {
         "external": {
           "command": "bash",
           "arguments": [
             "-c",
-            "temp=$(mktemp) && cat > $temp && ./vendor/bin/pint --quiet $temp && cat $temp"
+            "cat > {buffer_path} && ./vendor/bin/pint --quiet {buffer_path} && cat {buffer_path}"
           ]
         }
       }
@@ -66,39 +63,40 @@
       "language_servers": ["tsserver"]
     },
     "Python": {
-      "language_servers": ["pyright"]
-    }
-  },
-  "lsp": {
-    "gopls": {
-      "initialization_options": {
-        "gofumpt": true,
-        "usePlaceholders": true,
-        "staticcheck": true,
-        "codelenses": {
-          "gc_details": true,
-          "generate": true,
-          "regenerate_cgo": true,
-          "tidy": true,
-          "upgrade_dependency": true,
-          "vendor": true
-        },
-        "analysis": {
-          "completeUnimported": true,
-          "staticcheck": true,
-          "unusedParams": true,
-          "unusedWrite": true
-        },
-        "hints": {
-          "assignVariableTypes": true,
-          "compositeLiteralFields": true,
-          "compositeLiteralTypes": true,
-          "constantValues": true,
-          "functionTypeParameters": true,
-          "parameterNames": true,
-          "rangeVariableTypes": true
-        }
+      "formatter": { "language_server": { "name": "ruff" } },
+      "language_servers": ["pyright", "ruff"]
+    },
+    "TypeScript": {
+      // Refer https://github.com/jellydn/ts-inlay-hints for how to setup for Neovim and VSCode
+      "inlay_hints": {
+        "enabled": true,
+        "show_parameter_hints": false,
+        "show_other_hints": true,
+        "show_type_hints": true
       }
     }
-  }
+  }, // File scan exclusions, hide on the file explorer and search
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    // above is default from Zed
+    "**/out",
+    "**/dist",
+    "**/.husky",
+    "**/.turbo",
+    "**/.vscode-test",
+    "**/.vscode",
+    "**/.next",
+    "**/.storybook",
+    "**/.tap",
+    "**/.nyc_output",
+    "**/report",
+    "**/node_modules"
+  ]
 }
