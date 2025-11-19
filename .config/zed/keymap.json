@@ -19,8 +19,8 @@
       "space l r": "editor::Rename",
       "space l f": "editor::Format",
       "space l l": "diagnostics::Deploy",
+      "space l s": "project_symbols::Toggle",
       "space s t": "pane::DeploySearch",
-      "space c a": "pane::CloseInactiveItems",
       "g c c": "editor::ToggleComments",
       "space f f": "file_finder::Toggle",
       "space f b": "tab_switcher::Toggle",
@@ -28,7 +28,12 @@
       "space e": "workspace::ToggleLeftDock",
       "space p": "outline::Toggle",
       "g d": "editor::GoToDefinitionSplit",
-      "space t t": "terminal_panel::ToggleFocus"
+      "space t t": "terminal_panel::ToggleFocus",
+      "space b c": "pane::CloseOtherItems",
+      "space c": "pane::CloseActiveItem",
+      "space w": "workspace::Save",
+      "space A n": "agent::Chat",
+      "space A t": "agent::ToggleFocus"
     }
   },
   {
