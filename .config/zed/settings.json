@@ -8,15 +8,7 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "icon_theme": "JetBrains New UI Icons (Dark)",
-  "context_servers": {
-    "mcp-server-context7": {
-      "source": "extension",
-      "enabled": true,
-      "settings": {
-        "context7_api_key": "ctx7sk-bb26c72f-3894-4e25-9a52-50de7b47c395"
-      }
-    }
-  },
+  "context_servers": {},
   "restore_on_startup": "none",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
