@@ -27,10 +27,12 @@ return {
   { import = "astrocommunity.motion.vim-matchup" },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
+  { import = "astrocommunity.file-explorer.mini-files" },
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.completion.avante-nvim" },
   { import = "astrocommunity.editing-support.mcphub-nvim" },
+  { import = "astrocommunity.ai.opencode-nvim" },
   -- { import = "astrocommunity.editing-support.copilotchat-nvim" },
   { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
