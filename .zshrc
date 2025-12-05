@@ -65,15 +65,15 @@ alias fzp="fzf --style full \
     --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
 alias bb='/Users/ersanisik/bin/bb'
+alias logse='/Users/ersanisik/bin/log_search.sh'
 alias sesh_start='/Users/ersanisik/bin/sesh_start'
+alias shs='/Users/ersanisik/bin/sesh_start'
 alias hygg='/Users/ersanisik/.cargo/bin/hygg'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
 alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
-
 alias loghub='loghub-cli'
-
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
 
