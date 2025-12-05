@@ -1,15 +1,13 @@
 "" Source your .vimrc
 "source ~/.vimrc
 
+" ============================================================================
+" PLUGINS
+" ============================================================================
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdtree'
 Plug 'terryma/vim-multiple-cursors'
 
-" Set leader
-let mapleader = " "
-set clipboard+=unnamed
-
-" Plugins
 set commentary
 set ideajoin
 set highlightedyank
@@ -18,43 +16,43 @@ set which-key
 set NERDTree
 set easymotion
 
-" Configs
+" ============================================================================
+" SETTINGS
+" ============================================================================
+let mapleader = " "
+set clipboard+=unnamed
 set number
 set relativenumber
 set ignorecase
 set smartcase
 set incsearch
 set visualbell
-
-
-"" -- Suggested options --
-" Show a few lines of context around the cursor. Note that this makes the
-" text scroll if you mouse-click near the start or end of the window.
 set scrolloff=5
-
-" Do incremental searching.
-set incsearch
-
-" disable the timeout option
 set notimeout
-
-" increase the timeoutlen (default: 1000), don't add space around the equal sign
 set timeoutlen=5000
 
-
-" Don't use Ex mode, use Q for formatting.
+" ============================================================================
+" BASIC KEYMAPS
+" ============================================================================
+" Don't use Ex mode, use Q for formatting
 map Q gq
 
-" Reload
+" Reload config
 nnoremap <leader>so :source ~/.ideavimrc<CR>
 
 " Better indentation
 vnoremap < <gv
 vnoremap > >gv
 
-map <leader>w :w<CR>
+" Save file
+nmap <leader>w :w<CR>
 
-" Navigation
+" Select all
+nmap <leader>aa ggVG
+
+" ============================================================================
+" NAVIGATION - Window/Split
+" ============================================================================
 nmap <C-h> <c-w>h
 nmap <C-j> <c-w>j
 nmap <C-k> <c-w>k
@@ -63,91 +61,307 @@ nmap <C-l> <c-w>l
 nmap <C-o> <Action>(Back)
 nmap <C-i> <Action>(Forward)
 
-nmap <C-\> <Action>(ActivateProjectToolWindow)
+" Split window
+nmap <leader>sh <Action>(SplitHorizontally)
+nmap <leader>sv <Action>(SplitVertically)
+nmap | <Action>(SplitVertically)
+nmap \ <Action>(SplitHorizontally)
 
-" Finds
+" Window management
+nmap <leader>wc <Action>(CloseContent)
+nmap <leader>wm <Action>(MaximizeEditorInSplit)
+nmap <leader>wo <Action>(CloseAllEditorsButActive)
+
+" ============================================================================
+" NAVIGATION - Tabs/Buffers
+" ============================================================================
+nmap H <Action>(PreviousTab)
+nmap L <Action>(NextTab)
+nmap <leader>c <Action>(CloseActiveTab)
+nmap <leader>C <Action>(CloseAllEditors)
+nmap <leader>ba <Action>(CloseOtherTabs)
+nmap <leader>q <Action>(CloseContent)
+
+" ============================================================================
+" NAVIGATION - Code
+" ============================================================================
+map gd <Action>(GotoDeclaration)
+map gD <Action>(GotoTypeDeclaration)
+map gi <Action>(GotoImplementation)
+map gt <Action>(GotoTest)
+map gr <Action>(FindUsages)
+map g; <Action>(JumpToLastChange)
+
+nmap [d <Action>(GotoPreviousError)
+nmap ]d <Action>(GotoNextError)
+nmap [f <Action>(MethodUp)
+nmap ]f <Action>(MethodDown)
+nmap [c <Action>(VcsShowPrevChangeMarker)
+nmap ]c <Action>(VcsShowNextChangeMarker)
+
+" ============================================================================
+" FIND/SEARCH
+" ============================================================================
 nmap <leader>fa <Action>(GotoAction)
 nmap <leader>ff <Action>(GotoFile)
+nmap <leader>fc <Action>(GotoClass)
+nmap <leader>fb <Action>(Switcher)
 nmap <leader>fo <Action>(RecentFiles)
 nmap <leader>fd <Action>(ShowNavBar)
 nmap <leader>fs <Action>(FileStructurePopup)
 nmap <leader>fw <Action>(FindInPath)
 nmap <leader>fr <Action>(ReplaceInPath)
+nmap <leader>fk <Action>(ShowKeyBindings)
+nmap <leader>fn <Action>(NewScratchFile)
+
+" ============================================================================
+" FILE EXPLORER
+" ============================================================================
+nmap <C-\> <Action>(ActivateProjectToolWindow)
 nmap <leader>o :NERDTree<CR>
 nmap <leader>e :NERDTreeToggle<CR>
-nmap <leader>ca <Action>(CloseOtherTabs)
 
-" nmap <C-\> <Action>(ActivateTerminalToolWindow)
+" ============================================================================
+" CODE ACTIONS / LSP
+" ============================================================================
+map <leader>lr <Action>(RenameElement)
+map <leader>la <Action>(ShowIntentionActions)
+map <leader>lf <Action>(ReformatCode)
+nmap <leader>ls <Action>(GotoSymbol)
+nmap <leader>lS <Action>(FileStructurePopup)
+nmap <leader>lh <Action>(ParameterInfo)
+nmap <leader>ld <Action>(ShowErrorDescription)
+nmap K <Action>(QuickJavaDoc)
 
-nmap [d <Action>(GotoPreviousError)
-nmap ]d <Action>(GotoNextError)
+" Comment
+nmap <leader>/ <Action>(CommentByLineComment)
+vmap <leader>/ <Action>(CommentByLineComment)
 
-nmap [f <Action>(MethodUp)
-nmap ]f <Action>(Methdown)
-
-nmap [c <Action>(VcsShowPrevChangeMarker)
-nmap ]c <Action>(VcsShowNextChangeMarker)
-
+" Folding
 nmap zc <Action>(CollapseRegion)
 nmap zo <Action>(ExpandRegion)
 
-nmap H <Action>(PreviousTab)
-nmap L <Action>(NextTab)
-
-" Git
+" ============================================================================
+" GIT
+" ============================================================================
 nmap <leader>gg <Action>(VcsGroups)
 nmap <leader>gc <Action>(CheckinProject)
 nmap <leader>gb <Action>(Git.Branches)
 nmap <leader>gd <Action>(Compare.SameVersion)
 nmap <leader>gB <Action>(Git.CompareWithBranch)
 
-" Code navigation
-map gd <Action>(GotoDeclaration)
-map gi <Action>(GotoImplementation)
-map gt <Action>(GotoTest)
-map g; <Action>(JumpToLastChange)
+" ============================================================================
+" RUN / DEBUG
+" ============================================================================
+map <leader>d <Action>(Debug)
+nmap <leader>r <Action>(Run)
+nmap <leader>R <Action>(ChooseRunConfiguration)
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>dB <Action>(ViewBreakpoints)
+nmap <leader>dc <Action>(Resume)
+nmap <leader>ds <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>do <Action>(StepOut)
 
+" ============================================================================
+" TERMINAL
+" ============================================================================
 map <leader>t <Action>(ActivateTerminalToolWindow)
 
-" Code Actions
-map <leader>lr <Action>(RenameElement)
-map <leader>la <Action>(ShowIntentionActions)
-map <leader>lf <Action>(ReformatCode)
-map <leader>d <Action>(Debug)
-" Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+" ============================================================================
+" UI TOGGLES
+" ============================================================================
+nmap <leader>uz <Action>(ToggleZenMode)
+nmap <leader>uw <Action>(EditorToggleUseSoftWraps)
+nmap <leader>un <Action>(EditorToggleShowLineNumbers)
+
+" ============================================================================
+" BOOKMARKS
+" ============================================================================
+nmap <leader>m <Action>(ToggleBookmark)
+nmap <leader>M <Action>(ShowBookmarks)
+
+" ============================================================================
+" SESSION / PLUGINS
+" ============================================================================
+nmap <leader>pi <Action>(WelcomeScreen.Plugins)
+nmap <leader>pm <Action>(WelcomeScreen.Plugins)
+nmap <leader>Sl <Action>(ManageRecentProjects)
+nmap <leader>Ss <Action>(SaveAll)
+
+" ============================================================================
+" AI / COPILOT
+" ============================================================================
+map <leader>ac <Action>(copilot.chat.show)
+
+" ============================================================================
+" CLIPBOARD
+" ============================================================================
+vmap <leader>y "+y
+nmap <leader>Y "+Y
+nmap <leader>p "+p
+nmap <leader>P "+P
+
+" ============================================================================
+" MULTIPLE CURSORS
+" ============================================================================
 nmap <C-n> <Plug>NextWholeOccurrence
 xmap <C-n> <Plug>NextWholeOccurrence
 nmap g<C-n> <Plug>NextOccurrence
 xmap g<C-n> <Plug>NextOccurrence
 xmap <C-x> <Plug>SkipOccurrence
 xmap <C-p> <Plug>RemoveOccurrence
-
-" Note that the default <A-n> and g<A-n> shortcuts don't work on Mac due to dead keys.
-" <A-n> is used to enter accented text e.g. ñ
-" Feel free to pick your own mappings that are not affected. I like to use <leader>
 nmap <leader><C-n> <Plug>AllWholeOccurrences
 xmap <leader><C-n> <Plug>AllWholeOccurrences
 nmap <leader>g<C-n> <Plug>AllOccurrences
 xmap <leader>g<C-n> <Plug>AllOccurrences
-let g:WhichKeyDesc_multicursor = "<Space><C-n> Multiple Cursors"
-let g:WhichKeyDesc_easymotion = "<Space><Space> Easymotion"
-let g:WhichKeyDesc_debug        = "<Space>d Debug"
-let g:WhichKeyDesc_rename       = "<Space>lr Rename"
-let g:WhichKeyDesc_intentions   = "<Space>la Show Intention Actions"
-let g:WhichKeyDesc_reformat     = "<Space>lf Reformat Code"
-let g:WhichKeyDesc_terminal     = "<Space>t Terminal"
-let g:WhichKeyDesc_nerdtree     = "<Space>e NERDTree"
-let g:WhichKeyDesc_finds        = "<Space>f Finds"
-let g:WhichKeyDesc_findfiles        = "<Space>ff Find Files"
-let g:WhichKeyDesc_findrecent        = "<Space>fo Find Recent"
-let g:WhichKeyDesc_findstructure        = "<Space>fs Find Structure"
-let g:WhichKeyDesc_findpath        = "<Space>fw Find Path"
-let g:WhichKeyDesc_findreplace        = "<Space>fr Find Replace"
-let g:WhichKeyDesc_findaction        = "<Space>fa Find Action"
-let g:WhichKeyDesc_codeaction        = "<Space>l Code Action"
-let g:WhichKeyDesc_save        = "<Space>w Save"
-let g:WhichKeyDesc_config        = "<Space>s Config"
-let g:WhichKeyDesc_configreload        = "<Space>so Reload"
-let g:WhichKeyDesc_git        = "<Space>g Git"
 
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Groups
+" ============================================================================
+let g:WhichKeyDesc_ai = "<Space>a AI"
+let g:WhichKeyDesc_buffers = "<Space>b Buffers"
+let g:WhichKeyDesc_debug = "<Space>d Debug"
+let g:WhichKeyDesc_finds = "<Space>f Find"
+let g:WhichKeyDesc_git = "<Space>g Git"
+let g:WhichKeyDesc_codeaction = "<Space>l LSP/Code"
+let g:WhichKeyDesc_plugins = "<Space>p Plugins"
+let g:WhichKeyDesc_config = "<Space>s Config"
+let g:WhichKeyDesc_session = "<Space>S Session"
+let g:WhichKeyDesc_ui = "<Space>u UI Toggles"
+let g:WhichKeyDesc_window = "<Space>w Window"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - AI
+" ============================================================================
+let g:WhichKeyDesc_copilot = "<Space>ac Copilot Chat"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Buffers
+" ============================================================================
+let g:WhichKeyDesc_close = "<Space>c Close Tab"
+let g:WhichKeyDesc_closeall = "<Space>C Close All"
+let g:WhichKeyDesc_closeothertabs = "<Space>ba Close Other Tabs"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Debug
+" ============================================================================
+let g:WhichKeyDesc_debug_break = "<Space>db Toggle Breakpoint"
+let g:WhichKeyDesc_debug_viewbreak = "<Space>dB View Breakpoints"
+let g:WhichKeyDesc_debug_continue = "<Space>dc Continue"
+let g:WhichKeyDesc_debug_stepin = "<Space>di Step Into"
+let g:WhichKeyDesc_debug_stepout = "<Space>do Step Out"
+let g:WhichKeyDesc_debug_stepover = "<Space>ds Step Over"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Find
+" ============================================================================
+let g:WhichKeyDesc_findaction = "<Space>fa Find Action"
+let g:WhichKeyDesc_findbuffer = "<Space>fb Find Buffer"
+let g:WhichKeyDesc_findclass = "<Space>fc Find Class"
+let g:WhichKeyDesc_findnavbar = "<Space>fd Show NavBar"
+let g:WhichKeyDesc_findfiles = "<Space>ff Find Files"
+let g:WhichKeyDesc_findkeybindings = "<Space>fk Find Keybindings"
+let g:WhichKeyDesc_newscratch = "<Space>fn New Scratch File"
+let g:WhichKeyDesc_findrecent = "<Space>fo Find Recent"
+let g:WhichKeyDesc_findreplace = "<Space>fr Find Replace"
+let g:WhichKeyDesc_findstructure = "<Space>fs Find Structure"
+let g:WhichKeyDesc_findpath = "<Space>fw Find in Path"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Git
+" ============================================================================
+let g:WhichKeyDesc_gitbranches = "<Space>gb Git Branches"
+let g:WhichKeyDesc_gitcomparebranch = "<Space>gB Git Compare Branch"
+let g:WhichKeyDesc_gitcommit = "<Space>gc Git Commit"
+let g:WhichKeyDesc_gitdiff = "<Space>gd Git Diff"
+let g:WhichKeyDesc_gitgroups = "<Space>gg Git Groups"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - LSP/Code
+" ============================================================================
+let g:WhichKeyDesc_intentions = "<Space>la Show Intention Actions"
+let g:WhichKeyDesc_showerror = "<Space>ld Show Error"
+let g:WhichKeyDesc_reformat = "<Space>lf Reformat Code"
+let g:WhichKeyDesc_paraminfo = "<Space>lh Parameter Info"
+let g:WhichKeyDesc_rename = "<Space>lr Rename"
+let g:WhichKeyDesc_gotosymbol = "<Space>ls Go to Symbol"
+let g:WhichKeyDesc_filestructure = "<Space>lS File Structure"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Plugins
+" ============================================================================
+let g:WhichKeyDesc_plugininstall = "<Space>pi Plugin Install"
+let g:WhichKeyDesc_pluginmanage = "<Space>pm Plugin Manage"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Session/Config
+" ============================================================================
+let g:WhichKeyDesc_sessionload = "<Space>Sl Load Session"
+let g:WhichKeyDesc_sessionsave = "<Space>Ss Save Session"
+let g:WhichKeyDesc_configreload = "<Space>so Reload Config"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - UI
+" ============================================================================
+let g:WhichKeyDesc_uinumbers = "<Space>un Toggle Line Numbers"
+let g:WhichKeyDesc_uiwrap = "<Space>uw Toggle Soft Wraps"
+let g:WhichKeyDesc_zen = "<Space>uz Zen Mode"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Window
+" ============================================================================
+let g:WhichKeyDesc_save = "<Space>w Save"
+let g:WhichKeyDesc_windowclose = "<Space>wc Close Window"
+let g:WhichKeyDesc_windowmax = "<Space>wm Maximize Window"
+let g:WhichKeyDesc_windowonly = "<Space>wo Close Other Windows"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Other
+" ============================================================================
+let g:WhichKeyDesc_comment = "<Space>/ Toggle Comment"
+let g:WhichKeyDesc_selectall = "<Space>aa Select All"
+let g:WhichKeyDesc_bookmark = "<Space>m Toggle Bookmark"
+let g:WhichKeyDesc_bookmarks = "<Space>M Show Bookmarks"
+let g:WhichKeyDesc_nerdtree = "<Space>e NERDTree Toggle"
+let g:WhichKeyDesc_nerdtreeopen = "<Space>o NERDTree Open"
+let g:WhichKeyDesc_quit = "<Space>q Quit"
+let g:WhichKeyDesc_run = "<Space>r Run"
+let g:WhichKeyDesc_runchoose = "<Space>R Choose Run Config"
+let g:WhichKeyDesc_terminal = "<Space>t Terminal"
+let g:WhichKeyDesc_splith = "<Space>sh Split Horizontally"
+let g:WhichKeyDesc_splitv = "<Space>sv Split Vertically"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Go To (g prefix)
+" ============================================================================
+let g:WhichKeyDesc_gotodeclaration = "gd Go to Declaration"
+let g:WhichKeyDesc_gototypedef = "gD Go to Type Declaration"
+let g:WhichKeyDesc_gotoimpl = "gi Go to Implementation"
+let g:WhichKeyDesc_gotousages = "gr Find Usages"
+let g:WhichKeyDesc_gototest = "gt Go to Test"
+let g:WhichKeyDesc_gotolastchange = "g; Jump to Last Change"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Navigation (brackets)
+" ============================================================================
+let g:WhichKeyDesc_prevchange = "[c Previous Change"
+let g:WhichKeyDesc_preverror = "[d Previous Error"
+let g:WhichKeyDesc_prevmethod = "[f Previous Method"
+let g:WhichKeyDesc_nextchange = "]c Next Change"
+let g:WhichKeyDesc_nexterror = "]d Next Error"
+let g:WhichKeyDesc_nextmethod = "]f Next Method"
+
+" ============================================================================
+" WHICH-KEY DESCRIPTIONS - Misc
+" ============================================================================
+let g:WhichKeyDesc_quickdoc = "K Quick Documentation"
+let g:WhichKeyDesc_splitpipe = "| Split Vertically"
+let g:WhichKeyDesc_splitbackslash = "\\ Split Horizontally"
+let g:WhichKeyDesc_multicursor = "<C-n> Multiple Cursors"
+let g:WhichKeyDesc_easymotion = "<Space><Space> Easymotion"
+let g:WhichKeyDesc_yanksys = "<Space>y Yank to System"
+let g:WhichKeyDesc_yankline = "<Space>Y Yank Line to System"
+let g:WhichKeyDesc_pastesys = "<Space>p Paste from System"
+let g:WhichKeyDesc_pasteabove = "<Space>P Paste Above from System"
 
