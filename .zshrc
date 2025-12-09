@@ -44,7 +44,11 @@ alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:
 alias dWORK_NScon='docker exec -it docker-mainv2-1 bash'
 alias dWORK_NSup="docker compose -f docker/docker-compose.yml up -d"
 alias dtelexec='docker exec -it teli-php'
-
+#Kubernetes
+alias k="kubectl"
+alias kgp="kubectl get pods"
+alias kgpn="kubectl get pods -n "
+alias keti="kubectl exec -it "
 #NVIM
 alias vi="nvim"
 alias vf="nvim +GoToFile"
