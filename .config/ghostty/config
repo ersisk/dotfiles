@@ -1,0 +1,81 @@
+# By default Reload config with shft + cmd + , 
+
+theme = Kanagawa Wave
+background = #272a32
+background-opacity = 0.85
+background-blur-radius = 30
+
+font-family = JetBrainsMono NFM 
+font-size = 19
+font-style-bold=true
+
+macos-titlebar-style = hidden
+mouse-hide-while-typing = true
+
+confirm-close-surface = false
+window-decoration = true
+window-padding-x = 5
+window-padding-y = 5
+window-padding-balance = true
+
+auto-update = check
+auto-update-channel = stable
+
+#extras
+shell-integration-features = no-cursor
+copy-on-select = clipboard
+cursor-style-blink = false
+#################
+## keybindings ##
+#################
+# Some useful encoded characters:
+# \x0a = Enter/Return
+# \x1b = Esc
+# \x01 = <C-a> (tmux prefix)
+
+# switch to window by index (1-based)
+keybind = super+physical:one=text:\x011
+keybind = super+physical:two=text:\x012
+keybind = super+physical:three=text:\x013
+keybind = super+physical:four=text:\x014
+keybind = super+physical:five=text:\x015
+keybind = super+physical:six=text:\x016
+keybind = super+physical:seven=text:\x017
+keybind = super+physical:eight=text:\x018
+keybind = super+physical:nine=text:\x019
+# Change to tmux copy mode
+keybind = super+c=text:\x01[
+# :Grep (find)
+keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
+# <prefix>+g (open lazygit window)
+keybind = super+g=text:\x01\x67
+# <prefix>+k (open sesh picker)
+keybind = super+k=text:\x01\x54
+# <prefix>+l (switch to last session)
+keybind = super+l=text:\x01\x4c
+# <prefix>+u (open url)
+keybind = super+o=text:\x01\x75
+# :GotoFile
+keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
+#reload config
+keybind = super+r=reload_config
+#:w
+keybind = super+s=text:\x3a\x77\x0a
+# <prefix>+c (new window)
+keybind = super+t=text:\x01\x63
+# <prefix>+x (close window)
+keybind = super+shift+w=text:\x01\x78
+# <prefix>+& (kill pane)
+keybind = super+w=text:\x01&
+# :GotoSymbol
+keybind = super+shift+o=text:\x3a\x47\x6f\x54\x6f\x53\x79\x6d\x62\x6f\x6c\x0a
+# :GotoCommand
+keybind = super+shift+p=text:\x3a\x47\x6f\x54\x6f\x43\x6f\x6d\x6d\x61\x6e\x64\x0a
+# :GoToBuffer
+keybind = super+shift+t=text:\x3a\x47\x6f\x54\x6f\x42\x75\x66\x66\x65\x72\x0a
+#ts
+keybind = super+shift+k=text:\x74\x73\x0a
+#<prefix>+p previous tab
+keybind = super+left=text:\x01p
+#<prefix>+n next tab
+keybind = super+right=text:\x01n
