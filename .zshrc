@@ -1,13 +1,12 @@
 # Path to your oh-my-zsh installation.
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search web-search)
 export ZSH="/Users/ersanisik/.oh-my-zsh"
-
-source $ZSH/oh-my-zsh.sh
-
 ZSH_WEB_SEARCH_ENGINES=(
     ddc "https://duckduckgo.com/?q=DuckDuckGo%20AI%20Chat&ia=chat&duckai=1&atb=v452-1"
     grok "https://grok.com?q="
 )
+source $ZSH/oh-my-zsh.sh
+
 # Starship 
 eval "$(starship init zsh)"
 
@@ -27,7 +26,7 @@ export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#1F1F
 #Editor
 export EDITOR="nvim"
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#54546D'
-
+export STARSHIP_JOBS_COUNT="4"
 export PATH=/opt/homebrew/bin:$PATH
 export NOTES_DIR=~/obsidian-vault
 export EZA_CONFIG_DIR=~/.config/eza/
@@ -41,9 +40,12 @@ alias dc=docker-compose
 alias dce="docker-compose exec"
 alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
-alias dtelcocon='docker exec -it docker-getcontactv2-1 bash'
-alias dtelcoup="docker compose -f docker/docker-compose.yml up -d"
-alias dtelexec='docker exec -it teli-php'
+#Docker Projects Based
+alias dtelcoexec='docker exec -it docker-getcontactv2-1 bash'
+alias dteliup="docker compose -f docker/docker-compose.yml up -d"
+alias dteliexec='docker exec -it teli-php'
+alias dteliphp='docker exec -it teli-php php bin/console'
+alias dtelipest='docker exec -it teli-php ./vendor/bin/pest'
 #Kubernetes
 alias k="kubectl"
 alias kgp="kubectl get pods"
@@ -90,8 +92,6 @@ alias tl='tmux list-sessions'
 alias td='tmux detach'
 alias th='tmux new-session -d -c ~/ -s home'
 alias tc='clear; tmux clear-history; clear'
-
-alias copilot="gh copilot explain"
 
 bindkey '^P' up-history
 bindkey '^N' down-history
