@@ -48,10 +48,16 @@ keybind = super+c=text:\x01[
 keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
 # <prefix>+g (open lazygit window)
 keybind = super+g=text:\x01\x67
+#<prefix>+a (open opencode)
+keybind = super+a=text:\x01\x61
+# <prefix>+z open github panel
+keybind = super+shift+g=text:\x01\x7a
 # <prefix>+k (open sesh picker)
 keybind = super+k=text:\x01\x54
 # <prefix>+l (switch to last session)
 keybind = super+l=text:\x01\x4c
+# <prefix>+m lazysql
+keybind = super+shift+m=text:\x01\x6d
 # <prefix>+u (open url)
 keybind = super+o=text:\x01\x75
 # :GotoFile
@@ -72,8 +78,6 @@ keybind = super+shift+p=text:\x3a\x47\x6f\x54\x6f\x53\x79\x6d\x62\x6f\x6c\x0a
 keybind = super+shift+o=text:\x3a\x47\x6f\x54\x6f\x43\x6f\x6d\x6d\x61\x6e\x64\x0a
 # :GoToBuffer
 keybind = super+shift+t=text:\x3a\x47\x6f\x54\x6f\x42\x75\x66\x66\x65\x72\x0a
-#ts
-keybind = super+shift+k=text:\x74\x73\x0a
 #<prefix>+p previous tab
 keybind = super+left=text:\x01p
 #<prefix>+n next tab
