@@ -215,9 +215,22 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 alt-shift-f = 'fullscreen'
 
+# 1 vertical monitor on the left for workspace A, C, P
+# 2 horizontal monitors on the right for workspaces I, others go to main monitor
+# See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
+[workspace-to-monitor-force-assignment]
+A = 1
+C = 1
+P = 1
+I = 2
+
+# ==============================================================================
+# FLOATING WINDOWS
+# See: https://nikitabobko.github.io/AeroSpace/guide#floating-w
+# ==============================================================================
 [[on-window-detected]]
 if.app-id = 'com.apple.systempreferences'
-run = ['layout floating', 'move-node-to-workspace C'] # The callback itself
+run = ['layout floating']                 # The callback itself
 
 [[on-window-detected]]
 if.app-id = 'com.electron.ollama'
@@ -238,11 +251,6 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.alienator88.Pearcleaner'
 run = 'layout floating'
-
-[workspace-to-monitor-force-assignment]
-A = 1
-I = 1
-P = 1
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
@@ -269,11 +277,6 @@ run = 'layout floating'
 check-further-callbacks = true
 
 [[on-window-detected]]
-if.app-id = 'com.neovide.neovide'
-run = 'move-node-to-workspace I'
-check-further-callbacks = true
-
-[[on-window-detected]]
 if.app-id = 'com.apple.Music'
 run = 'layout floating'
 check-further-callbacks = true
@@ -284,8 +287,14 @@ run = 'layout floating'
 check-further-callbacks = true
 
 
-# app assignments
-# to find the app ids run `aerospace list-apps`
+# ==============================================================================
+# APP ASSIGNMENTS
+# To find the app ids run: aerospace list-apps
+# ==============================================================================
+
+# --- WEB BROWSERS (WORKSPACES: A, B) ---
+# Zen Browser is assigned to workspace B, while others are assigned to A.
+
 [[on-window-detected]]
 if.app-id = 'app.zen-browser.zen'
 run = "move-node-to-workspace B"
@@ -299,8 +308,24 @@ if.app-id = 'org.mozilla.librewolf'
 run = "move-node-to-workspace B"
 
 [[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = "move-node-to-workspace A"
+
+[[on-window-detected]]
+if.app-id = 'net.imput.helium'
+run = "move-node-to-workspace A"
+
+# --- TERMINALS (WORKSPACES: T, C) ---
+
+[[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
 run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = "move-node-to-workspace C"
+
+# --- COMMUNICATION & EMAIL (WORKSPACES: Z, X) ---
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -310,17 +335,12 @@ run = "move-node-to-workspace Z"
 if.app-id = 'org.mozilla.thunderbird'
 run = "move-node-to-workspace X"
 
-[[on-window-detected]]
-if.app-id = 'org.keepassxc.keepassxc'
-run = "move-node-to-workspace G"
+# --- DEVELOPMENT TOOLS & IDEs (WORKSPACE: I) ---
 
 [[on-window-detected]]
-if.app-id = 'com.usebruno.app'
-run = "move-node-to-workspace P"
-
-[[on-window-detected]]
-if.app-id = 'com.postmanlabs.mac'
-run = "move-node-to-workspace P"
+if.app-id = 'com.neovide.neovide'
+run = 'move-node-to-workspace I'
+check-further-callbacks = true
 
 [[on-window-detected]]
 if.app-id = 'com.jetbrains.intellij'
@@ -339,21 +359,10 @@ if.app-id = 'dev.zed.Zed'
 run = "move-node-to-workspace I"
 
 [[on-window-detected]]
-if.app-id = 'com.vscodium'
-run = "move-node-to-workspace I"
-
-[[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
 run = "move-node-to-workspace I"
 
-[[on-window-detected]]
-if.app-id = 'dev.commandline.waveterm'
-run = "move-node-to-workspace I"
-
-[[on-window-detected]]
-if.app-id = 'io.beekeeperstudio.beekeeper-studio'
-run = "move-node-to-workspace D"
-
+# --- DATABASE MANAGEMENT (WORKSPACE: D) ---
 [[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.desktop'
 run = "move-node-to-workspace D"
@@ -374,6 +383,18 @@ run = "move-node-to-workspace D"
 if.app-id = 'com.tinycraft.tinyrdm'
 run = "move-node-to-workspace D"
 
+# --- API TESTING & TOOLS (WORKSPACE: P) ---
+
+[[on-window-detected]]
+if.app-id = 'com.usebruno.app'
+run = "move-node-to-workspace P"
+
+[[on-window-detected]]
+if.app-id = 'com.postmanlabs.mac'
+run = "move-node-to-workspace P"
+
+# --- NOTE TAKING & PRODUCTIVITY (WORKSPACE: N) ---
+
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
 run = "move-node-to-workspace N"
@@ -382,14 +403,8 @@ run = "move-node-to-workspace N"
 if.app-id = 'org.streetwriters.notesnook'
 run = "move-node-to-workspace N"
 
-[[on-window-detected]]
-if.app-id = 'com.apple.Safari'
-run = "move-node-to-workspace A"
+# --- SECURITY & UTILITIES (WORKSPACE: G) ---
 
 [[on-window-detected]]
-if.app-id = 'net.imput.helium'
-run = "move-node-to-workspace A"
-
-[[on-window-detected]]
-if.app-id = 'com.mitchellh.ghostty'
-run = "move-node-to-workspace A"
+if.app-id = 'org.keepassxc.keepassxc'
+run = "move-node-to-workspace G"
