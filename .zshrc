@@ -137,3 +137,6 @@ export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 zstyle ':completion:*' menu select
+
+# Added by Antigravity
+export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"

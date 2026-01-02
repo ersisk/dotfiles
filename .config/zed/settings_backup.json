@@ -37,8 +37,7 @@
   },
   "agent_servers": {
     "OpenCode": {
-      "type": "custom",
-      "command": "/opt/homebrew/bin/OpenCode",
+      "command": "opencode",
       "args": ["acp"],
     },
   },

@@ -7,6 +7,25 @@
 // from the command palette.
 [
   {
+    "bindings": {
+      "cmd-alt-n": [
+        // Your custom keybinding
+        "agent::NewExternalAgentThread",
+        {
+          "agent": {
+            "custom": {
+              "name": "Opencode", // The agent name as it appears in the UI (e.g., "OpenCode", "Auggie CLI", etc.)
+              "command": {
+                "command": "opencode", // The agent name in lowercase with no spaces
+                "args": ["acp"],
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
     "context": "Editor && VimControl && !VimWaiting && !menu",
     "bindings": {
       "ctrl-w z": "workspace::ToggleZoom",
@@ -33,15 +52,15 @@
       "space c": "pane::CloseActiveItem",
       "space w": "workspace::Save",
       "space A n": "agent::Chat",
-      "space A t": "agent::ToggleFocus"
-    }
+      "space A t": "agent::ToggleFocus",
+    },
   },
   {
     "context": "vim_mode == normal",
     "bindings": {
       "H": "pane::ActivatePreviousItem",
-      "L": "pane::ActivateNextItem"
-    }
+      "L": "pane::ActivateNextItem",
+    },
   },
   {
     "context": "EmptyPane || SharedScreen || vim_operator == none && !VimWaiting && vim_mode != insert",
@@ -50,39 +69,39 @@
       "space r e": [
         "task::Rerun",
         {
-          "reevaluate_context": true
-        }
+          "reevaluate_context": true,
+        },
       ],
       "space f f": "file_finder::Toggle",
-      "space e": "workspace::ToggleLeftDock"
-    }
+      "space e": "workspace::ToggleLeftDock",
+    },
   },
   {
     "context": "Editor && vim_mode == insert && !menu",
     "bindings": {
-      "j j": "vim::NormalBefore"
-    }
+      "j j": "vim::NormalBefore",
+    },
   },
   {
     "context": "Editor && vim_mode == visual && !VimWaiting && !VimObject",
     "bindings": {
       "shift-j": "editor::MoveLineDown",
-      "shift-k": "editor::MoveLineUp"
-    }
+      "shift-k": "editor::MoveLineUp",
+    },
   },
   {
     "context": "Workspace",
     "bindings": {
       "ctrl-w n": "workspace::NewTerminal",
-      "ctrl-w f": "terminal_panel::ToggleFocus"
-    }
+      "ctrl-w f": "terminal_panel::ToggleFocus",
+    },
   },
   {
     "context": "Terminal",
     "bindings": {
       "ctrl-w z": "workspace::ToggleZoom",
-      "ctrl-w t": "terminal_panel::ToggleFocus"
-    }
+      "ctrl-w t": "terminal_panel::ToggleFocus",
+    },
   },
   {
     "context": "Editor",
@@ -96,32 +115,32 @@
       "cmd-d": [
         "editor::SelectNext",
         {
-          "replace_newest": false
-        }
+          "replace_newest": false,
+        },
       ],
       "ctrl-cmd-d": [
         "editor::SelectPrevious",
         {
-          "replace_newest": false
-        }
+          "replace_newest": false,
+        },
       ],
       "cmd-k cmd-d": [
         "editor::SelectNext",
         {
-          "replace_newest": true
-        }
+          "replace_newest": true,
+        },
       ],
       "cmd-k ctrl-cmd-d": [
         "editor::SelectPrevious",
         {
-          "replace_newest": true
-        }
+          "replace_newest": true,
+        },
       ],
       "cmd-/": [
         "editor::ToggleComments",
         {
-          "advance_downwards": false
-        }
+          "advance_downwards": false,
+        },
       ],
       "alt-up": "editor::SelectLargerSyntaxNode",
       "alt-down": "editor::SelectSmallerSyntaxNode",
@@ -139,21 +158,21 @@
       "alt-cmd-[": "editor::Fold",
       "alt-cmd-]": "editor::UnfoldLines",
       "ctrl-space": "editor::ShowCompletions",
-      "cmd-.": "editor::ToggleCodeActions"
-    }
+      "cmd-.": "editor::ToggleCodeActions",
+    },
   },
   {
     "context": "TabSwitcher",
     "bindings": {
       "shift-k": "menu::SelectPrevious",
       "shift-j": "menu::SelectNext",
-      "ctrl-d": "tab_switcher::CloseSelectedItem"
-    }
+      "ctrl-d": "tab_switcher::CloseSelectedItem",
+    },
   },
   {
     "context": "Pane",
     "bindings": {
-      "ctrl-d": "pane::CloseActiveItem"
-    }
-  }
+      "ctrl-d": "pane::CloseActiveItem",
+    },
+  },
 ]
