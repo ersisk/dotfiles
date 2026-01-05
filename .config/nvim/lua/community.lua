@@ -30,10 +30,8 @@ return {
   { import = "astrocommunity.file-explorer.mini-files" },
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
-  -- { import = "astrocommunity.completion.avante-nvim" },
-  -- { import = "astrocommunity.editing-support.mcphub-nvim" },
   { import = "astrocommunity.ai.opencode-nvim" },
-  -- { import = "astrocommunity.editing-support.copilotchat-nvim" },
+  -- API TESTING & TOOLS
   { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
   { import = "astrocommunity.editing-support.vim-visual-multi" },

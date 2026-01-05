@@ -1,19 +1,19 @@
 return {
-  {
-    "neo-tree.nvim",
-    opts = {
-      window = {
-        position = "left",
-      },
-      filesystem = {
-        filtered_items = {
-          visible = true,
-          hide_dotfiles = false,
-          hide_gitignored = false,
-        },
-      },
-    },
-  },
+  -- {
+  --   "neo-tree.nvim",
+  --   opts = {
+  --     window = {
+  --       position = "left",
+  --     },
+  --     filesystem = {
+  --       filtered_items = {
+  --         visible = true,
+  --         hide_dotfiles = false,
+  --         hide_gitignored = false,
+  --       },
+  --     },
+  --   },
+  -- },
   { "hrsh7th/nvim-cmp", enabled = false },
   { "rcarriga/cmp-dap", enabled = false },
   { "akinsho/git-conflict.nvim", version = "*", config = true },
