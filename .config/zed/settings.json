@@ -7,38 +7,61 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "git_panel": {
+    "dock": "right",
+  },
+  "features": {
+    "edit_prediction_provider": "copilot",
+  },
   "icon_theme": "JetBrains New UI Icons (Dark)",
   "context_servers": {},
   "restore_on_startup": "none",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_size": 17,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_size": 18,
   "minimap": {
     "show": "never",
   },
   "base_keymap": "VSCode",
   "vim_mode": true,
   "relative_line_numbers": "enabled",
-  "ui_font_size": 16,
-  "buffer_font_size": 18.0,
-  "buffer_font_family": "JetBrainsMono Nerd Font",
   "theme": {
     "mode": "system",
     "light": "Kanagawa",
     "dark": "Kanagawa Wave",
   },
-  "features": {
-    "edit_prediction_provider": "copilot",
+  "tab_bar": {
+    "show": true,
+  },
+  "scrollbar": {
+    "show": "never",
+  },
+  // Only show error on tab
+  "tabs": {
+    "show_diagnostics": "errors",
+  },
+  // Indentation, rainbow indentation
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware",
+  },
+  // NOTE: Zen mode, refer https://github.com/zed-industries/zed/issues/4382 when it's resolved
+  "centered_layout": {
+    "left_padding": 0.15,
+    "right_padding": 0.15,
   },
   "agent": {
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-sonnet-4.5",
+      "model": "gemini-3-flash-preview",
     },
   },
   "agent_servers": {
     "OpenCode": {
       "type": "custom",
-      "command": "/opt/homebrew/bin/OpenCode",
+      "command": "opencode",
       "args": ["acp"],
     },
   },
@@ -97,5 +120,9 @@
     "**/.nyc_output",
     "**/report",
     "**/node_modules",
-  ],
+  ], // Turn off telemetry
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
 }

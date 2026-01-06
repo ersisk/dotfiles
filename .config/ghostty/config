@@ -7,6 +7,8 @@ background-opacity = 0.92
 font-family = JetBrainsMono NFM 
 font-size = 19
 font-style-bold=true
+font-variation = wght=850
+font-thicken = true
 
 macos-titlebar-style = hidden
 mouse-hide-while-typing = true
@@ -43,7 +45,7 @@ keybind = super+physical:seven=text:\x017
 keybind = super+physical:eight=text:\x018
 keybind = super+physical:nine=text:\x019
 # Change to tmux copy mode
-keybind = super+c=text:\x01[
+keybind = super+shift+c=text:\x01[
 # :Grep (find)
 keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
 # <prefix>+g (open lazygit window)
