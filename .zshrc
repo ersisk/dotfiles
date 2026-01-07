@@ -53,7 +53,44 @@ alias dtelipest='docker exec -it teli-php ./vendor/bin/pest'
 alias k="kubectl"
 alias kgp="kubectl get pods"
 alias kgpn="kubectl get pods -n "
-alias keti="kubectl exec -it "
+alias keit="kubectl exec -it "
+# Kubectl exec + fzf
+fzfke() {
+  local ns="$1"
+  local container="$2"
+
+  # If namespace is not provided, select it using fzf
+  if [ -z "$ns" ]; then
+    ns=$(kubectl get namespaces --no-headers | fzf --height 20% --reverse --header="Select Namespace:" | awk '{print $1}')
+  fi
+
+  # Exit if no namespace is selected
+  if [ -z "$ns" ]; then
+    echo "Error: Namespace not specified."
+    return 1
+  fi
+
+  # Select pod from the specified namespace
+  local pod=$(kubectl get pods -n "$ns" --no-headers | fzf --height 40% --reverse --header="Select Pod ($ns):" | awk '{print $1}')
+
+  # If a pod is selected, construct and run the exec command
+  if [ -n "$pod" ]; then
+    local exec_cmd="kubectl exec -it $pod -n $ns"
+    
+    # If a second argument is provided, use it as the container name (-c)
+    if [ -n "$container" ]; then
+      echo "Connecting to: $ns / $pod (Container: $container)"
+      exec_cmd="$exec_cmd -c $container"
+    else
+      echo "Connecting to: $ns / $pod"
+    fi
+
+    # Execute the command, try /bin/bash first, fallback to /bin/sh
+    eval "$exec_cmd -- /bin/bash" || eval "$exec_cmd -- /bin/sh"
+  else
+    echo "No pod selected."
+  fi
+}
 
 #NVIM
 alias vi="nvim"
@@ -64,13 +101,13 @@ alias nvide="open -a Neovide.app"
 # Newsboat
 alias rssn="newsboat -r"
 
-#LSD / EZA
-alias ll='eza -al --icons=always --color=always --group-directories-first'
-alias ls='eza --long --icons=always --color=always --no-user'
-alias lsg='lsd --group-dirs first -A'
+#EZA
+alias ll='eza -al --icons --color --group-directories-first'
+alias ls='eza --icons --color --no-user --group-directories-first -a'
 
-alias fzn="fzf --print0 | xargs -0 -o nvim"
-alias fzp="fzf --style full \
+#FZF
+alias fzfn="fzf --print0 | xargs -0 -o nvim"
+alias fzfp="fzf --style full \
     --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
 # Custom Scripts
