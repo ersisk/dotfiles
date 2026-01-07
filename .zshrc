@@ -15,6 +15,8 @@ eval "$(zoxide init zsh)"
 
 # FZF
 eval "$(fzf --zsh)"
+
+# EXPORTS
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
@@ -23,7 +25,6 @@ export FZF_DEFAULT_OPTS='--height 100% --layout=reverse
 --color=marker:#526994,prompt:#b35560,spinner:#5f8a9b  --pointer="👉"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}'"
 export FZF_TMUX_OPTS=" -p90%,80% --layout=reverse --height 100% --color=bg:#1F1F28,fg:#C8C093,border:#565c64 --border=rounded"
-#Editor
 export EDITOR="nvim"
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#54546D'
 export STARSHIP_JOBS_COUNT="4"
@@ -40,38 +41,42 @@ alias dc=docker-compose
 alias dce="docker-compose exec"
 alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
 alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
+
 #Docker Projects Based
 alias dtelcoexec='docker exec -it docker-getcontactv2-1 bash'
 alias dteliup="docker compose -f docker/docker-compose.yml up -d"
 alias dteliexec='docker exec -it teli-php'
 alias dteliphp='docker exec -it teli-php php bin/console'
 alias dtelipest='docker exec -it teli-php ./vendor/bin/pest'
+
 #Kubernetes
 alias k="kubectl"
 alias kgp="kubectl get pods"
 alias kgpn="kubectl get pods -n "
 alias keti="kubectl exec -it "
+
 #NVIM
 alias vi="nvim"
 alias vf="nvim +GoToFile"
 alias vim="nvim"
 alias nvide="open -a Neovide.app"
+
+# Newsboat
 alias rssn="newsboat -r"
 
+#LSD / EZA
 alias ll='eza -al --icons=always --color=always --group-directories-first'
 alias ls='eza --long --icons=always --color=always --no-user'
-
-alias yz='yazi'
-
-alias lg='lazygit'
-alias lsql='lazysql'
+alias lsg='lsd --group-dirs first -A'
 
 alias fzn="fzf --print0 | xargs -0 -o nvim"
 alias fzp="fzf --style full \
     --preview 'fzf-preview.sh {}' --bind 'focus:transform-header:file --brief {}'"
 
+# Custom Scripts
 alias bb='/Users/ersanisik/bin/bb'
-alias logse='/Users/ersanisik/bin/log_search.sh'
+alias startdaily='/Users/ersanisik/bin/daily-monster'
+alias selo='/Users/ersanisik/bin/log_search.sh'
 alias sesh_start='/Users/ersanisik/bin/sesh_start'
 alias shs='/Users/ersanisik/bin/sesh_start'
 alias hygg='/Users/ersanisik/.cargo/bin/hygg'
@@ -80,6 +85,8 @@ alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
 alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 alias loghub='loghub-cli'
+
+# Obsidian Notes
 alias notes=" find ~/obsidian-vault | fzf --print0 | xargs -0 -o nvim"
 alias notesdaily='nvim $NOTES_DIR/Journals\(Günlük\)/$(date +"%Y-%m-%d.md")'
 
@@ -96,31 +103,6 @@ alias tc='clear; tmux clear-history; clear'
 bindkey '^P' up-history
 bindkey '^N' down-history
 
-dev-check() {
-    if git branch -avvv 2>&1 | grep -q ': ahead '; then
-        echo "You have unpushed commits. Are you sure you want to continue? (y/n)"
-        read -r response
-        if [ "$response" != "y" ]; then
-            echo "Aborting."
-            return 1
-        fi
-    fi
-
-    if ! git diff-index --quiet HEAD --; then
-        echo "You have uncommitted changes. Are you sure you want to continue? (y/n)"
-        read -r response
-        if [ "$response" != "y" ]; then
-            echo "Aborting."
-            return 1
-        fi
-    fi
-
-    local response=$(bb pipeline custom "$(git symbolic-ref --short HEAD)" "dev-check" | xargs)
-    local pipelineId=$(echo ${response##*/} | sed 's/\x1b\[[0-9;]*m//g' | tr -d '[:space:]')
-
-    echo "$response"
-    bb pipeline wait "$pipelineId"
-}
 . "$HOME/.local/bin/env"
 bindkey -r '\ec'
 
@@ -137,6 +119,3 @@ export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 zstyle ':completion:*' menu select
-
-# Added by Antigravity
-export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"
