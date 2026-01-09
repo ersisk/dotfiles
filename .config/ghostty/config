@@ -52,6 +52,8 @@ keybind = super+f=text:\x3a\x47\x72\x65\x70\x0a
 keybind = super+g=text:\x01\x67
 #<prefix>+a (open opencode)
 keybind = super+a=text:\x01\x61
+#<prefix>+A (open claude)
+keybind = super+shift+a=text:\x01\x41
 # <prefix>+z open github panel
 keybind = super+shift+g=text:\x01\x7a
 # <prefix>+k (open sesh picker)
