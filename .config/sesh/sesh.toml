@@ -4,7 +4,7 @@ preview_command = "eza -la --all --git --icons --color=always {}"
 [[session]]
 name = "Notes"
 path = "~/obsidian-vault/"
-startup_command = 'nvim .'
+startup_command = 'nvim +GoToFile'
 
 [[session]]
 name = "Home (~)"

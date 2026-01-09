@@ -215,13 +215,14 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 alt-shift-f = 'fullscreen'
 
-# 1 vertical monitor on the left for workspace A, C, P
+# 1 vertical monitor on the left for workspace A, C, P, X
 # 2 horizontal monitors on the right for workspaces I, others go to main monitor
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
 [workspace-to-monitor-force-assignment]
 A = 1
 C = 1
 P = 1
+X = 1
 I = 2
 
 # ==============================================================================
@@ -285,6 +286,10 @@ check-further-callbacks = true
 if.app-id = 'com.spotify.client'
 run = 'layout floating'
 check-further-callbacks = true
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = 'layout floating'
 
 
 # ==============================================================================
