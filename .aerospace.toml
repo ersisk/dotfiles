@@ -320,7 +320,7 @@ run = "move-node-to-workspace A"
 if.app-id = 'net.imput.helium'
 run = "move-node-to-workspace A"
 
-# --- TERMINALS (WORKSPACES: T, C) ---
+# --- TERMINALS (WORKSPACES: T) ---
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
@@ -328,7 +328,7 @@ run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.mitchellh.ghostty'
-run = "move-node-to-workspace C"
+run = "move-node-to-workspace T"
 
 # --- COMMUNICATION & EMAIL (WORKSPACES: Z, X) ---
 

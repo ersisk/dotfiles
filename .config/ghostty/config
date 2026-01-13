@@ -4,7 +4,7 @@ theme = Kanagawa Wave
 background = #1F1F28
 background-opacity = 0.92
 
-font-family = JetBrainsMono NFM 
+font-family = JetBrainsMono NFM ExtraBold 
 font-size = 19
 font-style-bold=true
 font-variation = wght=850
@@ -62,6 +62,8 @@ keybind = super+k=text:\x01\x54
 keybind = super+l=text:\x01\x4c
 # <prefix>+m lazysql
 keybind = super+shift+m=text:\x01\x6d
+# <prefix>+b (toogle tmux status)
+keybind = super+shift+b=text:\x01\x62
 # <prefix>+u (open url)
 keybind = super+o=text:\x01\x75
 # :GotoFile
