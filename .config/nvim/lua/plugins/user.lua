@@ -16,7 +16,6 @@ return {
   -- },
   { "hrsh7th/nvim-cmp", enabled = false },
   { "rcarriga/cmp-dap", enabled = false },
-  { "akinsho/git-conflict.nvim", version = "*", config = true },
   {
     "folke/snacks.nvim",
     opts = {
@@ -34,16 +33,5 @@ return {
         },
       },
     },
-  },
-  {
-    "adibhanna/nvim-newfile.nvim",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-    },
-    config = function()
-      require("nvim-newfile").setup {
-        -- Optional configuration
-      }
-    end,
   },
 }
