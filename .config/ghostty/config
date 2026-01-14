@@ -2,9 +2,9 @@
 
 theme = Kanagawa Wave
 background = #1F1F28
-background-opacity = 0.92
+background-opacity = 0.96
 
-font-family = JetBrainsMono NFM ExtraBold 
+font-family = JetBrainsMono NFM Bold 
 font-size = 19
 font-style-bold=true
 font-variation = wght=850

@@ -8,7 +8,7 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "git_panel": {
-    "dock": "right",
+    "dock": "left",
   },
   "features": {
     "edit_prediction_provider": "copilot",
