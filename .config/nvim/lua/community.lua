@@ -31,6 +31,7 @@ return {
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.ai.opencode-nvim" },
+  { import = "astrocommunity.ai.sidekick-nvim" },
   -- API TESTING & TOOLS
   -- { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
