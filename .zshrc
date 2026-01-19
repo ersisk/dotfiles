@@ -95,6 +95,7 @@ fzfke() {
 #NVIM
 alias vi="nvim"
 alias vf="nvim +GoToFile"
+alias vl="NVIM_APPNAME=nvim-lazy nvim"
 alias vim="nvim"
 alias nvide="open -a Neovide.app"
 
@@ -120,7 +121,7 @@ alias hygg='/Users/ersanisik/.cargo/bin/hygg'
 alias aws-ssh='/Users/ersanisik/bin/aws-ssh'
 alias aws-con="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias merged-b='/Users/ersanisik/bin/merged-branches_macos'
-alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
+alias merged-dlb='git branch --merged | grep -v "\*" | grep -v "test" | grep -v "master" | grep -v "main"| grep -v "stage" | grep -v "release" | grep -v "dev" | xargs -n 1 git branch -d'
 alias loghub='loghub-cli'
 
 # Obsidian Notes
@@ -156,3 +157,12 @@ export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 zstyle ':completion:*' menu select
+
+# bun completions
+[ -s "/Users/ersanisik/.bun/_bun" ] && source "/Users/ersanisik/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
