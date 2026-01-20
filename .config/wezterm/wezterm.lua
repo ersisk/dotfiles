@@ -48,31 +48,47 @@ local config = {
 		k.cmd_to_tmux_prefix("7", "7"),
 		k.cmd_to_tmux_prefix("8", "8"),
 		k.cmd_to_tmux_prefix("9", "9"),
-		k.cmd_to_tmux_prefix("C", "C"),
+		-- Detach Session
 		k.cmd_to_tmux_prefix("d", "D"),
+		-- Vertical Split
 		k.cmd_to_tmux_prefix("n", "%"),
+		-- Horizontal Split
 		k.cmd_to_tmux_prefix('"', '"'),
+		-- Sesh
 		k.cmd_to_tmux_prefix("k", "T"),
+		-- Last Session
 		k.cmd_to_tmux_prefix("l", "L"),
+		-- New Window
 		k.cmd_to_tmux_prefix("t", "c"),
+		-- Toogle Tmux Status
 		k.cmd_to_tmux_prefix("B", "b"),
 		k.cmd_to_tmux_prefix("C", "["),
+		-- Rename Window
 		k.cmd_to_tmux_prefix("ğ", ","),
-		k.cmd_to_tmux_prefix("Ğ", "$"),
+		-- Rename Session
+		k.cmd_to_tmux_prefix("R", "$"),
 		k.cmd_to_tmux_prefix("w", "&"),
 		k.cmd_to_tmux_prefix("W", "x"),
+		-- LazyGit
 		k.cmd_to_tmux_prefix("g", "g"),
+		--LazySql
 		k.cmd_to_tmux_prefix("M", "m"),
+		-- OpenURL
 		k.cmd_to_tmux_prefix("o", "u"),
+		-- Navigate Panes
 		k.cmd_to_tmux_prefix("LeftArrow", "p"),
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
+		-- Opencode
 		k.cmd_to_tmux_prefix("a", "a"),
+		--Claude
 		k.cmd_to_tmux_prefix("A", "A"),
+		--GH DASH
 		k.cmd_to_tmux_prefix("G", "z"),
-		--k.cmd_key("K", k.multiple_actions("sesh_start")),
+		-- Telescope-like actions
 		k.cmd_key("P", k.multiple_actions(":GoToSymbol")),
 		k.cmd_key("p", k.multiple_actions(":GoToFile")),
 		k.cmd_key("T", k.multiple_actions(":GoToBuffer")),
+		-- Save file
 		k.cmd_key(
 			"s",
 			act.Multiple({
