@@ -66,6 +66,21 @@ keybind = super+shift+m=text:\x01\x6d
 keybind = super+shift+b=text:\x01\x62
 # <prefix>+u (open url)
 keybind = super+o=text:\x01\x75
+# Detach Session (super+d -> prefix+D)
+keybind = super+d=text:\x01\x44
+# Vertical Split (super+n -> prefix+%)
+keybind = super+n=text:\x01\x25
+# Horizontal Split (super+" -> prefix+")
+keybind = super+shift+two=text:\x01\x22
+# Rename Window (super+ğ -> prefix+,)
+# Not: Klavyenizde 'ğ' tuşunun fiziksel karşılığına göre ayarlamanız gerekebilir
+keybind = super+ğ=text:\x01\x2c
+
+# Rename Session (super+shift+r -> prefix+$)
+keybind = super+shift+r=text:\x01\x24
+
+# Copilot (super+z -> prefix+Z)
+keybind = super+z=text:\x01\x5a
 # :GotoFile
 keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
 #reload config
