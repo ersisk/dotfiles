@@ -2,6 +2,10 @@ return {
   "folke/sidekick.nvim",
   opts = {
     cli = {
+      mux = {
+        backend = "zellij",
+        enabled = true,
+      },
       win = {
         layout = "right", -- Options: "float", "left", "bottom", "top", "right"
         -- Settings for split windows (left/right/top/bottom)
