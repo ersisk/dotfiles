@@ -83,7 +83,7 @@ local config = {
 		--Claude
 		k.cmd_to_tmux_prefix("A", "A"),
 		-- Copilot
-		k.cmd_to_tmux_prefix("z", "Z"),
+		k.cmd_to_tmux_prefix("Z", "Z"),
 		--GH DASH
 		k.cmd_to_tmux_prefix("G", "z"),
 		-- Telescope-like actions

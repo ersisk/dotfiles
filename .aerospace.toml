@@ -291,6 +291,9 @@ check-further-callbacks = true
 if.app-id = 'com.anthropic.claudefordesktop'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-id = 'com.superset.desktop'
+run = 'layout floating'
 
 # ==============================================================================
 # APP ASSIGNMENTS

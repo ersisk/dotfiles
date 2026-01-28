@@ -80,7 +80,7 @@ keybind = super+ğ=text:\x01\x2c
 keybind = super+shift+r=text:\x01\x24
 
 # Copilot (super+z -> prefix+Z)
-keybind = super+z=text:\x01\x5a
+keybind = super+shift+z=text:\x01\x5a
 # :GotoFile
 keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
 #reload config
