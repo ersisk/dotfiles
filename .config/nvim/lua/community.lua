@@ -21,16 +21,15 @@ return {
   { import = "astrocommunity.bars-and-lines.smartcolumn-nvim" },
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.kanagawa-nvim" },
+  { import = "astrocommunity.recipes.neovide" },
   --markdown
   { import = "astrocommunity.markdown-and-latex.render-markdown-nvim" },
   --motion
   { import = "astrocommunity.motion.vim-matchup" },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
-  { import = "astrocommunity.file-explorer.mini-files" },
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
-  { import = "astrocommunity.ai.opencode-nvim" },
   { import = "astrocommunity.ai.sidekick-nvim" },
   -- API TESTING & TOOLS
   -- { import = "astrocommunity.programming-language-support.kulala-nvim" },
