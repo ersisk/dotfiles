@@ -13,9 +13,8 @@
   "features": {
     "edit_prediction_provider": "copilot",
   },
-  "icon_theme": "JetBrains New UI Icons (Dark)",
   "context_servers": {},
-  "restore_on_startup": "none",
+  "restore_on_startup": "empty_tab",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
   "ui_font_size": 17,
@@ -31,6 +30,11 @@
     "mode": "system",
     "light": "Kanagawa Lotus",
     "dark": "Kanagawa Wave",
+  },
+  "experimental.theme_overrides": {
+    "editor.background": "#00000000",
+    "background": "#00000000",
+    "background.appearance": "blurred",
   },
   "tab_bar": {
     "show": true,
@@ -59,6 +63,9 @@
     },
   },
   "agent_servers": {
+    "github-copilot": {
+      "type": "registry",
+    },
     "OpenCode": {
       "type": "custom",
       "command": "opencode",
