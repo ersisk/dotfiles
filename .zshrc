@@ -166,3 +166,9 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Added by Antigravity
 export PATH="/Users/ersanisik/.antigravity/antigravity/bin:$PATH"
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /Users/ersanisik/.dart-cli-completion/zsh-config.zsh ]] && . /Users/ersanisik/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
