@@ -32,7 +32,7 @@ startup_command = "nvim +GoToFile"
 [[session]]
 name = "LazySQL Config"
 path = "~/Library/Application Support/lazysql"
-startup_command = "nvim config.toml"
+startup_command = "vl config.toml"
 preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
 [[session]]
