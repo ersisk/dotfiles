@@ -36,24 +36,8 @@ export EZA_CONFIG_DIR=~/.config/eza/
 alias al-list="print -rl -- ${(k)aliases} | fzf"
 
 #Docker
-alias docker-compose="docker compose"
-alias dc=docker-compose  
-alias dce="docker-compose exec"
-alias dcu-dev="docker-compose -f docker-compose-dev.yml  up -d"
-alias d-node10="docker run -it --rm -v "$PWD":/usr/src/app -w /usr/src/app node:10"
+alias dc="docker compose"  
 
-#Docker Projects Based
-alias dtelcoexec='docker exec -it docker-getcontactv2-1 bash'
-alias dteliup="docker compose -f docker/docker-compose.yml up -d"
-alias dteliexec='docker exec -it teli-php'
-alias dteliphp='docker exec -it teli-php php bin/console'
-alias dtelipest='docker exec -it teli-php ./vendor/bin/pest'
-
-#Kubernetes
-alias k="kubectl"
-alias kgp="kubectl get pods"
-alias kgpn="kubectl get pods -n "
-alias keit="kubectl exec -it "
 # Kubectl exec + fzf
 fzfke() {
   local ns="$1"
@@ -98,9 +82,6 @@ alias vf="nvim +GoToFile"
 alias vl="NVIM_APPNAME=nvim-lazy nvim"
 alias vim="nvim"
 alias nvide="open -a Neovide.app"
-
-# Newsboat
-alias rssn="newsboat -r"
 
 #EZA
 alias ll='eza -al --icons --color --group-directories-first'
