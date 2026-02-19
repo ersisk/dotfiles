@@ -22,11 +22,10 @@ stow . -t ~
 - Terminal: [wezterm](https://wezfurlong.org/wezterm/index.html)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
 - Colors: [kanagawa](https://github.com/rebelot/kanagawa.nvim)
-- Shell: [zsh](https://www.zsh.org/)
+- Shell: [fish](https://fishshell.com/)
 - Multiplexer: [tmux](https://github.com/tmux/tmux/wiki)
 - Editor: [Neovim](https://neovim.io)
 - Editor Config: [AstroNvim](https://astronvim.github.io/)
 - Git: [lazygit](https://github.com/jesseduffield/lazygit)
 - macOS package manager: [Homebrew](https://brew.sh)
 - npm package manager: [pnpm](https://pnpm.io/)
-
