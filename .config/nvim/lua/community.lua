@@ -46,4 +46,7 @@ return {
 
   { import = "astrocommunity.terminal-integration.vim-tmux-navigator" },
   { import = "astrocommunity.editing-support.undotree" },
+
+  --- Git
+  { import = "astrocommunity.git.codediff-nvim" },
 }
