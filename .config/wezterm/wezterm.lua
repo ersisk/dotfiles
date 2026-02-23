@@ -75,6 +75,10 @@ local config = {
 		k.cmd_to_tmux_prefix("M", "m"),
 		-- OpenURL
 		k.cmd_to_tmux_prefix("o", "u"),
+		--Open Editor
+		k.cmd_to_tmux_prefix("e", "e"),
+		-- Editor Diff
+		k.cmd_to_tmux_prefix("E", "E"),
 		-- Navigate Panes
 		k.cmd_to_tmux_prefix("LeftArrow", "p"),
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
