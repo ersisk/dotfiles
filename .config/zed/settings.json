@@ -48,10 +48,20 @@
   },
   // NOTE: Zen mode, refer https://github.com/zed-industries/zed/issues/4382 when it's resolved
   "agent": {
+    "favorite_models": [
+      {
+        "provider": "copilot_chat",
+        "model": "gemini-3.1-pro-preview"
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "gpt-5.3-codex"
+      }
+    ],
     "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gemini-3-flash-preview",
+      "model": "gemini-3.1-pro-preview",
     },
   },
   "agent_servers": {
