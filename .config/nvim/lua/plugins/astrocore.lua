@@ -53,6 +53,14 @@ return {
         },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["_"] = { "<C-x>", desc = "Decrement" },
+        ["<leader>Ac"] = {
+          function() require("sidekick.cli").toggle { name = "claude", focus = true } end,
+          desc = "sidekick toggle claude",
+        },
+        ["<leader>Ao"] = {
+          function() require("sidekick.cli").toggle { name = "copilot", focus = true } end,
+          desc = "sidekick toggle copilot",
+        },
       },
       i = {
         ["<C-s>"] = { "<esc>:w!<cr>", desc = "Save File" }, -- change description but the same command
