@@ -7,35 +7,64 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "git_panel": {
-    "dock": "left",
-  },
-  "features": {
-    "edit_prediction_provider": "copilot",
+  "theme": {
+    "mode": "system",
+    "light": "Kanagawa Lotus",
+    "dark": "Kanagawa Wave",
   },
   "context_servers": {},
   "restore_on_startup": "empty_tab",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
-  "ui_font_size": 17,
+  "ui_font_size": 20,
   "buffer_font_family": "JetBrainsMono Nerd Font",
-  "buffer_font_size": 18,
+  "buffer_font_size": 20,
+  "agent_buffer_font_size": 20,
+  "buffer_line_height": {
+    "custom": 2,
+  },
+  "drag_and_drop_selection": {
+    "enabled": false,
+  },
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000,
+    },
+  },
+  "auto_update": false,
+  "extend_comment_on_newline": false,
+  "horizontal_scroll_margin": 1,
+  "vertical_scroll_margin": 1,
+  "tab_size": 2,
   "minimap": {
     "show": "never",
   },
   "base_keymap": "VSCode",
   "vim_mode": true,
   "relative_line_numbers": "enabled",
-  "theme": {
-    "mode": "system",
-    "light": "Kanagawa Lotus",
-    "dark": "Kanagawa Wave",
-  },
   "tab_bar": {
     "show": true,
   },
+  "project_panel": {
+    "dock": "left",
+    "default_width": 400,
+    "hide_root": true,
+    "auto_fold_dirs": false,
+    "starts_open": false,
+    "git_status": false,
+    "sticky_scroll": false,
+    "scrollbar": {
+      "show": "never",
+    },
+    "indent_guides": {
+      "show": "never",
+    },
+  },
   "scrollbar": {
     "show": "never",
+  },
+  "file_finder": {
+    "modal_max_width": "large",
   },
   // Only show error on tab
   "tabs": {
@@ -46,23 +75,45 @@
     "enabled": true,
     "coloring": "indent_aware",
   },
-  // NOTE: Zen mode, refer https://github.com/zed-industries/zed/issues/4382 when it's resolved
   "agent": {
     "favorite_models": [
       {
         "provider": "copilot_chat",
-        "model": "gemini-3.1-pro-preview"
+        "model": "gemini-3.1-pro-preview",
+        "enable_thinking": false
       },
       {
         "provider": "copilot_chat",
-        "model": "gpt-5.3-codex"
+        "model": "gpt-5.3-codex",
+        "enable_thinking": false
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-sonnet-4",
+        "enable_thinking": false
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-opus-4.6",
+        "enable_thinking": false
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "claude-sonnet-4.5",
+        "enable_thinking": false
       }
     ],
     "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gemini-3.1-pro-preview",
+      "model": "claude-sonnet-4",
     },
+  },
+  "edit_predictions": {
+    "provider": "copilot",
+  },
+  "git_panel": {
+    "dock": "left",
   },
   "agent_servers": {
     "github-copilot": {

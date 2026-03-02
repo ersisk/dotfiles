@@ -4,9 +4,8 @@ theme = Kanagawa Wave
 background = #1F1F28
 background-opacity = 0.96
 
-font-family = JetBrainsMono NFM Bold 
+font-family = "JetBrainsMono NFM Bold" 
 font-size = 19
-font-style-bold=true
 font-variation = wght=850
 font-thicken = true
 
@@ -14,9 +13,7 @@ macos-titlebar-style = hidden
 mouse-hide-while-typing = true
 
 confirm-close-surface = false
-window-decoration = true
-window-padding-x = 5
-window-padding-y = 5
+window-decoration = none
 window-padding-balance = true
 
 auto-update = check
@@ -73,8 +70,11 @@ keybind = super+n=text:\x01\x25
 # Horizontal Split (super+" -> prefix+")
 keybind = super+shift+two=text:\x01\x22
 # Rename Window (super+ğ -> prefix+,)
-# Not: Klavyenizde 'ğ' tuşunun fiziksel karşılığına göre ayarlamanız gerekebilir
 keybind = super+ğ=text:\x01\x2c
+# <prefix>+e (Open Editor)
+keybind = super+e=text:\x01e
+# <prefix>+E (Editor Diff)
+keybind = super+shift+e=text:\x01E
 
 # Rename Session (super+shift+r -> prefix+$)
 keybind = super+shift+r=text:\x01\x24
@@ -86,7 +86,7 @@ keybind = super+p=text:\x3a\x47\x6f\x54\x6f\x46\x69\x6c\x65\x0a
 #reload config
 keybind = super+r=reload_config
 #:w
-keybind = super+s=text:\x3a\x77\x0a
+keybind = super+s=text:\x1b:w\x0a
 # <prefix>+c (new window)
 keybind = super+t=text:\x01\x63
 # <prefix>+x (close window)

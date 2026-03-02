@@ -55,11 +55,11 @@ return {
         ["_"] = { "<C-x>", desc = "Decrement" },
         ["<leader>Ac"] = {
           function() require("sidekick.cli").toggle { name = "claude", focus = true } end,
-          desc = "sidekick toggle claude",
+          desc = "Sidekick Toggle Claude",
         },
         ["<leader>Ao"] = {
           function() require("sidekick.cli").toggle { name = "copilot", focus = true } end,
-          desc = "sidekick toggle copilot",
+          desc = "Sidekick Toggle Copilot",
         },
       },
       i = {
