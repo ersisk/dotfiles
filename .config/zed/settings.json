@@ -16,10 +16,10 @@
   "restore_on_startup": "empty_tab",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
-  "ui_font_size": 20,
+  "ui_font_size": 18,
   "buffer_font_family": "JetBrainsMono Nerd Font",
-  "buffer_font_size": 20,
-  "agent_buffer_font_size": 20,
+  "buffer_font_size": 18,
+  "agent_buffer_font_size": 18,
   "buffer_line_height": {
     "custom": 2,
   },
@@ -80,28 +80,28 @@
       {
         "provider": "copilot_chat",
         "model": "gemini-3.1-pro-preview",
-        "enable_thinking": false
+        "enable_thinking": false,
       },
       {
         "provider": "copilot_chat",
         "model": "gpt-5.3-codex",
-        "enable_thinking": false
+        "enable_thinking": false,
       },
       {
         "provider": "copilot_chat",
         "model": "claude-sonnet-4",
-        "enable_thinking": false
+        "enable_thinking": false,
       },
       {
         "provider": "copilot_chat",
         "model": "claude-opus-4.6",
-        "enable_thinking": false
+        "enable_thinking": false,
       },
       {
         "provider": "copilot_chat",
         "model": "claude-sonnet-4.5",
-        "enable_thinking": false
-      }
+        "enable_thinking": false,
+      },
     ],
     "default_profile": "write",
     "default_model": {

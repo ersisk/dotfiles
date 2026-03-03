@@ -82,11 +82,11 @@ local config = {
 		-- Navigate Panes
 		k.cmd_to_tmux_prefix("LeftArrow", "p"),
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
-		-- Opencode
+		-- Claude
 		k.cmd_to_tmux_prefix("a", "a"),
-		--Claude
-		k.cmd_to_tmux_prefix("A", "A"),
 		-- Copilot
+		k.cmd_to_tmux_prefix("A", "A"),
+		-- Opencode
 		k.cmd_to_tmux_prefix("Z", "Z"),
 		--GH DASH
 		k.cmd_to_tmux_prefix("G", "z"),
