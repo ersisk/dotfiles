@@ -53,11 +53,11 @@ return {
         },
         ["+"] = { "<C-a>", desc = "Increment" },
         ["_"] = { "<C-x>", desc = "Decrement" },
-        ["<leader>Ac"] = {
+        ["<leader>AA"] = {
           function() require("sidekick.cli").toggle { name = "claude", focus = true } end,
           desc = "Sidekick Toggle Claude",
         },
-        ["<leader>Ao"] = {
+        ["<leader>AZ"] = {
           function() require("sidekick.cli").toggle { name = "copilot", focus = true } end,
           desc = "Sidekick Toggle Copilot",
         },
