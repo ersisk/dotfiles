@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "icon_theme": "JetBrains New UI Icons (Dark)",
   "theme": {
     "mode": "system",
     "light": "Kanagawa Lotus",
@@ -106,7 +107,7 @@
     "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-sonnet-4.5",
+      "model": "claude-sonnet-4.6",
     },
   },
   "edit_predictions": {
