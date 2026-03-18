@@ -3,11 +3,13 @@
 theme = Kanagawa Wave
 background = #1F1F28
 background-opacity = 0.96
+background-blur-radius = 12
 
 font-family = "JetBrainsMono NFM Bold" 
 font-size = 19
 font-variation = wght=850
 font-thicken = true
+font-feature = -liga,-calt,-dlig
 
 macos-titlebar-style = hidden
 mouse-hide-while-typing = true
