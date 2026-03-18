@@ -19,13 +19,13 @@ stow . -t ~
 
 # Software
 
-- Terminal: [wezterm](https://wezfurlong.org/wezterm/index.html)
+- Terminal: [Ghostty](https://ghostty.org/)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
-- Colors: [kanagawa](https://github.com/rebelot/kanagawa.nvim)
-- Shell: [fish](https://fishshell.com/)
-- Multiplexer: [tmux](https://github.com/tmux/tmux/wiki)
+- Colors: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
+- Shell: [Fish](https://fishshell.com/)
+- Multiplexer: [Tmux](https://github.com/tmux/tmux/wiki)
 - Editor: [Neovim](https://neovim.io)
 - Editor Config: [AstroNvim](https://astronvim.github.io/)
-- Git: [lazygit](https://github.com/jesseduffield/lazygit)
+- Git: [Lazygit](https://github.com/jesseduffield/lazygit)
 - macOS package manager: [Homebrew](https://brew.sh)
 - npm package manager: [pnpm](https://pnpm.io/)

@@ -337,6 +337,10 @@ run = "move-node-to-workspace T"
 if.app-id = 'com.mitchellh.ghostty'
 run = "move-node-to-workspace T"
 
+[[on-window-detected]]
+if.app-id = 'com.cmuxterm.app'
+run = "move-node-to-workspace T"
+
 # --- COMMUNICATION & EMAIL (WORKSPACES: Z, X) ---
 
 [[on-window-detected]]
