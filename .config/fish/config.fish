@@ -113,4 +113,6 @@ alias fzfp="fzf --print0 | xargs -0 -o bat"
 alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
 alias dnv="diffnav"
+alias nvi="neovide +GoToFile ."
 
+alias work-teli-rc='kubectl exec -it $(kubectl get pods -n $WORK_NS | grep "$WORK_SVC*"| grep -v "redis" | grep -v "mongo" | grep "Running" | grep -v "web\|postgres\|new-backend\|admin-frontend" | awk "{print \$1; exit}") -n $WORK_NS -c work-teli -- bash'

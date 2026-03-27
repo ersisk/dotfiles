@@ -102,6 +102,11 @@ local config = {
 				k.multiple_actions(":w"),
 			})
 		),
+		{
+			key = "Enter",
+			mods = "ALT", -- Eğer sadece 'Option' ise 'ALT' olarak bırakın
+			action = wezterm.action.DisableDefaultAssignment,
+		},
 	},
 }
 
