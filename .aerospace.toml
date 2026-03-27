@@ -396,6 +396,10 @@ if.app-id = 'com.install4j.0526-4458-1435-8154.837'
 run = "move-node-to-workspace D"
 
 [[on-window-detected]]
+if.app-id = 'com.razein.wizql'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
 if.app-id = 'com.tinycraft.tinyrdm'
 run = "move-node-to-workspace D"
 
