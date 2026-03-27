@@ -113,4 +113,6 @@ alias fzfp="fzf --print0 | xargs -0 -o bat"
 alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
 alias dnv="diffnav"
+alias nvi="neovide +GoToFile ."
 
+alias teli-rc='kubectl exec -it $(kubectl get pods -n telco | grep "teli*"| grep -v "redis" | grep -v "mongo" | grep "Running" | grep -v "web\|postgres\|new-be\|admin-fe" | awk "{print \$1; exit}") -n telco -c teli-be -- bash'
