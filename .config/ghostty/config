@@ -70,7 +70,7 @@ keybind = super+d=text:\x01\x44
 # Vertical Split (super+n -> prefix+%)
 keybind = super+n=text:\x01\x25
 # Horizontal Split (super+" -> prefix+")
-keybind = super+shift+two=text:\x01\x22
+keybind = super+shift+n=text:\x01\x22
 # Rename Window (super+ğ -> prefix+,)
 keybind = super+ğ=text:\x01\x2c
 # <prefix>+e (Open Editor)

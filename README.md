@@ -19,7 +19,7 @@ stow . -t ~
 
 # Software
 
-- Terminal: [Ghostty](https://ghostty.org/)
+- Terminal: [Wezterm](https://wezterm.org/)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
 - Colors: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
 - Shell: [Fish](https://fishshell.com/)
