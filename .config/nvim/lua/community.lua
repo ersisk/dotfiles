@@ -10,7 +10,7 @@ return {
   -- packs
   { import = "astrocommunity.pack.json" },
   { import = "astrocommunity.pack.python" },
-  { import = "astrocommunity.pack.markdown" },
+  -- { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
@@ -22,15 +22,12 @@ return {
   { import = "astrocommunity.color.transparent-nvim" },
   { import = "astrocommunity.colorscheme.kanagawa-nvim" },
   { import = "astrocommunity.recipes.neovide" },
-  --markdown
-  { import = "astrocommunity.markdown-and-latex.render-markdown-nvim" },
   --motion
   { import = "astrocommunity.motion.vim-matchup" },
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
-  { import = "astrocommunity.ai.sidekick-nvim" },
   -- API TESTING & TOOLS
   -- { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
