@@ -1,3 +1,8 @@
+-- You can also add or configure plugins by creating files in this `plugins/` folder
+-- PLEASE REMOVE THE EXAMPLES YOU HAVE NO INTEREST IN BEFORE ENABLING THIS FILE
+-- Here are some examples:
+
+---@type LazySpec
 return {
   {
     "neo-tree.nvim",
@@ -23,8 +28,6 @@ return {
       legacy_computing_symbols_support = false,
     },
   },
-  { "hrsh7th/nvim-cmp", enabled = false },
-  { "rcarriga/cmp-dap", enabled = false },
   {
     "folke/snacks.nvim",
     opts = {
@@ -41,6 +44,12 @@ return {
             ]],
         },
       },
+    },
+  },
+  {
+    "m4xshen/smartcolumn.nvim",
+    opts = {
+      colorcolumn = "118",
     },
   },
 }

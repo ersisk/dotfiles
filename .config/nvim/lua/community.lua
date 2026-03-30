@@ -5,13 +5,7 @@
 ---@type LazySpec
 return {
   "AstroNvim/astrocommunity",
-  -- available plugins can be found at https://github.com/AstroNvim/astrocommunity
-  --
-  -- packs
-  { import = "astrocommunity.pack.json" },
-  { import = "astrocommunity.pack.python" },
-  -- { import = "astrocommunity.pack.markdown" },
-  { import = "astrocommunity.pack.docker" },
+  { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.pack.go" },
