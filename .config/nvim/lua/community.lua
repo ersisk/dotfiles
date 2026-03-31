@@ -7,7 +7,6 @@ return {
   "AstroNvim/astrocommunity",
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
-  { import = "astrocommunity.pack.blade" },
   { import = "astrocommunity.pack.go" },
   --ui
   { import = "astrocommunity.recipes.ai" },
@@ -22,6 +21,7 @@ return {
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
   { import = "astrocommunity.completion.copilot-lua-cmp" },
+  { import = "astrocommunity.ai.opencode-nvim" },
   -- API TESTING & TOOLS
   -- { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
@@ -40,4 +40,7 @@ return {
 
   --- Git
   { import = "astrocommunity.git.codediff-nvim" },
+
+  --- Markdown
+  { import = "astrocommunity.markdown-and-latex.render-markdown-nvim" },
 }
