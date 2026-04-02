@@ -381,11 +381,11 @@ run = "move-node-to-workspace I"
 # --- DATABASE MANAGEMENT (WORKSPACE: D) ---
 [[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.desktop'
-run = "move-node-to-workspace D"
+run = ["move-node-to-workspace D", "layout floating"] # Beekeeper studio has some weird behavior with AeroSpace, so I set it to floating layout]
 
 [[on-window-detected]]
 if.app-id = 'com.TablePro'
-run = "move-node-to-workspace D"
+run = ["move-node-to-workspace D", "layout floating"] # TablePro has some weird behavior with AeroSpace, so I set it to floating layout]
 
 [[on-window-detected]]
 if.app-id = 'com.install4j.0526-4458-1435-8154.837'
@@ -393,10 +393,6 @@ run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'com.razein.wizql'
-run = "move-node-to-workspace D"
-
-[[on-window-detected]]
-if.app-id = 'com.tinycraft.tinyrdm'
 run = "move-node-to-workspace D"
 
 # --- API TESTING & TOOLS (WORKSPACE: P) ---
