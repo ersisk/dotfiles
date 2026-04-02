@@ -84,9 +84,9 @@ local config = {
 		k.cmd_to_tmux_prefix("RightArrow", "n"),
 		-- Claude
 		k.cmd_to_tmux_prefix("a", "a"),
-		-- Copilot
-		k.cmd_to_tmux_prefix("A", "A"),
 		-- Opencode
+		k.cmd_to_tmux_prefix("A", "A"),
+		-- Generate Commit
 		k.cmd_to_tmux_prefix("Z", "Z"),
 		--GH DASH
 		k.cmd_to_tmux_prefix("G", "z"),
