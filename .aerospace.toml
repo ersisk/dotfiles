@@ -420,3 +420,7 @@ run = "move-node-to-workspace N"
 [[on-window-detected]]
 if.app-id = 'org.keepassxc.keepassxc'
 run = "move-node-to-workspace G"
+
+[[on-window-detected]]
+if.app-id = 'com.bitwarden.desktop'
+run = "move-node-to-workspace G"

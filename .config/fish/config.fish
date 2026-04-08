@@ -24,7 +24,7 @@ set -U fish_greeting # disable fish greeting
 
 
 set -U fish_key_bindings fish_vi_key_bindings
-set -U OLLAMA_ORIGINS "*"
+set -gx OLLAMA_ORIGINS "*"
 set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
 set -Ux EDITOR nvim # 'neovim/neovim' text editor
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
@@ -111,6 +111,7 @@ alias dc="docker compose"
 alias fzfe="fzf --print0 | xargs -0 -o nvim"
 alias fzflg="fd -I -e log | gum filter --limit 1 --no-sort --fuzzy --placeholder 'Pick a Log' --height 50 --prompt='⚡' | xargs -r -o tail -f | hl -P"
 alias fzfp="fzf --print0 | xargs -0 -o bat"
+alias fzfssh="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
 alias dnv="diffnav"
