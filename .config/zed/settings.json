@@ -117,6 +117,9 @@
     "dock": "left",
   },
   "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
     "github-copilot-cli": {
       "type": "registry"
     },

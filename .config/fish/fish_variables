@@ -6,6 +6,7 @@ SETUVAR --export EZA_CONFIG_DIR:\x7e/\x2econfig/eza/
 SETUVAR --export FZF_DEFAULT_COMMAND:fd\x20\x2dH\x20\x2dE\x20\x27\x2egit\x27
 SETUVAR --export FZF_DEFAULT_OPTS:\x2d\x2dlayout\x3dreverse\x20\x2d\x2dinfo\x3dhidden\x20\x2d\x2dansi\x20\x2d\x2dpointer\x3d\U0001f449\x20\x2d\x2dgutter\x3d\x22\x20\x22\x20\x2d\x2dcolor\x3dcurrent\x2dbg\x3a\x2d1\x20\x2d\x2dcolor\x3dcurrent\x2dfg\x3ablue\x20\x2d\x2dcolor\x3dgutter\x3a\x2d1\x20\x2d\x2dcolor\x3dheader\x2dbg\x3a\x2d1\x20\x2d\x2dcolor\x3dheader\x2dborder\x3acyan\x20\x2d\x2dcolor\x3dhl\x2b\x3ayellow\x20\x2d\x2dcolor\x3dhl\x3ayellow\x20\x2d\x2dcolor\x3dinput\x2dborder\x3ayellow\x20\x2d\x2dcolor\x3dlist\x2dborder\x3ablue\x20\x2d\x2dcolor\x3dpointer\x3ablue\x20\x2d\x2dcolor\x3dpreview\x2dborder\x3acyan\x20
 SETUVAR --export --path GOPATH:/Users/ersanisik/go
+SETUVAR OLLAMA_ORIGINS:\x2a
 SETUVAR --export PAGER:nvimpager
 SETUVAR __fish_initialized:4300
 SETUVAR _fisher_jorgebucaran_2F_fisher_files:\x7e/\x2econfig/fish/functions/fisher\x2efish\x1e\x7e/\x2econfig/fish/completions/fisher\x2efish

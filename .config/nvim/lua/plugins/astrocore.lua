@@ -76,6 +76,7 @@ return {
 
         ["+"] = { "<C-a>", desc = "Increment" },
         ["_"] = { "<C-x>", desc = "Decrement" },
+        ["<leader>a"] = { desc = "Claude Code" },
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
         -- ["<Leader>b"] = { desc = "Buffers" },
