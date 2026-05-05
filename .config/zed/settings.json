@@ -7,6 +7,12 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
   "icon_theme": "JetBrains New UI Icons (Dark)",
   "theme": {
     "mode": "system",
@@ -77,6 +83,7 @@
     "coloring": "indent_aware",
   },
   "agent": {
+    "dock": "right",
     "favorite_models": [
       {
         "provider": "copilot_chat",
@@ -111,7 +118,7 @@
     },
   },
   "edit_predictions": {
-    "provider": "copilot",
+    "provider": "none",
   },
   "git_panel": {
     "dock": "left",

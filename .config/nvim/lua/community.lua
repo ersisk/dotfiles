@@ -20,7 +20,7 @@ return {
   --file explorer
   { import = "astrocommunity.file-explorer.oil-nvim" },
   --Copilot
-  { import = "astrocommunity.completion.copilot-lua-cmp" },
+  -- { import = "astrocommunity.completion.copilot-lua-cmp" },
   -- API TESTING & TOOLS
   -- { import = "astrocommunity.programming-language-support.kulala-nvim" },
   -- Visual Multi
