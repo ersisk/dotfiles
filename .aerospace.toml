@@ -103,6 +103,8 @@ alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
 
+alt-f = 'fullscreen'
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
 alt-shift-h = 'move left'
 alt-shift-j = 'move down'
@@ -200,7 +202,8 @@ h = ['layout horizontal', 'mode main']
 v = ['layout vertical', 'mode main']
 a = ['layout accordion', 'mode main']
 t = ['layout tiles', 'mode main']
-f = [
+f = ['fullscreen', 'mode main']
+m = [
   'layout floating tiling',
   'mode main',
 ] # Toggle between floating and tiling layout
