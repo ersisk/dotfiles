@@ -273,18 +273,6 @@ run = 'layout floating'
 check-further-callbacks = true
 
 [[on-window-detected]]
-if.app-id = 'org.mozilla.librewolf'
-if.window-title-regex-substring = 'Picture-in-Picture'
-run = 'layout floating'
-check-further-callbacks = true
-
-[[on-window-detected]]
-if.app-id = 'com.tinyspeck.slackmacgap'
-if.window-title-regex-substring = 'Huddle'
-run = 'layout floating'
-check-further-callbacks = true
-
-[[on-window-detected]]
 if.app-id = 'com.apple.Music'
 run = 'layout floating'
 check-further-callbacks = true
@@ -319,10 +307,6 @@ if.app-id = 'org.mozilla.firefox'
 run = "move-node-to-workspace A"
 
 [[on-window-detected]]
-if.app-id = 'org.mozilla.librewolf'
-run = "move-node-to-workspace B"
-
-[[on-window-detected]]
 if.app-id = 'com.apple.Safari'
 run = "move-node-to-workspace A"
 
@@ -337,22 +321,14 @@ if.app-id = 'com.github.wez.wezterm'
 run = "move-node-to-workspace T"
 
 [[on-window-detected]]
-if.app-id = 'com.mitchellh.ghostty'
-run = "move-node-to-workspace T"
-
-[[on-window-detected]]
-if.app-id = 'com.cmuxterm.app'
+if.app-id = 'net.kovidgoyal.kitty'
 run = "move-node-to-workspace T"
 
 # --- COMMUNICATION & EMAIL (WORKSPACES: Z, X) ---
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
-run = "move-node-to-workspace Z"
-
-[[on-window-detected]]
-if.app-id = 'org.mozilla.thunderbird'
-run = "move-node-to-workspace X"
+run = ["move-node-to-workspace Z", "layout floating"]
 
 # --- DEVELOPMENT TOOLS & IDEs (WORKSPACE: I) ---
 
@@ -377,10 +353,6 @@ run = "move-node-to-workspace I"
 if.app-id = 'dev.zed.Zed'
 run = "move-node-to-workspace I"
 
-[[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
-run = "move-node-to-workspace I"
-
 # --- DATABASE MANAGEMENT (WORKSPACE: D) ---
 [[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.desktop'
@@ -389,14 +361,6 @@ run = ["move-node-to-workspace D", "layout floating"] # Beekeeper studio has som
 [[on-window-detected]]
 if.app-id = 'com.TablePro'
 run = ["move-node-to-workspace D", "layout floating"] # TablePro has some weird behavior with AeroSpace, so I set it to floating layout]
-
-[[on-window-detected]]
-if.app-id = 'com.install4j.0526-4458-1435-8154.837'
-run = "move-node-to-workspace D"
-
-[[on-window-detected]]
-if.app-id = 'com.razein.wizql'
-run = "move-node-to-workspace D"
 
 # --- API TESTING & TOOLS (WORKSPACE: P) ---
 
@@ -412,10 +376,6 @@ run = "move-node-to-workspace P"
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
-run = "move-node-to-workspace N"
-
-[[on-window-detected]]
-if.app-id = 'org.streetwriters.notesnook'
 run = "move-node-to-workspace N"
 
 # --- SECURITY & UTILITIES (WORKSPACE: G) ---
