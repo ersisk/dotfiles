@@ -19,7 +19,7 @@ stow . -t ~
 
 # Software
 
-- Terminal: [Wezterm](https://wezterm.org/)
+- Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)
 - Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
 - Colors: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
 - Shell: [Fish](https://fishshell.com/)
