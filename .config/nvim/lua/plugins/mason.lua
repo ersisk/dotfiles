@@ -31,7 +31,6 @@ return {
         "gofumpt",
         "iferr",
         "impl",
-        "black",
         "isort",
       },
     },
