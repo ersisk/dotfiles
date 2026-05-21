@@ -24,6 +24,8 @@ set -U fish_greeting # disable fish greeting
 
 
 set -U fish_key_bindings fish_vi_key_bindings
+set -Ux CLOUDSDK_PYTHON (which python3.13)
+set -Ux OBSIDIAN_VAULT "~/obsidian-vault"
 set -gx OLLAMA_ORIGINS "*"
 set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
 set -Ux EDITOR nvim # 'neovim/neovim' text editor
@@ -116,3 +118,6 @@ alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
 alias dnv="diffnav"
 alias sduck="s -p duckduckgo"
+
+# The next line updates PATH for the Google Cloud SDK.
+if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/path.fish.inc; end
