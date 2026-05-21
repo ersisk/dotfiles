@@ -20,7 +20,7 @@ stow . -t ~
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)
-- Font: [JetbrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
+- Font: [Maple Mono Nerd Font](https://font.subf.dev/en/)
 - Colors: [Kanagawa](https://github.com/rebelot/kanagawa.nvim)
 - Shell: [Fish](https://fishshell.com/)
 - Multiplexer: [Tmux](https://github.com/tmux/tmux/wiki)
