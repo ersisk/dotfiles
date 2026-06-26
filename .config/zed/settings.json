@@ -8,10 +8,10 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "outline_panel": {
-    "dock": "left"
+    "dock": "right"
   },
   "collaboration_panel": {
-    "dock": "left"
+    "dock": "right"
   },
   "icon_theme": "JetBrains New UI Icons (Dark)",
   "theme": {
@@ -53,7 +53,7 @@
     "show": true,
   },
   "project_panel": {
-    "dock": "left",
+    "dock": "right",
     "default_width": 400,
     "hide_root": true,
     "auto_fold_dirs": false,
@@ -83,7 +83,7 @@
     "coloring": "indent_aware",
   },
   "agent": {
-    "dock": "right",
+    "dock": "left",
     "favorite_models": [
       {
         "provider": "copilot_chat",
@@ -121,7 +121,7 @@
     "provider": "none",
   },
   "git_panel": {
-    "dock": "left",
+    "dock": "right",
   },
   "agent_servers": {
     "claude-acp": {
