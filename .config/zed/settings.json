@@ -8,10 +8,10 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "outline_panel": {
-    "dock": "right"
+    "dock": "right",
   },
   "collaboration_panel": {
-    "dock": "right"
+    "dock": "right",
   },
   "icon_theme": "JetBrains New UI Icons (Dark)",
   "theme": {
@@ -23,10 +23,10 @@
   "restore_on_startup": "empty_tab",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
-  "ui_font_size": 18,
+  "ui_font_size": 16,
   "buffer_font_family": "JetBrainsMono Nerd Font",
-  "buffer_font_size": 18,
-  "agent_buffer_font_size": 18,
+  "buffer_font_size": 16,
+  "agent_buffer_font_size": 16,
   "buffer_line_height": {
     "custom": 2,
   },
@@ -125,10 +125,10 @@
   },
   "agent_servers": {
     "claude-acp": {
-      "type": "registry"
+      "type": "registry",
     },
     "github-copilot-cli": {
-      "type": "registry"
+      "type": "registry",
     },
     "github-copilot": {
       "type": "registry",
