@@ -3,6 +3,27 @@
 -- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
 --       as this provides autocomplete and documentation while editing
 
+-- Copy the current file path (relative to cwd), optionally with a selected
+-- line range, into the system clipboard for pasting into AI chats.
+local function copy_ref(opts)
+  local path = vim.fn.expand "%:."
+  local ref = path
+
+  if opts.visual then
+    -- '< and '> are only set after leaving visual mode, so read the live selection
+    local start_line = vim.fn.line "v"
+    local end_line = vim.fn.line "."
+    if start_line > end_line then start_line, end_line = end_line, start_line end
+    ref = path .. ":" .. start_line .. ":" .. end_line
+  end
+
+  local note = vim.fn.input "Prompt (optional): "
+  if note ~= "" then ref = ref .. " " .. note end
+
+  vim.fn.setreg("+", ref)
+  vim.notify("Copied: " .. ref)
+end
+
 ---@type LazySpec
 return {
   "AstroNvim/astrocore",
@@ -77,12 +98,16 @@ return {
         ["+"] = { "<C-a>", desc = "Increment" },
         ["_"] = { "<C-x>", desc = "Decrement" },
         ["<leader>a"] = { desc = "Claude Code" },
+        ["<Leader>ap"] = { function() copy_ref {} end, desc = "Copy file path" },
         -- tables with just a `desc` key will be registered with which-key if it's installed
         -- this is useful for naming menus
         -- ["<Leader>b"] = { desc = "Buffers" },
 
         -- setting a mapping to false will disable it
         -- ["<C-S>"] = false,
+      },
+      v = {
+        ["<Leader>ap"] = { function() copy_ref { visual = true } end, desc = "Copy file path with line range" },
       },
     },
   },

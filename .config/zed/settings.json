@@ -23,10 +23,10 @@
   "restore_on_startup": "empty_tab",
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
-  "ui_font_size": 16,
+  "ui_font_size": 14,
   "buffer_font_family": "JetBrainsMono Nerd Font",
-  "buffer_font_size": 16,
-  "agent_buffer_font_size": 16,
+  "buffer_font_size": 14,
+  "agent_buffer_font_size": 14,
   "buffer_line_height": {
     "custom": 2,
   },
