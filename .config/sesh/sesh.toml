@@ -46,3 +46,11 @@ preview_command = "bat --language=bash --style=snip --color=always ~/.newsboat/u
 name = "Presents"
 path = "~/Documents/presents"
 startup_command = "nvim +GoToFile"
+
+[[session]]
+name = "Main"
+path="~/workspace/php/work/main/"
+
+[[session]]
+name = "Translate"
+path = "~/workspace/php/work-translate/"
