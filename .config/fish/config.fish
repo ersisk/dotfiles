@@ -118,6 +118,7 @@ alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
 alias dnv="diffnav"
 alias sduck="s -p duckduckgo"
+alias wt='git worktree'
 
 # The next line updates PATH for the Google Cloud SDK.
 if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/path.fish.inc; end
