@@ -1,0 +1,380 @@
+#!/usr/bin/env bash
+# claude-tmux-notify
+# Claude Code hook script: posts a macOS notification (and a tmux status-line
+# message when inside tmux) when Claude stops, needs input, or finishes a
+# long-running bash command / background task.
+#
+# Install:
+#   mkdir -p ~/.local/bin
+#   cp claude-tmux-notify ~/.local/bin/claude-tmux-notify
+#   chmod +x ~/.local/bin/claude-tmux-notify
+#
+# How it works:
+#   Stop / Notification        → always notify
+#   PreToolUse  (Bash)         → stash start timestamp (silent)
+#   PostToolUse (Bash)         → notify only if elapsed >= threshold
+#   PreToolUse  (Task)         → stash run_in_background flag (silent)
+#   SubagentStop               → notify only if the subagent was background
+#
+# Where a notification goes depends on whether the pane is on screen right now:
+#   visible (kitty focused, active pane of active window) → nothing, you're watching
+#   kitty focused, pane in another session/window/pane    → tmux status line
+#   kitty backgrounded, or the pane's session detached    → macOS notification
+
+set -euo pipefail
+
+# --- Configuration -----------------------------------------------------------
+# Minimum seconds a bash command must run before triggering a notification.
+NOTIFY_THRESHOLD="${CLAUDE_NOTIFY_THRESHOLD:-10}"
+# Scratch directory for timestamps and flags between Pre/Post hooks.
+STATE_DIR="${TMPDIR:-/tmp}/claude-tmux-notify"
+# tmux display duration in milliseconds.
+DISPLAY_MS=5000
+# Set to 0 to disable the semantic window-name state prefix (icon glyph).
+WINDOW_STATE="${CLAUDE_WINDOW_STATE:-1}"
+# Bundle ID raised when a macOS notification is clicked (requires terminal-notifier).
+# Raised via -execute (open -b <id>) because -activate is unreliable on recent macOS;
+# -execute also lets the click jump tmux to the originating pane (see notify_click_cmd).
+NOTIFY_ACTIVATE_BUNDLE_ID="${CLAUDE_NOTIFY_ACTIVATE:-net.kovidgoyal.kitty}"
+# Path to the icon shown on the right side of macOS notifications.
+# Use a PNG — terminal-notifier's -appIcon does not reliably render .icns on recent macOS.
+NOTIFY_APP_ICON="${CLAUDE_NOTIFY_APP_ICON:-$HOME/.local/share/claude-tmux-notify/kitty.png}"
+# Raycast deeplink fired alongside the Stop notification. Set to empty to disable.
+CONFETTI_URL="${CLAUDE_CONFETTI_URL:-raycast://extensions/raycast/raycast/confetti}"
+# -----------------------------------------------------------------------------
+
+# Read the hook payload from stdin
+PAYLOAD=$(cat)
+
+# --- Parse JSON payload ------------------------------------------------------
+if command -v jq &>/dev/null; then
+  EVENT=$(echo "$PAYLOAD" | jq -r '.hook_event_name // "Unknown"')
+  TOOL=$(echo "$PAYLOAD" | jq -r '.tool_name // ""')
+  TOOL_CMD=$(echo "$PAYLOAD" | jq -r '.tool_input.command // ""')
+  TOOL_DESC=$(echo "$PAYLOAD" | jq -r '.tool_input.description // ""')
+  RUN_BG=$(echo "$PAYLOAD" | jq -r '.tool_input.run_in_background // false')
+  SESSION_ID=$(echo "$PAYLOAD" | jq -r '.session_id // ""')
+  CWD=$(echo "$PAYLOAD" | jq -r '.cwd // ""')
+else
+  EVENT=$(echo "$PAYLOAD" | grep -o '"hook_event_name":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
+  TOOL=$(echo "$PAYLOAD" | grep -o '"tool_name":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
+  TOOL_CMD=""
+  TOOL_DESC=""
+  RUN_BG="false"
+  SESSION_ID=""
+  CWD=$(echo "$PAYLOAD" | grep -o '"cwd":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
+fi
+
+PROJECT=$(basename "${CWD:-unknown}")
+TARGET="${TMUX_PANE:-%0}"
+# Unique key per session+pane (safe for parallel sessions).
+KEY="${SESSION_ID:-default}_${TMUX_PANE:-term}"
+
+mkdir -p "$STATE_DIR"
+
+# --- Helpers -----------------------------------------------------------------
+short_str() {
+  local s="$1" max="${2:-40}"
+  if [[ ${#s} -gt $max ]]; then
+    echo "${s:0:$(( max - 3 ))}..."
+  else
+    echo "$s"
+  fi
+}
+
+# Escape double quotes and backslashes for AppleScript string literals.
+as_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  printf '%s' "$s"
+}
+
+# Returns 0 if the kitty app is currently frontmost on macOS, 1 otherwise.
+# Uses lsappinfo (fast, no TCC prompt) — falls back to "not focused" on error.
+is_kitty_focused() {
+  command -v lsappinfo &>/dev/null || return 1
+  local front_info front_name
+  front_info=$(lsappinfo info -only name "$(lsappinfo front)" 2>/dev/null) || return 1
+  # Output looks like: "LSDisplayName"="kitty"
+  front_name=$(printf '%s' "$front_info" | sed -n 's/.*"LSDisplayName"="\([^"]*\)".*/\1/p')
+  [[ "$front_name" == "kitty" ]]
+}
+
+# Is the target pane on screen right now? True only when it is the active pane of
+# the active window of a session some client is currently displaying.
+#
+# Note the deliberate use of #{session_attached} rather than a client lookup: a
+# session with no attached client is one the user has switched away from, so its
+# pane is not on screen — but it is still reachable in a keystroke, so it is NOT
+# treated as unreachable (see DISPLAY_CLIENT below).
+# Queried once per hook run; empty outside tmux.
+if [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null; then
+  TARGET_VIS=$(tmux display-message -p -t "$TARGET" \
+    '#{pane_active}#{window_active}#{?#{session_attached},1,0}' 2>/dev/null) || TARGET_VIS=""
+else
+  TARGET_VIS=""
+fi
+
+# Returns 0 when the target pane is what the user is actually looking at: the
+# active pane of the active window of a session that is currently displayed.
+# Returns 1 outside tmux — there is no "elsewhere" to be, the terminal is the view.
+is_target_visible() {
+  [[ "$TARGET_VIS" == "111" ]]
+}
+
+# The client to route status-line messages to. `display-message -t <pane>` renders
+# only on a client displaying that pane's session, so a pane in a switched-away
+# session would print to nobody. Any attached client on this server is looking at
+# the same terminal, so it is the right place to show the message — the styled
+# line carries the pane's own session:window, which says where to go.
+# Empty when no client is attached (nothing on screen; macOS notification instead).
+if [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null; then
+  DISPLAY_CLIENT=$(tmux list-clients -F '#{client_name}' 2>/dev/null | head -1) || DISPLAY_CLIENT=""
+else
+  DISPLAY_CLIENT=""
+fi
+
+# Bare tmux session:window for the target pane, e.g. "Home:2". Empty when unavailable.
+# Targets $TARGET explicitly so the info matches Claude's pane, not the currently-active one.
+tmux_context() {
+  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
+  tmux display-message -p -t "$TARGET" '#S:#I' 2>/dev/null || return 0
+}
+
+# Shell command run when a macOS notification is clicked: raise kitty, then jump
+# tmux to the exact session/window/pane this hook fired from.
+#
+# The click handler runs outside tmux (no $TMUX), so the socket path is captured
+# here and passed back via `tmux -S`. switch-client needs an explicit client too
+# (-c), since without $TMUX tmux has no notion of a "current" client.
+# Falls back to plain kitty activation when any part is unavailable.
+notify_click_cmd() {
+  local activate="open -b $NOTIFY_ACTIVATE_BUNDLE_ID"
+  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || { printf '%s' "$activate"; return 0; }
+
+  local socket sess win pane client tmux_bin
+  socket="${TMUX%%,*}"
+  tmux_bin=$(command -v tmux)
+  read -r sess win pane < <(tmux display-message -p -t "$TARGET" '#S #I #P' 2>/dev/null) \
+    || { printf '%s' "$activate"; return 0; }
+
+  # Any client attached to this session is a valid switch target; the first one wins.
+  client=$(tmux list-clients -t "$sess" -F '#{client_name}' 2>/dev/null | head -1)
+
+  local cmd="$activate"
+  if [[ -n "$client" ]]; then
+    cmd+="; $tmux_bin -S '$socket' switch-client -c '$client' -t '$sess'"
+  fi
+  cmd+="; $tmux_bin -S '$socket' select-window -t '${sess}:${win}'"
+  cmd+="; $tmux_bin -S '$socket' select-pane -t '${sess}:${win}.${pane}'"
+  printf '%s' "$cmd"
+}
+
+# Kanagawa Wave palette — inline styling for tmux display-message.
+KW_INK='#16161d'    # sumiInk0  — badge foreground
+KW_INK4='#54546d'   # sumiInk4  — context segment background
+KW_BG='#1f1f28'     # sumiInk3  — message background; must match message-style in tmux.conf
+KW_WHITE='#dcd7ba'  # fujiWhite — message text
+KW_GREEN='#98bb6c'  # springGreen
+KW_ORANGE='#ff9e3b' # roninYellow
+KW_BLUE='#7e9cd8'   # crystalBlue
+KW_YELLOW='#e6c384' # carpYellow
+KW_SEP=$'\ue0b0'    # powerline right-facing separator (needs a Nerd Font)
+
+# Renders a powerline-styled tmux message:
+#   <glyph BADGE> ▶ <session:window> ▶ <text>
+# $1 accent colour, $2 glyph, $3 badge label, $4 message text.
+# The context segment is dropped when tmux lookup yields nothing.
+tmux_styled() {
+  local accent="$1" glyph="$2" badge="$3" text="$4"
+  local ctx out
+  ctx=$(tmux_context)
+
+  out="#[fg=${KW_INK},bg=${accent},bold] ${glyph} ${badge} "
+  if [[ -n "$ctx" ]]; then
+    out+="#[fg=${accent},bg=${KW_INK4},nobold]${KW_SEP}#[fg=${KW_WHITE},bg=${KW_INK4}] ${ctx} "
+    out+="#[fg=${KW_INK4},bg=${KW_BG}]${KW_SEP}#[fg=${KW_WHITE},bg=${KW_BG}] ${text} "
+  else
+    out+="#[fg=${accent},bg=${KW_BG},nobold]${KW_SEP}#[fg=${KW_WHITE},bg=${KW_BG}] ${text} "
+  fi
+  printf '%s' "$out"
+}
+
+# Semantic per-window state, shown as an icon glyph prefixed onto the window name.
+# Hybrid to coexist with tmux-nerd-font-window-name:
+#   - automatic-rename ON  (plugin drives the name): store the glyph in the
+#     per-window @claude_state option; tmux.conf's automatic-rename-format
+#     prepends it, so the plugin's re-renames re-compose the glyph, not clobber it.
+#   - automatic-rename OFF (Claude Code / manual owns the name): the format never
+#     runs, so prepend the glyph directly onto #W, stripping any known prefix first
+#     (idempotent — re-applying never stacks). Also keep @claude_state in sync so
+#     the glyph reappears if auto-rename is later turned back on.
+STATE_GLYPHS='🔨⚙👀⏳🏁✅'
+
+set_window_state() {
+  [[ "$WINDOW_STATE" == "1" ]] || return 0
+  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
+
+  local glyph
+  case "$1" in
+    working)    glyph='🔨' ;;
+    waiting)    glyph='👀' ;;
+    bg-running) glyph='⏳' ;;
+    done-bg)    glyph='🏁' ;;
+    done)       glyph='✅' ;;
+    idle)       glyph='' ;;
+    *)          return 0 ;;
+  esac
+
+  if [[ -n "$glyph" ]]; then
+    tmux set-option -w -t "$TARGET" @claude_state "$glyph" 2>/dev/null || true
+  else
+    tmux set-option -uw -t "$TARGET" @claude_state 2>/dev/null || true
+  fi
+
+  local autoren
+  autoren=$(tmux display-message -p -t "$TARGET" '#{automatic-rename}' 2>/dev/null) || return 0
+  [[ "$autoren" == "0" ]] || return 0
+
+  local name stripped
+  name=$(tmux display-message -p -t "$TARGET" '#W' 2>/dev/null) || return 0
+  stripped="${name#[$STATE_GLYPHS] }"
+  if [[ -n "$glyph" ]]; then
+    tmux rename-window -t "$TARGET" "$glyph $stripped" 2>/dev/null || true
+  else
+    tmux rename-window -t "$TARGET" "$stripped" 2>/dev/null || true
+  fi
+}
+
+notify() {
+  local message="$1" title="${2:-Claude Code}" tmux_line="${3:-$message}" confetti="${4:-0}"
+
+  # Subtitle: project name, plus the tmux session:window when available, so the
+  # notification identifies which pane it came from at a glance.
+  local subtitle sw
+  subtitle="$PROJECT"
+  sw=$(tmux_context) && [[ -n "$sw" ]] && subtitle="$sw"
+
+  # Routing, by whether the user can actually see this pane right now:
+  #   kitty focused + pane on screen        → nothing, you are already watching it
+  #   kitty focused, pane anywhere else     → tmux status line on the live client
+  #   kitty backgrounded, or no tmux client → macOS notification
+  local focused=0
+  is_kitty_focused && focused=1
+
+  if [[ "$focused" == "1" ]] && is_target_visible; then
+    return 0
+  fi
+
+  local use_tmux=0
+  if [[ "$focused" == "1" && -n "$DISPLAY_CLIENT" ]]; then
+    use_tmux=1
+  fi
+
+  if [[ "$use_tmux" == "0" ]]; then
+    # Fire-and-forget so the Raycast launch never delays the hook.
+    if [[ "$confetti" == "1" && -n "$CONFETTI_URL" ]] && command -v open &>/dev/null; then
+      open -g "$CONFETTI_URL" >/dev/null 2>&1 &
+    fi
+    if command -v terminal-notifier &>/dev/null; then
+      # -group collapses repeated notifications for this session+pane into one
+      # (a new one replaces the previous), so Notification Center doesn't pile up.
+      local -a args=(
+        -title "$title"
+        -subtitle "$subtitle"
+        -message "$message"
+        -group "$KEY"
+        -execute "$(notify_click_cmd)"
+      )
+      # -appIcon replaces the left app icon; -contentImage shows the logo large
+      # on the right. Provide both so kitty is visible regardless of layout.
+      if [[ -n "$NOTIFY_APP_ICON" && -f "$NOTIFY_APP_ICON" ]]; then
+        args+=(-appIcon "$NOTIFY_APP_ICON" -contentImage "$NOTIFY_APP_ICON")
+      fi
+      terminal-notifier "${args[@]}" >/dev/null 2>&1 || true
+    elif command -v osascript &>/dev/null; then
+      local m t
+      m=$(as_escape "$message")
+      t=$(as_escape "$title")
+      osascript -e "display notification \"$m\" with title \"$t\"" >/dev/null 2>&1 || true
+    fi
+  fi
+
+  # -c targets the live client, not the pane: a pane in a switched-away session
+  # has no client of its own, so -t would render the message to nobody.
+  if [[ "$use_tmux" == "1" ]]; then
+    tmux display-message -d "$DISPLAY_MS" -c "$DISPLAY_CLIENT" "$tmux_line" 2>/dev/null || true
+  fi
+}
+
+# --- PreToolUse: stash state, exit silently ----------------------------------
+if [[ "$EVENT" == "PreToolUse" ]]; then
+
+  if [[ "$TOOL" == "Task" && "$RUN_BG" == "true" ]]; then
+    echo "$TOOL_DESC" > "${STATE_DIR}/bg_task_${KEY}"
+    set_window_state bg-running
+    exit 0
+  fi
+
+  if [[ "$TOOL" == "Bash" ]]; then
+    date +%s > "${STATE_DIR}/bash_${KEY}"
+  fi
+
+  set_window_state working
+  exit 0
+fi
+
+# --- PostToolUse (Bash): notify only if command was slow ---------------------
+if [[ "$EVENT" == "PostToolUse" && "$TOOL" == "Bash" ]]; then
+  TS_FILE="${STATE_DIR}/bash_${KEY}"
+
+  if [[ -f "$TS_FILE" ]]; then
+    START=$(cat "$TS_FILE")
+    rm -f "$TS_FILE"
+    NOW=$(date +%s)
+    ELAPSED=$(( NOW - START ))
+
+    if (( ELAPSED >= NOTIFY_THRESHOLD )); then
+      SHORT=$(short_str "$TOOL_CMD")
+      notify "Done (${ELAPSED}s): ${SHORT}" "Claude Code — ${PROJECT}" \
+        "$(tmux_styled "$KW_YELLOW" '⚡' 'BASH' "${SHORT} · ${ELAPSED}s")"
+    fi
+  fi
+  exit 0
+fi
+
+# --- SubagentStop: notify only if subagent was background --------------------
+if [[ "$EVENT" == "SubagentStop" ]]; then
+  BG_FILE="${STATE_DIR}/bg_task_${KEY}"
+
+  if [[ -f "$BG_FILE" ]]; then
+    DESC=$(cat "$BG_FILE")
+    rm -f "$BG_FILE"
+    SHORT=$(short_str "$DESC" 50)
+    set_window_state done-bg
+    notify "Background task done: ${SHORT}" "Claude Code — ${PROJECT}" \
+      "$(tmux_styled "$KW_BLUE" '🏁' 'BG' "$SHORT")"
+  fi
+  exit 0
+fi
+
+# --- Stop / Notification: always notify --------------------------------------
+case "$EVENT" in
+  Stop)
+    set_window_state done
+    notify "Claude finished" "Claude Code — ${PROJECT}" \
+      "$(tmux_styled "$KW_GREEN" '✅' 'DONE' "finished in ${PROJECT}")" 1
+    ;;
+  Notification)
+    set_window_state waiting
+    notify "Claude needs input" "Claude Code — ${PROJECT}" \
+      "$(tmux_styled "$KW_ORANGE" '👀' 'INPUT' "needs input in ${PROJECT}")"
+    ;;
+  *)
+    notify "Event: ${EVENT}" "Claude Code — ${PROJECT}" \
+      "$(tmux_styled "$KW_WHITE" '🤖' 'EVENT' "${EVENT} in ${PROJECT}")"
+    ;;
+esac
+
+exit 0
