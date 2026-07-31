@@ -222,11 +222,12 @@ alt-shift-f = 'fullscreen'
 # 2 horizontal monitors on the right for workspaces I, others go to main monitor
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
 [workspace-to-monitor-force-assignment]
-A = 1
-C = 1
+A = 2
+C = 2
+I = 2
 P = 1
 X = 1
-I = 2
+T = 1
 
 # ==============================================================================
 # FLOATING WINDOWS
