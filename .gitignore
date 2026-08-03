@@ -3,3 +3,7 @@
 .config/envim/lazy-lock.json
 .config/tmux/plugins
 .config/yazi/flavors/
+
+# ~/.claude runtime state — sadece settings.json versiyonlanır
+.claude/*
+!.claude/settings.json
