@@ -258,14 +258,6 @@ if.app-id = 'com.alienator88.Pearcleaner'
 run = 'layout floating'
 
 [[on-window-detected]]
-if.app-id = 'com.apple.mail'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'org.mozilla.thunderbird'
-run = ["move-node-to-workspace C", "layout floating"]
-
-[[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
 if.window-title-regex-substring = 'Picture-in-Picture'
 run = 'layout floating'
@@ -335,6 +327,14 @@ run = "move-node-to-workspace T"
 if.app-id = 'com.tinyspeck.slackmacgap'
 run = ["move-node-to-workspace Z", "layout floating"]
 
+[[on-window-detected]]
+if.app-id = 'com.apple.mail'
+run = ["move-node-to-workspace C", "layout floating"]
+
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.thunderbird'
+run = ["move-node-to-workspace C", "layout floating"]
 # --- DEVELOPMENT TOOLS & IDEs (WORKSPACE: I) ---
 
 [[on-window-detected]]
