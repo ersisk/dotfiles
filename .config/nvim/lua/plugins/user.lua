@@ -52,4 +52,29 @@ return {
       colorcolumn = "118",
     },
   },
+  {
+    "pwntester/octo.nvim",
+    keys = {
+      {
+        "<leader>gD",
+        function()
+          local buffer = require("octo.utils").get_current_buffer()
+          if not buffer or not buffer:isPullRequest() then
+            vim.notify("Not in an Octo PR buffer", vim.log.levels.WARN)
+            return
+          end
+          local pr = buffer:pullRequest()
+          -- PR branches are often not checked out locally; prefer the remote ref when it exists
+          local function ref(name)
+            if vim.fn.system({ "git", "rev-parse", "--verify", "--quiet", "origin/" .. name }) ~= "" then
+              return "origin/" .. name
+            end
+            return name
+          end
+          vim.cmd(("CodeDiff %s %s"):format(ref(pr.baseRefName), ref(pr.headRefName)))
+        end,
+        desc = "CodeDiff for current PR",
+      },
+    },
+  },
 }

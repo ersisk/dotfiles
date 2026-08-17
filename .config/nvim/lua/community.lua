@@ -39,7 +39,7 @@ return {
 
   --- Git
   { import = "astrocommunity.git.codediff-nvim" },
-
+  { import = "astrocommunity.git.octo-nvim" },
   --- Markdown
   { import = "astrocommunity.markdown-and-latex.render-markdown-nvim" },
 }
