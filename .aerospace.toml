@@ -311,6 +311,10 @@ run = "move-node-to-workspace A"
 if.app-id = 'net.imput.helium'
 run = "move-node-to-workspace A"
 
+[[on-window-detected]]
+if.app-id = 'com.brave.Browser'
+run = "move-node-to-workspace A"
+
 # --- TERMINALS (WORKSPACES: T) ---
 
 [[on-window-detected]]
