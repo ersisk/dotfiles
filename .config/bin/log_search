@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Kontrol edelim, fzf kurulmuş mu?
+if ! command -v fzf &>/dev/null; then
+  echo "fzf bulunamadı. Lütfen fzf'yi yükleyin."
+  exit 1
+fi
+
+# Log dosyalarının olduğu dizini tanımla
+LOG_DIR="var/log"
+
+# Eğer ikinci parametre varsa, onu dosya adı olarak kullan (dosya-tarih.log)
+if [ -n "$2" ]; then
+  current_date=$(date +%Y-%m-%d)
+  selected_file="$LOG_DIR/$2-$current_date.log"
+  if [ ! -f "$selected_file" ]; then
+    echo "Hata: Dosya bulunamadı: $selected_file"
+    exit 1
+  fi
+else
+  # fzf ile dosya seçimini yap
+  selected_file=$(find "$LOG_DIR" -type f | fzf)
+fi
+
+# Eğer bir dosya seçildi ise işlem menüsü göster
+if [ -n "$selected_file" ]; then
+  echo "Seçilen dosya: $selected_file"
+  # Eğer parametre (örn: ./script.sh 1) verildiyse onu kullan, yoksa menüyü göster
+  if [ -n "$1" ]; then
+    choice="$1"
+  else
+    echo "Bir işlem seçin:"
+    echo "1) Dosyayı takip etmek (tail -f)"
+    echo "2) Dosyanın son 100000 satırını görüntülemek (tail -n 100000)"
+    echo "3) Dosyayı düzenlemek (nvim)"
+    echo "4) jlv"
+    echo "5) sieve"
+    read -r choice
+  fi
+
+  case $choice in
+  1)
+    echo "Dosya takip ediliyor: $selected_file"
+    tail -f "$selected_file" | hl -P
+    ;;
+  2)
+    echo "Dosyanın son 100000 satırı:"
+    tail -n 100000 "$selected_file" | hl -P
+    ;;
+  3)
+    echo "Dosya düzenleniyor: $selected_file"
+    nvim "$selected_file"
+    ;;
+  4)
+    echo "jlv ile görüntüleniyor: $selected_file"
+    jlv "$selected_file"
+    ;;
+  5)
+    echo "sieve ile görüntüleniyor: $selected_file"
+    sieve "$selected_file"
+    ;;
+  *)
+    echo "Geçersiz seçim, çıkış yapılıyor."
+    ;;
+  esac
+
+else
+  echo "Herhangi bir dosya seçilmedi."
+fi
