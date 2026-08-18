@@ -3,7 +3,9 @@ preview_command = "eza -la --all --git --icons --color=always {}"
 
 [[session]]
 name = "Notes"
-path = "~/obsidian-vault/"
+alias = "n"
+alias_auto_connect = true
+path = "~/obsidian-vault"
 startup_command = 'nvim +GoToFile'
 
 [[session]]
@@ -12,21 +14,27 @@ path = "~/"
 
 [[session]]
 name = "Config"
-path = "~/.config/"
+alias = "c"
+alias_auto_connect = true
+path = "~/.config"
 startup_command = 'nvim +GoToFile'
 
 [[session]]
 name = "Workspace"
-path = "~/workspace/"
+alias = "w"
+path = "~/workspace"
 
 [[session]]
 name = "Downloads"
+alias = "dl"
 path = "~/Downloads"
 startup_command = "yazi"
 
 [[session]]
 name = "Dotfiles"
-path = "~/workspace/dotfiles/"
+alias = "df"
+alias_auto_connect = true
+path = "~/workspace/dotfiles"
 startup_command = "nvim +GoToFile"
 
 [[session]]
@@ -37,9 +45,10 @@ preview_command = "bat --language=bash --style=snip --color=always ~/Library/App
 
 [[session]]
 name = "Rss Feeds"
-path = "~/.newsboat/"
+alias = "rss"
+path = "~/.newsboat"
 startup_command = "newsboat -r"
-preview_command = "bat --language=bash --style=snip --color=always ~/.newsboat/urls"
+preview_command = "~/.config/sesh/rss-preview.sh"
 
 
 [[session]]
@@ -49,8 +58,70 @@ startup_command = "nvim +GoToFile"
 
 [[session]]
 name = "Main"
-path="~/workspace/php/work/main/"
+alias = "gc"
+alias_auto_connect = true
+path="~/workspace/php/work/main"
+windows = ["GH Dash"]
+
+[[session]]
+name = "Notif"
+alias = "gn"
+alias_auto_connect = true
+path = "~/workspace/work-notif"
+
+[[session]]
+name = "Lib"
+alias = "gl"
+alias_auto_connect = true
+path = "~/workspace/work-lib"
 
 [[session]]
 name = "Translate"
-path = "~/workspace/php/work-translate/"
+alias = "tt"
+path = "~/workspace/php/work-translate"
+
+
+[[session]]
+name= "Reset Admin Pass"
+path="~/workspace/php/work/bin"
+startup_command="./reset-admin-password.sh; read -P 'devam icin enter...'; exit"
+
+[[window]]
+name = "GH Dash"
+startup_script = "gh dash"
+
+# Worktree'ye girince dogrudan dosya secicide acilsin.
+# Not: [[wildcard]] icinde yalnizca startup_command isliyor - preview_command
+# wildcard yolunda hic okunmuyor (previewer sadece isimli [[session]]'a bakiyor).
+[[wildcard]]
+pattern = "~/workspace/php/work/main/.worktrees/*"
+startup_command = "nvim +GoToFile"
+
+# `sesh worktree` kurulu surumde (2.28.0) YOK - upstream'de merge edildi (#435)
+# ama henuz release edilmemis. Brew ile yeni surum gelince yorumu kaldir:
+#   sesh worktree connect --pr 3198  ->  .worktrees/3198 altinda gh pr checkout
+# Mevcut branch-adli worktree'lerle cakismaz (onlar .worktrees/<branch-adi>).
+# worktree_dir + base_branch override sart: sesh defaultlari .wk ve origin/main.
+#
+# [[worktree]]
+# repo = "WORK_ORG/WORK_MAIN_REPO"
+# path = "~/workspace/php/work/main"
+# worktree_dir = ".worktrees"
+# base_branch = "origin/master"
+# branch_template = "GD-{number}"
+# create_command = "nvim +GoToFile"
+# startup_command = "nvim +GoToFile"
+#
+# [[worktree]]
+# repo = "WORK_ORG/WORK_TELI_REPO"
+# path = "~/workspace/php/work/teli"
+# worktree_dir = ".worktrees"
+# base_branch = "origin/master"
+# create_command = "nvim +GoToFile"
+# startup_command = "nvim +GoToFile"
+#
+# Zen (Firefox tabanli) AppleScript ile aktif sekme URL'si vermiyor - sdef yok,
+# hem `active tab` hem `front document` -1728 donuyor. --browser calismaz,
+# PR numarasini elle vermek gerekir.
+# [browser]
+# application = "Zen"
