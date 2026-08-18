@@ -1,25 +1,57 @@
 #!/bin/bash
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  printf '\033[0mlog_search — var/log altındaki log dosyalarını fzf ile seç ve incele\n\n'
+  printf '\033[1mKULLANIM\033[0m\n'
+  printf '  log_search [işlem] [dosya-öneki]\n\n'
+  printf '\033[1mARGÜMANLAR\033[0m\n'
+  printf '  işlem         menüyü atla, doğrudan işlemi seç (1-5)\n'
+  printf '  dosya-öneki   fzf yerine <log-dizini>/<önek>-<bugünün-tarihi>.log kullan\n'
+  printf '  -h, --help    bu yardım\n\n'
+  printf '\033[1mLOG DİZİNİ\033[0m\n'
+  printf '  Sırayla denenir: var/log, log, storage/logs\n\n'
+  printf '\033[1mİŞLEMLER\033[0m\n'
+  printf '  1  tail -f (canlı takip, hl ile renkli)\n'
+  printf '  2  son 100000 satır\n'
+  printf '  3  nvim ile aç\n'
+  printf '  4  jlv\n'
+  printf '  5  sieve\n\n'
+  printf '\033[1mÖRNEKLER\033[0m\n'
+  printf '  log_search              # dosyayı fzf ile seç, işlemi menüden seç\n'
+  printf '  log_search 1            # fzf ile seç, doğrudan tail -f\n'
+  printf '  log_search 1 app        # var/log/app-2026-08-18.log dosyasını takip et\n'
+  exit 0
+fi
+
 # Kontrol edelim, fzf kurulmuş mu?
 if ! command -v fzf &>/dev/null; then
   echo "fzf bulunamadı. Lütfen fzf'yi yükleyin."
   exit 1
 fi
 
-# Log dosyalarının olduğu dizini tanımla
-LOG_DIR="var/log"
+# Log dizinini bul: proje düzenine göre yaygın yollar
+LOG_DIR=""
+for d in var/log log storage/logs; do
+  if [ -d "$d" ]; then
+    LOG_DIR="$d"
+    break
+  fi
+done
 
-# Eğer ikinci parametre varsa, onu dosya adı olarak kullan (dosya-tarih.log)
-if [ -n "$2" ]; then
+if [ -z "$LOG_DIR" ]; then
+  echo "log_search: log dizini bulunamadı (var/log, log, storage/logs)" >&2
+  exit 1
+fi
+
+if [ -n "${2:-}" ]; then
   current_date=$(date +%Y-%m-%d)
   selected_file="$LOG_DIR/$2-$current_date.log"
   if [ ! -f "$selected_file" ]; then
-    echo "Hata: Dosya bulunamadı: $selected_file"
+    echo "Hata: Dosya bulunamadı: $selected_file" >&2
     exit 1
   fi
 else
-  # fzf ile dosya seçimini yap
-  selected_file=$(find "$LOG_DIR" -type f | fzf)
+  selected_file=$(find "$LOG_DIR" -type f | fzf --reverse --header "$LOG_DIR")
 fi
 
 # Eğer bir dosya seçildi ise işlem menüsü göster
