@@ -13,18 +13,20 @@ cur_session=$(tmux display-message -p '#{session_name}' 2>/dev/null)
 
 count=0
 first=""
+first_local=""
 while read -r sess widx glyph; do
   [[ -n "$glyph" && "$ATTENTION_GLYPHS" == *"$glyph"* ]] || continue
   count=$((count + 1))
-  if [[ -z "$first" ]]; then
-    # Aynı session'daysa sadece pencere no; başka session'daysa session:pencere
-    if [[ "$sess" == "$cur_session" ]]; then
-      first="$widx"
-    else
-      first="$sess:$widx"
-    fi
+  if [[ "$sess" == "$cur_session" ]]; then
+    # Aynı session: sadece pencere no yeter, önceliklidir
+    [[ -z "$first_local" ]] && first_local="$widx"
+  else
+    [[ -z "$first" ]] && first="$sess:$widx"
   fi
 done < <(tmux list-windows -a -F '#{session_name} #{window_index} #{@claude_state}' 2>/dev/null)
+
+# Kendi session'ındaki bekleyen varsa onu göster
+[[ -n "$first_local" ]] && first="$first_local"
 
 ((count == 0)) && exit 0
 
