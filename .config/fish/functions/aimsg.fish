@@ -55,29 +55,42 @@ function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği cl
     test $no_wait -eq 1; and return 0
 
     # Raycast'in çıktısı clipboard'a düşene kadar bekle: diff gitmiş, OPTION gelmiş olmalı.
+    # Beklerken Raycast'in terminale yazdığı metin ekranda görünmesin.
+    isatty stdin; and stty -echo 2>/dev/null
     echo -n "Raycast'te Copy'ye bas... "
     set -l raw ""
     for i in (seq 60)
         sleep 1
         set raw (pbpaste 2>/dev/null | string collect)
-        string match -qr 'OPTION\s*[0-9]' -- "$raw"; and break
+        # Raycast bazen OPTION listesi, bazen tek mesaj döndürüyor: ikisini de kabul et.
+        # Kendi kopyaladığımız diff'i çıktı sanmamak için 'diff --git' hariç tutulur.
+        if test -n "$raw"; and not string match -q '*diff --git*' -- "$raw"
+            break
+        end
         set raw ""
     end
     if test -z "$raw"
+        isatty stdin; and stty echo 2>/dev/null
         echo "zaman aşımı: clipboard'da OPTION yok — enter" >&2
         isatty stdin; and read -P 'enter...' -n 1 -l __aimsg_key
         return 1
     end
+    isatty stdin; and stty echo 2>/dev/null
     echo "alındı."
 
-    # Raycast'in Paste'i metni terminale yazmış olabilir; buffer'da kalırsa
-    # fzf'in arama alanına düşüyor (macOS stty'de flush yok). Enter ile tüket.
+    # Raycast'in Paste'i metni terminale yazar; buffer'da kalırsa fzf'in arama
+    # alanına düşüyor. termios TCIFLUSH ile kernel seviyesinde temizle
+    # (macOS stty'de flush yok, fish read'de timeout yok).
     if isatty stdin
-        read -P 'seçim için enter... ' -l __aimsg_drain
+        python3 -c 'import termios,sys; termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)' 2>/dev/null
     end
 
     # OPTION N: satırlarını ayır, altındaki metni al
     set -l opts (printf '%s\n' $raw | awk '/^[[:space:]]*OPTION[[:space:]]*[0-9]+:/{n=1; next} n && NF {print; n=0}')
+    # OPTION formatı yoksa boş olmayan satırları seçenek say (tek mesaj hali)
+    if test (count $opts) -eq 0
+        set opts (printf '%s\n' $raw | string trim | string match -v '')
+    end
     if test (count $opts) -eq 0
         echo "aimsg: OPTION ayrıştırılamadı — enter" >&2
         isatty stdin; and read -P 'enter...' -n 1 -l __aimsg_key
