@@ -31,23 +31,33 @@ set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
 set -Ux EDITOR nvim # 'neovim/neovim' text editor
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
 set -Ux EZA_CONFIG_DIR "~/.config/eza/"
-set -Ux FZF_DEFAULT_OPTS (printf '%s ' \
+# Kanagawa Wave; ton degerleri claude-tmux-notify ve tmux status bar ile ayni.
+set -gx FZF_DEFAULT_OPTS (printf '%s ' \
     '--layout=reverse' \
     '--info=hidden' \
     '--ansi' \
     '--pointer=👉' \
     '--gutter=" "' \
+    '--color=bg+:-1' \
+    '--color=bg:-1' \
+    '--color=fg:#dcd7ba' \
+    '--color=fg+:#c8c093' \
     '--color=current-bg:-1' \
-    '--color=current-fg:blue' \
+    '--color=current-fg:#7e9cd8' \
     '--color=gutter:-1' \
+    '--color=header:#957fb8' \
     '--color=header-bg:-1' \
-    '--color=header-border:cyan' \
-    '--color=hl+:yellow' \
-    '--color=hl:yellow' \
-    '--color=input-border:yellow' \
-    '--color=list-border:blue' \
-    '--color=pointer:blue' \
-    '--color=preview-border:cyan' | string collect)
+    '--color=header-border:#6a9589' \
+    '--color=hl:#e6c384' \
+    '--color=hl+:#ffa066' \
+    '--color=info:#727169' \
+    '--color=input-border:#e6c384' \
+    '--color=list-border:#7e9cd8' \
+    '--color=marker:#98bb6c' \
+    '--color=pointer:#7e9cd8' \
+    '--color=preview-border:#6a9589' \
+    '--color=prompt:#98bb6c' \
+    '--color=spinner:#ff9e3b' | string collect)
 
 # TODO: fix colors of nvimpager
 # set -Ux PAGER "~/.local/bin/nvimpager" # 'lucc/nvimpager'

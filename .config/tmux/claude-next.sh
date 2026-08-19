@@ -41,6 +41,14 @@ session="${next%%:*}"
 tmux switch-client -t "$session" 2>/dev/null
 tmux select-window -t "$next" 2>/dev/null
 
+# Gecilen pane'in son mesajini kisa bir mesaj cubugunda goster: hangi cevabi
+# bekledigini pane'e bakmadan anlamak icin (@claude_last, claude-tmux-notify yazar).
+last=$(tmux show-option -wqv -t "$next" @claude_last 2>/dev/null)
+if [[ -n "$last" ]]; then
+  glyph=$(tmux show-option -wqv -t "$next" @claude_state 2>/dev/null)
+  tmux display-message -d 2500 "#[fg=#16161d,bg=#7e9cd8,bold] ${glyph} ${next} #[fg=#7e9cd8,bg=#1f1f28,nobold]#[fg=#dcd7ba,bg=#1f1f28] ${last} "
+fi
+
 # Focus the pane actually running Claude; a window can hold several panes.
 pane=$(
   tmux list-panes -t "$next" -F '#{pane_index} #{pane_tty}' 2>/dev/null |

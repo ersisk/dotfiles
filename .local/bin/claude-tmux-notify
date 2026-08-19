@@ -55,8 +55,10 @@ if command -v jq &>/dev/null; then
   RUN_BG=$(echo "$PAYLOAD" | jq -r '.tool_input.run_in_background // false')
   SESSION_ID=$(echo "$PAYLOAD" | jq -r '.session_id // ""')
   CWD=$(echo "$PAYLOAD" | jq -r '.cwd // ""')
+  TRANSCRIPT=$(echo "$PAYLOAD" | jq -r '.transcript_path // ""')
 else
   EVENT=$(echo "$PAYLOAD" | grep -o '"hook_event_name":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
+  TRANSCRIPT=""
   TOOL=$(echo "$PAYLOAD" | grep -o '"tool_name":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
   TOOL_CMD=""
   TOOL_DESC=""
@@ -238,6 +240,7 @@ set_window_state() {
     tmux set-option -w -t "$TARGET" @claude_state "$glyph" 2>/dev/null || true
   else
     tmux set-option -uw -t "$TARGET" @claude_state 2>/dev/null || true
+    tmux set-option -uw -t "$TARGET" @claude_last 2>/dev/null || true
   fi
 
   local autoren
@@ -260,6 +263,17 @@ set_window_state() {
   else
     tmux rename-window -t "$TARGET" "$stripped" 2>/dev/null || true
   fi
+}
+
+# Son kullanici-gorunur mesaji pencereye yazar; claude-next.sh onizlemede gosterir.
+# Transcript yoksa sessizce atlanir - rozet ve glyph akisi bundan bagimsiz calisir.
+set_last_message() {
+  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
+  [[ -n "${TRANSCRIPT:-}" && -r "$TRANSCRIPT" ]] || return 0
+  local msg
+  msg=$(~/.config/tmux/claude-last-msg.sh "$TRANSCRIPT" 2>/dev/null) || return 0
+  [[ -n "$msg" ]] || return 0
+  tmux set-option -w -t "$TARGET" @claude_last "$msg" 2>/dev/null || true
 }
 
 notify() {
@@ -378,11 +392,13 @@ fi
 case "$EVENT" in
   Stop)
     set_window_state done
+    set_last_message
     notify "Claude finished" "Claude Code — ${PROJECT}" \
       "$(tmux_styled "$KW_GREEN" '' 'DONE' "finished in ${PROJECT}")" 1
     ;;
   Notification)
     set_window_state waiting
+    set_last_message
     notify "Claude needs input" "Claude Code — ${PROJECT}" \
       "$(tmux_styled "$KW_ORANGE" '󰛐' 'INPUT' "needs input in ${PROJECT}")"
     ;;
