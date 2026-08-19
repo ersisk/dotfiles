@@ -1,0 +1,39 @@
+gui:
+  nerdFontsVersion: "3"
+  theme:
+    activeBorderColor:
+      - "#FFA066"
+      - "bold"
+    inactiveBorderColor:
+      - "#54546D"
+    searchingActiveBorderColor:
+      - "#76946A"
+      - "bold"
+    optionsTextColor:
+      - "#7E9CD8"
+    selectedLineBgColor:
+      - "#2A2A37"
+    cherryPickedCommitFgColor:
+      - "#7E9CD8"
+    cherryPickedCommitBgColor:
+      - "#957FB8"
+    markedBaseCommitFgColor:
+      - "#7E9CD8"
+    markedBaseCommitBgColor:
+      - "#e5c07b"
+    unstagedChangesColor:
+      - "#C34043"
+    defaultFgColor:
+      - "#abb2bf"
+# git:
+#   pagers:
+#     - colorArg: always
+#       pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+
+customCommands:
+  # Secili commit'i parent'iyla CodeDiff'te acar. lazygit acik kalir, nvim ayri tmux penceresinde.
+  - key: "X"
+    context: "commits, subCommits, reflogCommits"
+    description: "CodeDiff in new tmux window"
+    command: 'tmux new-window -n " CodeDiff" "nvim ''+CodeDiff {{.SelectedLocalCommit.Sha}}~1 {{.SelectedLocalCommit.Sha}}''"'
+    output: none

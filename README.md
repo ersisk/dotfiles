@@ -22,6 +22,15 @@ stow . -t ~
    Work session paths in `sesh.toml` read from it; without the file the
    work sessions are skipped and everything else keeps working.
 
+6. Link the lazygit config. On macOS lazygit reads
+   `~/Library/Application Support/lazygit`, not `~/.config`, so stow does not
+   cover it.
+
+```sh
+ln -sf ~/workspace/dotfiles/.config/lazygit/config.yml \
+  "$HOME/Library/Application Support/lazygit/config.yml"
+```
+
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)
