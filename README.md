@@ -22,7 +22,11 @@ stow . -t ~
    Work session paths in `sesh.toml` read from it; without the file the
    work sessions are skipped and everything else keeps working.
 
-6. Link the lazygit config. On macOS lazygit reads
+6. `jira-to-branch` needs three Raycast commands: the `screenocr` extension
+   plus two personal AI commands (`parse-jira-title`, `generate-branch`).
+   Without them the script times out waiting for the clipboard.
+
+7. Link the lazygit config. On macOS lazygit reads
    `~/Library/Application Support/lazygit`, not `~/.config`, so stow does not
    cover it.
 

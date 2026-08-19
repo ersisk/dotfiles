@@ -19,3 +19,6 @@ set -gx WORK_ORG ExampleOrg
 set -gx WORK_MAIN_REPO main-project
 set -gx WORK_TELI_REPO other-repo
 set -gx WORK_TELI $WORK_ROOT/other-repo
+
+# log_search container yolu icin (opsiyonel; tanimsizsa container atlanir)
+set -gx GTC_CONTAINER your-app-container

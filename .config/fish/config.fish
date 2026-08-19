@@ -126,6 +126,7 @@ alias fzfp="fzf --print0 | xargs -0 -o bat"
 alias fzfssh="find ~/ssh -type f -name '*.sh' | fzf --print0 | xargs -0 -o bash"
 alias cldy "claude --dangerously-skip-permissions"
 alias lgs="log_search"
+alias jtb="jira-to-branch"
 alias dnv="diffnav"
 alias sduck="s -p duckduckgo"
 alias wt='git worktree'

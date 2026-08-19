@@ -1,0 +1,110 @@
+#!/bin/bash
+#
+# Raycast OCR → Parse Jira Title → Generate Branch
+# Üç Raycast komutunu zincirleme çalıştırır.
+# Çıktılar clipboard üzerinden aktarılır.
+#
+
+set -euo pipefail
+
+# ── Ayarlar ──────────────────────────────────────────────
+POLL_INTERVAL=0.5          # Clipboard kontrol sıklığı (saniye)
+TIMEOUT=60                 # Her adım için maksimum bekleme süresi (saniye)
+STEP_DELAY=1.5             # Raycast komutları arası bekleme (saniye)
+
+# ── Yardımcı Fonksiyonlar ───────────────────────────────
+log()  { printf "\033[1;34m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*" >&2; }
+ok()   { printf "\033[1;32m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*" >&2; }
+err()  { printf "\033[1;31m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*" >&2; }
+
+get_clipboard() {
+    pbpaste 2>/dev/null || ""
+}
+
+
+# Clipboard değişene kadar bekle, timeout ile
+wait_for_clipboard_change() {
+    local old_clip="$1"
+    local label="$2"
+    local elapsed=0
+
+    log "'${label}' çıktısı bekleniyor..."
+
+    while (( $(echo "$elapsed < $TIMEOUT" | bc -l) )); do
+        sleep "$POLL_INTERVAL"
+        elapsed=$(echo "$elapsed + $POLL_INTERVAL" | bc -l)
+
+        local current
+        current=$(get_clipboard)
+
+        # Clipboard değişti ve boş değil
+        if [[ -n "$current" && "$current" != "$old_clip" ]]; then
+            ok "'${label}' tamamlandı. (${elapsed}s)"
+            echo "$current"
+            return 0
+        fi
+    done
+
+    err "'${label}' zaman aşımına uğradı (${TIMEOUT}s)."
+    return 1
+}
+
+# ── Ana Akış ─────────────────────────────────────────────
+flush_stdin() {
+    # termios TCIFLUSH ile input buffer'ını kernel seviyesinde temizle
+    python3 -c "import termios,sys; termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)" 2>/dev/null || true
+}
+
+main() {
+    # Raycast clipboard'a yazarken terminale de paste edebilir — input'u bastır
+    stty -echo 2>/dev/null
+    trap 'stty echo 2>/dev/null; flush_stdin' EXIT
+
+    log "Zincirleme başlatılıyor..."
+
+    # ╭─ 1. Adım: Screen OCR ─────────────────────────────╮
+    local clip_before
+    clip_before=$(get_clipboard)
+
+    log "Screen OCR başlatılıyor — ekrandan metin seçin..."
+    open "raycast://extensions/huzef44/screenocr/recognize-text"
+
+    local ocr_result
+    ocr_result=$(wait_for_clipboard_change "$clip_before" "Screen OCR") || exit 1
+
+    sleep "$STEP_DELAY"
+
+    # ╭─ 2. Adım: Parse Jira Title ───────────────────────╮
+    clip_before=$(get_clipboard)
+
+    local encoded_ocr
+    encoded_ocr=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$ocr_result")
+
+    log "Jira title parse ediliyor..."
+    open "raycast://ai-commands/parse-jira-title?arguments=${encoded_ocr}"
+
+    local jira_title
+    jira_title=$(wait_for_clipboard_change "$clip_before" "Parse Jira Title") || exit 1
+
+    sleep "$STEP_DELAY"
+
+    # ╭─ 3. Adım: Generate Branch ────────────────────────╮
+    clip_before=$(get_clipboard)
+
+    local encoded_title
+    encoded_title=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$jira_title")
+
+    log "Branch adı üretiliyor..."
+    open "raycast://ai-commands/generate-branch?arguments=${encoded_title}"
+
+    local branch_name
+    branch_name=$(wait_for_clipboard_change "$clip_before" "Generate Branch") || exit 1
+
+    # ╭─ Sonuç: clipboard'a kopyala ──────────────────────╮
+    echo -n "$branch_name" | pbcopy
+    flush_stdin
+    stty echo 2>/dev/null
+    ok "Branch clipboard'a kopyalandı: $branch_name"
+}
+
+main "$@"

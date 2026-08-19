@@ -8,8 +8,11 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   printf '  işlem         menüyü atla, doğrudan işlemi seç (1-5)\n'
   printf '  dosya-öneki   fzf yerine <log-dizini>/<önek>-<bugünün-tarihi>.log kullan\n'
   printf '  -h, --help    bu yardım\n\n'
-  printf '\033[1mLOG DİZİNİ\033[0m\n'
-  printf '  Sırayla denenir: var/log, log, storage/logs\n\n'
+  printf '\033[1mLOG KAYNAĞI\033[0m\n'
+  printf '  Sırayla denenir: var/log, log, storage/logs (host).\n'
+  printf '  Hiçbiri yoksa ve container ayakta ise container içindeki log dizini\n'
+  printf '  kullanılır; dosya geçici olarak host'"'"'a çekilip incelenir.\n'
+  printf '  Container adı $GTC_CONTAINER ile verilir; tanımsızsa container atlanır.\n\n'
   printf '\033[1mİŞLEMLER\033[0m\n'
   printf '  1 tail -f, 2 son 100000 satır, 3 nvim, 4 jlv, 5 sieve\n\n'
   printf '\033[1mÖRNEKLER\033[0m\n'
@@ -25,8 +28,10 @@ if ! command -v fzf &>/dev/null; then
   exit 1
 fi
 
-# Log dizinini bul: proje düzenine göre yaygın yollar
+# Log dizinini bul: host'ta yaygın yollar, yoksa container'a düş.
+CONTAINER="${GTC_CONTAINER:-}"
 LOG_DIR=""
+IN_CONTAINER=0
 for d in var/log log storage/logs; do
   if [ -d "$d" ]; then
     LOG_DIR="$d"
@@ -35,19 +40,56 @@ for d in var/log log storage/logs; do
 done
 
 if [ -z "$LOG_DIR" ]; then
-  echo "log_search: log dizini bulunamadı (var/log, log, storage/logs)" >&2
+  # Container içinde ara (loglar host'a mount edilmemiş olabilir)
+  if [ -n "$CONTAINER" ] && command -v docker &>/dev/null && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx "$CONTAINER"; then
+    for d in /data/project/log /data/project/var/log /var/log/nginx; do
+      if docker exec "$CONTAINER" test -d "$d" 2>/dev/null; then
+        LOG_DIR="$d"
+        IN_CONTAINER=1
+        break
+      fi
+    done
+  fi
+fi
+
+if [ -z "$LOG_DIR" ]; then
+  echo "log_search: log dizini bulunamadı (var/log, log, storage/logs${CONTAINER:+ ya da $CONTAINER içinde})" >&2
   exit 1
 fi
 
+# Eğer ikinci parametre varsa, onu dosya adı olarak kullan (dosya-tarih.log)
 if [ -n "${2:-}" ]; then
   current_date=$(date +%Y-%m-%d)
   selected_file="$LOG_DIR/$2-$current_date.log"
-  if [ ! -f "$selected_file" ]; then
+  if [ "$IN_CONTAINER" -eq 1 ]; then
+    docker exec "$CONTAINER" test -f "$selected_file" 2>/dev/null || {
+      echo "Hata: Dosya bulunamadı: $CONTAINER:$selected_file" >&2
+      exit 1
+    }
+  elif [ ! -f "$selected_file" ]; then
     echo "Hata: Dosya bulunamadı: $selected_file" >&2
     exit 1
   fi
 else
-  selected_file=$(find "$LOG_DIR" -type f | fzf --reverse --header "$LOG_DIR")
+  # fzf ile dosya seçimini yap (en yeni üstte)
+  if [ "$IN_CONTAINER" -eq 1 ]; then
+    selected_file=$(docker exec "$CONTAINER" sh -c "ls -t '$LOG_DIR'/*.log 2>/dev/null" \
+      | fzf --reverse --header "$CONTAINER:$LOG_DIR")
+  else
+    selected_file=$(find "$LOG_DIR" -type f | fzf --reverse --header "$LOG_DIR")
+  fi
+fi
+
+# Container'daki dosyayı host'a çek: nvim/jlv/sieve/hl container'da yok.
+# tail -f canlı takip olduğu için kopyalanmaz, doğrudan container'dan akıtılır.
+local_file="$selected_file"
+if [ "$IN_CONTAINER" -eq 1 ] && [ -n "$selected_file" ] && [ "${1:-}" != "1" ]; then
+  local_file="$(mktemp -t logsearch)"
+  trap 'rm -f "$local_file"' EXIT
+  docker exec "$CONTAINER" cat "$selected_file" > "$local_file" 2>/dev/null || {
+    echo "Hata: dosya çekilemedi: $selected_file" >&2
+    exit 1
+  }
 fi
 
 # Eğer bir dosya seçildi ise işlem menüsü göster
@@ -69,23 +111,27 @@ if [ -n "$selected_file" ]; then
   case $choice in
   1)
     echo "Dosya takip ediliyor: $selected_file"
-    tail -f "$selected_file" | hl -P
+    if [ "$IN_CONTAINER" -eq 1 ]; then
+      docker exec "$CONTAINER" tail -f "$selected_file" | hl -P
+    else
+      tail -f "$selected_file" | hl -P
+    fi
     ;;
   2)
     echo "Dosyanın son 100000 satırı:"
-    tail -n 100000 "$selected_file" | hl -P
+    tail -n 100000 "$local_file" | hl -P
     ;;
   3)
     echo "Dosya düzenleniyor: $selected_file"
-    nvim "$selected_file"
+    nvim "$local_file"
     ;;
   4)
     echo "jlv ile görüntüleniyor: $selected_file"
-    jlv "$selected_file"
+    jlv "$local_file"
     ;;
   5)
     echo "sieve ile görüntüleniyor: $selected_file"
-    sieve "$selected_file"
+    sieve "$local_file"
     ;;
   *)
     echo "Geçersiz seçim, çıkış yapılıyor."

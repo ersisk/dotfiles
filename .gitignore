@@ -10,3 +10,7 @@
 
 # Is yerine ait gercek yollar - repoda tutulmaz
 .config/fish/conf.d/work-paths.fish
+
+# Derlenmis binary'ler - repoda tutulmaz (biri x86_64, Rosetta ile calisiyor)
+.config/bin/aws-ssh
+.config/bin/merged-branches

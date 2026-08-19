@@ -20,15 +20,18 @@ gui:
     markedBaseCommitFgColor:
       - "#7E9CD8"
     markedBaseCommitBgColor:
-      - "#e5c07b"
+      - "#e6c384"
     unstagedChangesColor:
       - "#C34043"
     defaultFgColor:
-      - "#abb2bf"
-# git:
-#   pagers:
-#     - colorArg: always
-#       pager: delta --dark --paging=never --line-numbers --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+      - "#dcd7ba"
+git:
+  diffRenderers:
+    # Kanagawa temasi, side-by-side ve dekorasyonlar ~/.gitconfig'teki delta ayarlarindan miras alinir.
+    # hyperlinks-file-link-format: diff'te dosya adina tiklayinca lazygit'in editorunu acar.
+    - type: stdinFilter
+      colorArg: always
+      command: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
 
 customCommands:
   # Secili commit'i parent'iyla CodeDiff'te acar. lazygit acik kalir, nvim ayri tmux penceresinde.
