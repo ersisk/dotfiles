@@ -5,12 +5,12 @@
 # claude-tmux-notify) is one of the "needs you" glyphs, in a stable global order,
 # always landing on the one after the current window so repeated presses advance.
 #
-# Working states (🔨 busy, ⏳ background running) are deliberately excluded —
+# Working states (󰓦 busy, 󱎫 background running) are deliberately excluded —
 # Claude is still going, there is nothing to answer yet.
 
 set -uo pipefail
 
-ATTENTION_GLYPHS='👀✅🏁'
+ATTENTION_GLYPHS='󰛐'
 
 # session:window for every window flagged with an attention glyph, sorted so the
 # cycle order is stable across invocations regardless of tmux's listing order.

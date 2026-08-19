@@ -4,13 +4,12 @@
 # Boşsa (henüz hook tetiklenmemiş / idle) nötr bir işaret gösterilir.
 state_label() {
   case "$1" in
-    🔨) printf '🔨 çalışıyor  ' ;;
-    ⚙)  printf '⚙  araç      ' ;;
-    👀) printf '👀 input bekliyor' ;;
-    ⏳) printf '⏳ arka plan  ' ;;
-    🏁) printf '🏁 bg bitti   ' ;;
-    ✅) printf '✅ bitti      ' ;;
-    *)  printf '💤 boşta      ' ;;
+    󰓦) printf '󰓦 çalışıyor      ' ;;
+    󰛐) printf '󰛐 input bekliyor ' ;;
+    󱎫) printf '󱎫 arka plan      ' ;;
+    ) printf ' bg bitti       ' ;;
+    ) printf ' bitti          ' ;;
+    *)  printf '󰤄 boşta          ' ;;
   esac
 }
 

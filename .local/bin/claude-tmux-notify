@@ -210,7 +210,14 @@ tmux_styled() {
 #     runs, so prepend the glyph directly onto #W, stripping any known prefix first
 #     (idempotent — re-applying never stacks). Also keep @claude_state in sync so
 #     the glyph reappears if auto-rename is later turned back on.
-STATE_GLYPHS='🔨⚙👀⏳🏁✅'
+# Nerd Font durum glyph'leri (Kanagawa ile renklendirilebilsin diye emoji degil).
+# Bu liste degisirse claude-status.sh / claude-next.sh / claude-sesh.sh da guncellenmeli.
+STATE_GLYPHS='󰓦󰛐󱎫'
+# Onceki emoji durum seti: pencere adinda kalmis olabilir, yeniden
+# adlandirirken soyulmalari icin tanimli tutuluyor.
+LEGACY_GLYPHS='🔨⚙👀⏳🏁✅'
+# Not: 󰘦 / 󰚩 kullanicinin utility.conf'ta verdigi kalici pencere ikonlari;
+# durum glyph'i degiller, asla soyulmamalilar.
 
 set_window_state() {
   [[ "$WINDOW_STATE" == "1" ]] || return 0
@@ -218,11 +225,11 @@ set_window_state() {
 
   local glyph
   case "$1" in
-    working)    glyph='🔨' ;;
-    waiting)    glyph='👀' ;;
-    bg-running) glyph='⏳' ;;
-    done-bg)    glyph='🏁' ;;
-    done)       glyph='✅' ;;
+    working)    glyph='󰓦' ;;
+    waiting)    glyph='󰛐' ;;
+    bg-running) glyph='󱎫' ;;
+    done-bg)    glyph='' ;;
+    done)       glyph='' ;;
     idle)       glyph='' ;;
     *)          return 0 ;;
   esac
@@ -239,7 +246,15 @@ set_window_state() {
 
   local name stripped
   name=$(tmux display-message -p -t "$TARGET" '#W' 2>/dev/null) || return 0
-  stripped="${name#[$STATE_GLYPHS] }"
+  # Birikmis prefixleri tek tek soy: eski emoji setinden gecis yapan pencerelerde
+  # ad "<yeni> <eski> <daha eski> Claude" gibi katmanlanabiliyor.
+  # Nerd-font eklentisi adin basina kendi bosluklarini koyabiliyor, bu yuzden
+  # glyph ile ad arasindaki bosluk sayisi degisken.
+  stripped="$name"
+  while [[ "$stripped" == [$STATE_GLYPHS$LEGACY_GLYPHS]* ]]; do
+    stripped="${stripped#[$STATE_GLYPHS$LEGACY_GLYPHS]}"
+    stripped="${stripped# }"
+  done
   if [[ -n "$glyph" ]]; then
     tmux rename-window -t "$TARGET" "$glyph $stripped" 2>/dev/null || true
   else
@@ -354,7 +369,7 @@ if [[ "$EVENT" == "SubagentStop" ]]; then
     SHORT=$(short_str "$DESC" 50)
     set_window_state done-bg
     notify "Background task done: ${SHORT}" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_BLUE" '🏁' 'BG' "$SHORT")"
+      "$(tmux_styled "$KW_BLUE" '' 'BG' "$SHORT")"
   fi
   exit 0
 fi
@@ -364,16 +379,16 @@ case "$EVENT" in
   Stop)
     set_window_state done
     notify "Claude finished" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_GREEN" '✅' 'DONE' "finished in ${PROJECT}")" 1
+      "$(tmux_styled "$KW_GREEN" '' 'DONE' "finished in ${PROJECT}")" 1
     ;;
   Notification)
     set_window_state waiting
     notify "Claude needs input" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_ORANGE" '👀' 'INPUT' "needs input in ${PROJECT}")"
+      "$(tmux_styled "$KW_ORANGE" '󰛐' 'INPUT' "needs input in ${PROJECT}")"
     ;;
   *)
     notify "Event: ${EVENT}" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_WHITE" '🤖' 'EVENT' "${EVENT} in ${PROJECT}")"
+      "$(tmux_styled "$KW_WHITE" '󱜙' 'EVENT' "${EVENT} in ${PROJECT}")"
     ;;
 esac
 
