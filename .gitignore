@@ -7,3 +7,6 @@
 # ~/.claude runtime state — sadece settings.json versiyonlanır
 .claude/*
 !.claude/settings.json
+
+# Is yerine ait gercek yollar - repoda tutulmaz
+.config/fish/conf.d/work-paths.fish

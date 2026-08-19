@@ -60,41 +60,41 @@ startup_command = "nvim +GoToFile"
 name = "Main"
 alias = "gc"
 alias_auto_connect = true
-path="~/workspace/php/work/main"
-windows = ["GH Dash"]
+path = "$WORK_MAIN"
+windows = [" GH Dash"]
 
 [[session]]
 name = "Notif"
 alias = "gn"
 alias_auto_connect = true
-path = "~/workspace/work-notif"
+path = "$WORK_NOTIF"
 
 [[session]]
 name = "Lib"
 alias = "gl"
 alias_auto_connect = true
-path = "~/workspace/work-lib"
+path = "$WORK_LIB"
 
 [[session]]
 name = "Translate"
 alias = "tt"
-path = "~/workspace/php/work-translate"
+path = "$WORK_TRANSLATE"
 
 
 [[session]]
 name= "Reset Admin Pass"
-path="~/workspace/php/work/bin"
+path = "$WORK_BIN"
 startup_command="./reset-admin-password.sh; read -P 'devam icin enter...'; exit"
 
 [[window]]
-name = "GH Dash"
+name = " GH Dash"
 startup_script = "gh dash"
 
 # Worktree'ye girince dogrudan dosya secicide acilsin.
 # Not: [[wildcard]] icinde yalnizca startup_command isliyor - preview_command
 # wildcard yolunda hic okunmuyor (previewer sadece isimli [[session]]'a bakiyor).
 [[wildcard]]
-pattern = "~/workspace/php/work/main/.worktrees/*"
+pattern = "$WORK_MAIN/.worktrees/*"
 startup_command = "nvim +GoToFile"
 
 # `sesh worktree` kurulu surumde (2.28.0) YOK - upstream'de merge edildi (#435)
@@ -104,8 +104,8 @@ startup_command = "nvim +GoToFile"
 # worktree_dir + base_branch override sart: sesh defaultlari .wk ve origin/main.
 #
 # [[worktree]]
-# repo = "WORK_ORG/WORK_MAIN_REPO"
-# path = "~/workspace/php/work/main"
+# repo = "$WORK_ORG/$WORK_MAIN_REPO"
+# path = "$WORK_MAIN"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
 # branch_template = "GD-{number}"
@@ -113,8 +113,8 @@ startup_command = "nvim +GoToFile"
 # startup_command = "nvim +GoToFile"
 #
 # [[worktree]]
-# repo = "WORK_ORG/WORK_TELI_REPO"
-# path = "~/workspace/php/work/teli"
+# repo = "$WORK_ORG/$WORK_TELI_REPO"
+# path = "$WORK_TELI"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
 # create_command = "nvim +GoToFile"
