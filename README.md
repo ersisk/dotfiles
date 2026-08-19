@@ -17,6 +17,11 @@ My dotfiles are managed by [GNU Stow](https://www.gnu.org/software/stow/).
 stow . -t ~
 ```
 
+5. Copy `.config/fish/conf.d/work-paths.fish.example` to
+   `~/.config/fish/conf.d/work-paths.fish` and fill in your own paths.
+   Work session paths in `sesh.toml` read from it; without the file the
+   work sessions are skipped and everything else keeps working.
+
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)

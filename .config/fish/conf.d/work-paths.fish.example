@@ -1,0 +1,21 @@
+# Is yerine ait gercek dizin yollari - ORNEK dosya.
+#
+# Kurulum: bu dosyayi work-paths.fish olarak kopyala ve yollari kendi
+# makinene gore doldur. Gercek dosya .gitignore'da; ic proje adlari
+# repoya girmesin diye repoda tutulmuyor.
+#
+#   cp work-paths.fish.example ~/.config/fish/conf.d/work-paths.fish
+#
+# sesh.toml ve tmux configleri bu degiskenlere bagli; dosya yoksa
+# is session'lari acilmaz (digerleri calismaya devam eder).
+
+set -gx WORK_ROOT ~/workspace/example
+set -gx WORK_MAIN $WORK_ROOT/main-project
+set -gx WORK_BIN $WORK_ROOT/bin
+set -gx WORK_NOTIF ~/workspace/example-notif
+set -gx WORK_LIB ~/workspace/example-lib
+set -gx WORK_TRANSLATE ~/workspace/example-translate
+set -gx WORK_ORG ExampleOrg
+set -gx WORK_MAIN_REPO main-project
+set -gx WORK_TELI_REPO other-repo
+set -gx WORK_TELI $WORK_ROOT/other-repo
