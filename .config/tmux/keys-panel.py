@@ -6,6 +6,9 @@ eklendiginde burada guncelleme gerekmez.
 
 tmux -N notlari "⌘+g lazygit" formatinda oldugu icin kitty esiyle ayni satirda
 birlestirilebiliyor; eslesmeyenler kendi satirinda kalir.
+
+Kisayollardan sonra fish alias'lari ve fish/functions altindaki komutlar
+"alias" bolumunde listelenir.
 """
 
 import os
@@ -19,6 +22,8 @@ TMUX_CONFS = [
     os.path.join(HOME, ".config/tmux/utility.conf"),
     os.path.join(HOME, ".config/tmux/tmux.conf"),
 ]
+FISH_CONF = os.path.join(HOME, ".config/fish/config.fish")
+FISH_FUNCTIONS = os.path.join(HOME, ".config/fish/functions")
 
 # "(Cmd+Shift+E -> Ctrl+A, Shift+E)" gibi kuyruklar yorumun anlamli kismini bogar
 ARROW = re.compile(r"\s*\(?\s*(Cmd|⌘)[^)]*->[^)]*\)?\s*$", re.IGNORECASE)
@@ -32,7 +37,12 @@ FLAGS = re.compile(r"^(?:-[a-zA-Z]+\s+|-T\s+\S+\s+)*")
 # notun basindaki "⌘+⇧+K" gibi kitty esi
 EQUIV = re.compile(r"^((?:⌘|⇧|⌃|⌥|\+)+[^\s]*)\s+(.*)$")
 
+# alias adi ve komutu; deger tirnakli ya da tirnaksiz, "=" opsiyonel
+ALIAS = re.compile(r"""^alias\s+(?P<name>[\w.-]+)\s*=?\s*(?P<q>["']?)(?P<cmd>.*?)(?P=q)$""")
+
 PREFIX = "^a"
+# fzf --ansi ile okunur; alias satirlarini kisayollardan gorsel olarak ayirir
+CYAN, DIM, RESET = "\033[36m", "\033[2m", "\033[0m"
 GLYPHS = {"cmd": "⌘", "shift": "⇧", "ctrl": "⌃", "alt": "⌥", "opt": "⌥"}
 SKIP_DESC = ("note:", "not:")
 
@@ -115,6 +125,37 @@ def parse_kitty():
             "src": "kitty",
         })
         pending = []
+    return rows
+
+
+def parse_alias():
+    """config.fish alias'lari + fish/functions/*.fish (ozel komutlar)."""
+    rows = []
+    try:
+        with open(FISH_CONF, encoding="utf-8") as fh:
+            lines = fh.read().splitlines()
+    except OSError:
+        lines = []
+
+    for line in lines:
+        m = ALIAS.match(line.strip())
+        if not m:
+            continue
+        rows.append({
+            "kitty": m.group("name"),
+            "tmux": "",
+            "desc": m.group("cmd").strip(),
+            "section": "alias",
+        })
+
+    try:
+        names = sorted(
+            f[:-5] for f in os.listdir(FISH_FUNCTIONS) if f.endswith(".fish")
+        )
+    except OSError:
+        names = []
+    for name in names:
+        rows.append({"kitty": name, "tmux": "", "desc": "fish function", "section": "alias"})
     return rows
 
 
@@ -223,6 +264,9 @@ def sort_key(row):
     Boylece ⌘+A ile ⌘+⇧+A yan yana gelir ve sade olan (az modifier) once gelir.
     Kitty esi olmayan, yalniz tmux satirlari en sona duser.
     """
+    if row.get("section") == "alias":
+        return (4, 0, "", 0, row["kitty"].lower())
+
     key = row["kitty"]
     if not key:
         return (3, 0, "", 0, row["desc"].lower())
@@ -240,7 +284,7 @@ def sort_key(row):
 
 
 def main():
-    rows = merge(parse_kitty(), parse_tmux())
+    rows = merge(parse_kitty(), parse_tmux()) + parse_alias()
     if not rows:
         sys.exit("kisayol bulunamadi")
 
@@ -248,7 +292,13 @@ def main():
     tw = max((len(r["tmux"]) for r in rows), default=0)
     for r in sorted(rows, key=sort_key):
         sec = f"  · {r['section']}" if r["section"] else ""
-        print(f"{r['kitty']:<{kw}}  {r['tmux']:<{tw}}  {r['desc']}{sec}")
+        # hizalama ANSI kodlarindan etkilenmesin: once padle, sonra renklendir
+        name = f"{r['kitty']:<{kw}}"
+        rest = f"{r['tmux']:<{tw}}  {r['desc']}{sec}"
+        if r["section"] == "alias":
+            print(f"{CYAN}{name}{RESET}  {DIM}{rest}{RESET}")
+        else:
+            print(f"{name}  {rest}")
 
 
 if __name__ == "__main__":

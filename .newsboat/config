@@ -1,0 +1,29 @@
+# Kanagawa (Wave) - renkler kitty'nin ANSI paletinden gelir (current-theme.conf),
+# newsboat hex kabul etmiyor; sadece isim veya color0-255 indeksi.
+# color4=#7e9cd8 crystalBlue, color3=#c0a36e boatYellow2, color11=#e6c384 carpYellow,
+# color8=#727169 fujiGray, color2=#76946a autumnGreen, color1=#c34043 autumnRed
+
+color background          default   default
+color listnormal          color7    default
+color listnormal_unread   color15   default   bold
+color listfocus           color15   color4
+color listfocus_unread    color15   color4    bold
+color info                color11   color0    bold
+color title               color11   color0    bold
+color hint-key            color11   color0    bold
+color hint-keys-delimiter color8    color0
+color hint-separator      color8    color0
+color hint-description    color7    color0
+color article             color7    default
+color end-of-text-marker  color8    default
+
+highlight article "^Feed:.*$"                      color4   default bold
+highlight article "^Title:.*$"                     color11  default bold
+highlight article "^Author:.*$"                    color14  default
+highlight article "^Date:.*$"                      color8   default
+highlight article "^Link:.*$"                      color12  default
+highlight article "^Flags:.*$"                     color8   default
+highlight article "https?://[^ ]+"                 color12  default underline
+highlight article "\\[[0-9]+\\]"                   color5   default bold
+highlight article "\\[image\\ [0-9]+\\]"           color2   default
+highlight article "\\[embedded flash: [0-9][0-9]*\\]" color2 default

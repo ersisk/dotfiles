@@ -43,6 +43,8 @@ selection="$(printf '%s\n' "$rows" | fzf \
 [[ -z "$selection" ]] && exit 0
 
 # ilk iki kolon tuslar; aciklamayi atip panoya sadece onlari koy
+# fzf --ansi secimi ham dondurur; renk kodlari panoya sizmasin
+selection="$(printf '%s' "$selection" | sed $'s/\033\[[0-9;]*m//g')"
 keys="$(printf '%s' "$selection" | awk -F'  +' '{
     out = $1
     if ($2 ~ /\^a/) out = out "  /  " $2
