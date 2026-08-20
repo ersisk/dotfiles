@@ -32,6 +32,11 @@ git:
     - type: stdinFilter
       colorArg: always
       command: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
+    # AST tabanli diff: formatlama mi mantik mi degismis sorusunu ayirir. delta'nin yanina gelir, yerine gecmez.
+    - name: difftastic
+      type: extDiff
+      colorArg: always
+      command: difft --color=always --display=inline
 
 customCommands:
   # Secili commit'i parent'iyla CodeDiff'te acar. lazygit acik kalir, nvim ayri tmux penceresinde.

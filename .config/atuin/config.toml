@@ -1,0 +1,24 @@
+## https://docs.atuin.sh/configuration/config/
+# Sync kapali: kayit/kimlik yok, gecmis yalnizca bu makinede kalir.
+auto_sync = false
+update_check = false
+
+# Ctrl-R bulundugun git repo agacinda acilir; arama ekraninda Ctrl-R ile
+# tum gecmise (global) gecilir. Siralama asagidaki search.filters ile belirlenir.
+workspaces = true
+filter_mode = "workspace"
+search_mode = "fuzzy"
+style = "compact"
+inline_height = 20
+show_preview = true
+enter_accept = false
+
+# Sirlarin veritabanina hic girmemesi icin.
+secrets_filter = true
+
+history_filter = [
+  "^\\s",
+]
+
+[search]
+filters = ["workspace", "global", "directory", "host"]
