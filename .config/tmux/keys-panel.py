@@ -213,6 +213,32 @@ def merge(kitty_rows, tmux_rows):
     return merged
 
 
+# ok/isimli tuslar harf ve rakamlardan sonra gelsin
+NAMED_KEY_ORDER = ("Left", "Right", "Up", "Down", "Equal", "Minus")
+
+
+def sort_key(row):
+    """Tus sirasina gore: once ana tus, sonra modifier sayisi.
+
+    Boylece ⌘+A ile ⌘+⇧+A yan yana gelir ve sade olan (az modifier) once gelir.
+    Kitty esi olmayan, yalniz tmux satirlari en sona duser.
+    """
+    key = row["kitty"]
+    if not key:
+        return (3, 0, "", 0, row["desc"].lower())
+
+    parts = key.split("+")
+    base = parts[-1]
+    mods = len(parts) - 1
+
+    if len(base) == 1 and base.isdigit():
+        return (0, 0, base, mods, "")
+    if len(base) == 1:
+        return (1, 0, base.lower(), mods, "")
+    idx = NAMED_KEY_ORDER.index(base) if base in NAMED_KEY_ORDER else len(NAMED_KEY_ORDER)
+    return (2, idx, base.lower(), mods, "")
+
+
 def main():
     rows = merge(parse_kitty(), parse_tmux())
     if not rows:
@@ -220,7 +246,7 @@ def main():
 
     kw = max((len(r["kitty"]) for r in rows), default=0)
     tw = max((len(r["tmux"]) for r in rows), default=0)
-    for r in sorted(rows, key=lambda r: (r["section"] or "~", r["desc"].lower())):
+    for r in sorted(rows, key=sort_key):
         sec = f"  · {r['section']}" if r["section"] else ""
         print(f"{r['kitty']:<{kw}}  {r['tmux']:<{tw}}  {r['desc']}{sec}")
 

@@ -27,5 +27,6 @@ summary=$(printf '%s' "$json" | python3 ~/.config/tmux/pr-status.py 2>/dev/null)
 # Ozeti gecici dosyaya yaz: popup komut satirinda tirnak kacisiyla ugrasmamak icin
 tmp=$(mktemp -t pr-status) || exit 0
 printf '%s\n\n(kapatmak icin bir tusa bas)\n' "$summary" >"$tmp"
+# popup komutu tmux'un default-shell'inde (fish) calisir; bash sozdizimi icin acikca bash cagir
 tmux display-popup -E -w 64 -h 12 -T ' PR ' \
-  "cat '$tmp'; read -rsn1; rm -f '$tmp'"
+  "bash -c \"cat '$tmp'; read -rsn1; rm -f '$tmp'\""
