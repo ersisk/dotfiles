@@ -3,7 +3,7 @@ preview_command = "eza -la --all --git --icons --color=always {}"
 
 [[session]]
 name = "Notes"
-alias = "n"
+alias = "nt"
 alias_auto_connect = true
 path = "~/obsidian-vault"
 startup_command = 'nvim +GoToFile'
@@ -14,14 +14,14 @@ path = "~/"
 
 [[session]]
 name = "Config"
-alias = "c"
+alias = "cf"
 alias_auto_connect = true
 path = "~/.config"
 startup_command = 'nvim +GoToFile'
 
 [[session]]
 name = "Workspace"
-alias = "w"
+alias = "ws"
 path = "~/workspace"
 
 [[session]]
