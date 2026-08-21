@@ -2,49 +2,51 @@
 preview_command = "eza -la --all --git --icons --color=always {}"
 
 [[session]]
-name = "Notes"
+name = "📝 Notes"
 alias = "nt"
 alias_auto_connect = true
 path = "~/obsidian-vault"
 startup_command = 'nvim +GoToFile'
 
 [[session]]
-name = "Home (~)"
+name = "🏠 Home (~)"
+alias = "hme"
 path = "~/"
 
 [[session]]
-name = "Config"
+name = "🔧 Config"
 alias = "cf"
 alias_auto_connect = true
 path = "~/.config"
 startup_command = 'nvim +GoToFile'
 
 [[session]]
-name = "Workspace"
+name = "📂 Workspace"
 alias = "ws"
 path = "~/workspace"
 
 [[session]]
-name = "Downloads"
+name = "📥 Downloads"
 alias = "dl"
 path = "~/Downloads"
 startup_command = "yazi"
 
 [[session]]
-name = "Dotfiles"
+name = "🧩 Dotfiles"
 alias = "df"
 alias_auto_connect = true
 path = "~/workspace/dotfiles"
 startup_command = "nvim +GoToFile"
 
 [[session]]
-name = "LazySQL Config"
+name = "🗄 LazySQL Config"
+alias = "lsq"
 path = "~/Library/Application Support/lazysql"
 startup_command = "vp config.toml"
 preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
 [[session]]
-name = "Rss Feeds"
+name = "📰 Rss Feeds"
 alias = "rss"
 path = "~/.newsboat"
 startup_command = "newsboat -r"
@@ -52,37 +54,39 @@ preview_command = "~/.config/sesh/rss-preview.sh"
 
 
 [[session]]
-name = "Presents"
+name = "🎤 Presents"
+alias = "prs"
 path = "~/Documents/presents"
 startup_command = "nvim +GoToFile"
 
 [[session]]
-name = "Main"
+name = "💼 Main"
 alias = "gc"
 alias_auto_connect = true
 path = "$WORK_MAIN"
 windows = [" GH Dash"]
 
 [[session]]
-name = "Notif"
+name = "💼 Notif"
 alias = "gn"
 alias_auto_connect = true
 path = "$WORK_NOTIF"
 
 [[session]]
-name = "Lib"
+name = "💼 Lib"
 alias = "gl"
 alias_auto_connect = true
 path = "$WORK_LIB"
 
 [[session]]
-name = "Translate"
+name = "💼 Translate"
 alias = "tt"
 path = "$WORK_TRANSLATE"
 
 
 [[session]]
-name= "Reset Admin Pass"
+name= "🔑 Reset Admin Pass"
+alias = "rstpw"
 path = "$WORK_BIN"
 startup_command="./reset-admin-password.sh; read -P 'devam icin enter...'; exit"
 
