@@ -110,7 +110,7 @@
       }
     }
   },
-  "alwaysThinkingEnabled": false,
+  "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
@@ -120,9 +120,7 @@
   "mcpServers": {
     "qmd": {
       "command": "qmd",
-      "args": [
-        "mcp"
-      ]
+      "args": ["mcp"]
     }
   },
   "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1,

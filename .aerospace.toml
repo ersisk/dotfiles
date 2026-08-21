@@ -346,6 +346,12 @@ if.app-id = 'com.neovide.neovide'
 run = 'move-node-to-workspace I'
 check-further-callbacks = true
 
+# Terminalden bundle içindeki binary ile açılınca macOS bundle-id vermiyor (NULL-APP-BUNDLE-ID),
+# bu yüzden app-id kuralı tutmuyor; isimle yakala.
+[[on-window-detected]]
+if.app-name-regex-substring = '[Nn]eovide'
+run = 'move-node-to-workspace I'
+
 [[on-window-detected]]
 if.app-id = 'com.jetbrains.intellij'
 run = "move-node-to-workspace I"
