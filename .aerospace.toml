@@ -377,6 +377,10 @@ run = ["move-node-to-workspace D", "layout floating"] # Beekeeper studio has som
 if.app-id = 'com.TablePro'
 run = ["move-node-to-workspace D", "layout floating"] # TablePro has some weird behavior with AeroSpace, so I set it to floating layout]
 
+[[on-window-detected]]
+if.app-id = 'tabularis'
+run = "move-node-to-workspace D"
+
 # --- API TESTING & TOOLS (WORKSPACE: P) ---
 
 [[on-window-detected]]

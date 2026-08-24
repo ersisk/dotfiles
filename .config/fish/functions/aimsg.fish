@@ -1,3 +1,30 @@
+function __aimsg_base --description "HEAD'e en yakin entegrasyon dalinin merge-base'i"
+    set -l cands
+    set -l oh (git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null)
+    test -n "$oh"; and set -a cands $oh
+    set -a cands origin/release-candidate origin/main origin/master origin/develop main master
+
+    set -l seen
+    set -l best_mb ""
+    set -l best_n 0
+    for ref in $cands
+        contains -- $ref $seen; and continue
+        set -a seen $ref
+        git rev-parse -q --verify "$ref^{commit}" >/dev/null 2>&1; or continue
+        # HEAD bu dala girmisse branch'e ozgu is kalmamistir: base uretme
+        git merge-base --is-ancestor HEAD $ref 2>/dev/null; and return 1
+        set -l mb (git merge-base $ref HEAD 2>/dev/null)
+        test -n "$mb"; or continue
+        set -l n (git rev-list --count $mb..HEAD 2>/dev/null)
+        test -n "$n"; and test $n -gt 0; or continue
+        if test $best_n -eq 0 -o $n -lt $best_n
+            set best_n $n
+            set best_mb $mb
+        end
+    end
+    test -n "$best_mb"; and echo $best_mb
+end
+
 function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği clipboard'"'"'a al'
     if contains -- -h $argv; or contains -- --help $argv
         set_color normal
@@ -7,7 +34,8 @@ function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği cl
         echo "  aimsg [-c|--commit] [-n|--no-wait]"
         echo
         set_color -o; echo "AKIŞ"; set_color normal
-        echo "  1. diff clipboard'a kopyalanır (unstaged, yoksa staged)"
+        echo "  1. diff clipboard'a kopyalanır (unstaged, yoksa staged, yoksa untracked)"
+        echo "     hiçbiri yoksa: branch'in base'ine göre commit'li diff (worktree akışı)"
         echo "  2. Raycast AI commit-generator açılır"
         echo "  3. Raycast'te Copy'ye bas — çıktı clipboard'a düşer"
         echo "  4. burada OPTION'lar fzf ile listelenir, seçtiğin clipboard'a gider"
@@ -40,6 +68,21 @@ function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği cl
         end
     end
 
+    # Worktree akisinda is zaten commit'lenmis oluyor, calisma agaci temiz kaliyor.
+    # O durumda branch'i base'ine gore diff'le: base, HEAD'e en yakin aday ref'in
+    # merge-base'i (repo'ya gore master/release-candidate/upstream degisiyor).
+    set -l from_range 0
+    if test -z "$diff_output"
+        set -l base (__aimsg_base)
+        if test -n "$base"
+            set diff_output (git --no-pager diff $base HEAD)
+            if test -n "$diff_output"
+                set from_range 1
+                echo "kaynak: commit'li diff — base "(string sub -l 8 -- $base)", "(git rev-list --count $base..HEAD)" commit, "(count $diff_output)" satır"
+            end
+        end
+    end
+
     if test -z "$diff_output"
         test (count $marked) -gt 0; and git reset -q -- $marked 2>/dev/null
         echo "aimsg: diff yok — enter" >&2
@@ -50,6 +93,8 @@ function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği cl
     test (count $marked) -gt 0; and git reset -q -- $marked 2>/dev/null
 
     set -l branch (git symbolic-ref --short HEAD 2>/dev/null)
+    # detached worktree'de symbolic-ref bos doner
+    test -z "$branch"; and set branch (git rev-parse --short HEAD 2>/dev/null)
     open -g "raycast://ai-commands/commit-generator?arguments={\"branch\":\"$branch\"}"
 
     test $no_wait -eq 1; and return 0
@@ -104,7 +149,10 @@ function aimsg --description 'Raycast AI ile commit mesajı üret, seçeneği cl
     test -z "$pick"; and return 0
 
     printf '%s' $pick | pbcopy
-    if test $do_commit -eq 1
+    if test $do_commit -eq 1 -a $from_range -eq 1
+        echo "clipboard: $pick"
+        echo "commit edilecek değişiklik yok (mesaj commit'li diff'ten üretildi) — amend: git commit --amend -m ..." >&2
+    else if test $do_commit -eq 1
         if test (count (git --no-pager diff --cached --name-only)) -gt 0
             git commit -m "$pick"
         else

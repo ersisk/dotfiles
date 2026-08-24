@@ -9,6 +9,30 @@ vim.cmd [[command! -nargs=0 GoToSymbol :lua Snacks.picker.lsp_symbols()]]
 vim.cmd [[command! -nargs=0 GoToBuffer :lua Snacks.picker.buffers()]]
 vim.cmd [[command! -nargs=0 Grep :lua Snacks.picker.grep()]]
 vim.cmd [[command! -nargs=0 SmartGoTo :lua Snacks.picker.smart()]]
+
+-- codediff.nvim always opens its diff in a new tab, so `nvim +CodeDiff` ends up with two.
+-- Wipe the launch buffer first: snacks dashboard only drops its resize handler on BufWipeout.
+vim.api.nvim_create_user_command("CodeDiffSolo", function()
+  local launch_tab = vim.api.nvim_get_current_tabpage()
+  local launch_buf = vim.api.nvim_get_current_buf()
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "CodeDiffOpen",
+    once = true,
+    callback = function()
+      vim.schedule(function()
+        if not vim.api.nvim_tabpage_is_valid(launch_tab) or vim.api.nvim_get_current_tabpage() == launch_tab then
+          return
+        end
+        pcall(vim.api.nvim_buf_delete, launch_buf, { force = true })
+        if vim.api.nvim_tabpage_is_valid(launch_tab) then
+          pcall(vim.cmd, vim.api.nvim_tabpage_get_number(launch_tab) .. "tabclose")
+        end
+      end)
+    end,
+  })
+  vim.cmd.CodeDiff()
+end, { desc = "CodeDiff without the launch tab" })
+
 vim.api.nvim_create_user_command("FormatDisable", function(args)
   if args.bang then
     -- FormatDisable! will disable formatting just for this buffer
