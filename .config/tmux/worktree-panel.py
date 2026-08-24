@@ -5,6 +5,7 @@ PR merged + calisma agaci temiz olanlar "temizlenebilir" olarak isaretlenir;
 karar kullaniciya birakilir, script hicbir seyi silmez.
 """
 import json, subprocess, sys, time, os
+from concurrent.futures import ThreadPoolExecutor
 
 KW = {"green": "\033[38;2;152;187;108m", "yellow": "\033[38;2;230;195;132m",
       "orange": "\033[38;2;255;158;59m", "blue": "\033[38;2;126;156;216m",
@@ -56,12 +57,10 @@ if pr_state is None:
                 pr_state.setdefault(pr["headRefName"], [pr["number"], pr["state"]])
         except Exception:
             pass
-    fresh = True
-else:
-    fresh = False
 
 now = time.time()
-for p in paths:
+
+def collect(p):
     branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], p)
     detached = branch == "HEAD"
     if detached:
@@ -72,20 +71,29 @@ for p in paths:
         days = int((now - os.stat(p).st_mtime) // 86400)
     except OSError:
         days = 0
+    return p, branch, detached, dirty, days
 
-    num, state = pr_state.get(branch, (None, None))
+def lookup_pr(branch):
     # Son 100 PR listesinde yoksa (eski merged dallar) branch icin ayrica sor
-    if num is None and not detached:
-        one = run(["gh", "pr", "list", "--head", branch, "--state", "all",
-                   "--limit", "1", "--json", "number,state"], repo)
-        if one:
-            try:
-                arr = json.loads(one)
-                if arr:
-                    num, state = arr[0]["number"], arr[0]["state"]
-                    pr_state[branch] = [num, state]
-            except Exception:
-                pass
+    one = run(["gh", "pr", "list", "--head", branch, "--state", "all",
+               "--limit", "1", "--json", "number,state"], repo)
+    try:
+        arr = json.loads(one) if one else []
+        if arr:
+            return branch, [arr[0]["number"], arr[0]["state"]]
+    except Exception:
+        pass
+    return branch, [None, None]  # PR'i olmayan dal da cachelenmeli, yoksa her acilista tekrar sorulur
+
+# Worktree basina iki git cagrisi + eksik PR sorgusu var; seri calisinca panel saniyeler suruyor
+with ThreadPoolExecutor(max_workers=8) as ex:
+    rows = list(ex.map(collect, paths))
+    missing = [b for _, b, detached, _, _ in rows if not detached and b not in pr_state]
+    if missing:
+        pr_state.update(dict(ex.map(lookup_pr, missing)))
+
+for p, branch, detached, dirty, days in rows:
+    num, state = pr_state.get(branch, (None, None))
 
     if dirty:
         status = "{}● {} dosya{}".format(KW["orange"], dirty, KW["off"])

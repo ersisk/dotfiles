@@ -12,7 +12,7 @@ vim.cmd [[command! -nargs=0 SmartGoTo :lua Snacks.picker.smart()]]
 
 -- codediff.nvim always opens its diff in a new tab, so `nvim +CodeDiff` ends up with two.
 -- Wipe the launch buffer first: snacks dashboard only drops its resize handler on BufWipeout.
-vim.api.nvim_create_user_command("CodeDiffSolo", function()
+vim.api.nvim_create_user_command("CodeDiffSolo", function(opts)
   local launch_tab = vim.api.nvim_get_current_tabpage()
   local launch_buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_create_autocmd("User", {
@@ -30,8 +30,8 @@ vim.api.nvim_create_user_command("CodeDiffSolo", function()
       end)
     end,
   })
-  vim.cmd.CodeDiff()
-end, { desc = "CodeDiff without the launch tab" })
+  vim.cmd { cmd = "CodeDiff", args = opts.fargs }
+end, { nargs = "*", desc = "CodeDiff without the launch tab" })
 
 vim.api.nvim_create_user_command("FormatDisable", function(args)
   if args.bang then
