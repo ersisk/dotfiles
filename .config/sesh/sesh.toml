@@ -39,10 +39,19 @@ path = "~/workspace/dotfiles"
 startup_command = "nvim +GoToFile"
 
 [[session]]
-name = "🗄 LazySQL Config"
+name = "🐳 LazyDocker"
+alias = "lzd"
+alias_auto_connect = true
+path = "~/Library/Application Support/lazydocker"
+startup_command = "lazydocker"
+preview_command = "bat --language=yaml --style=snip --color=always ~/Library/Application Support/lazydocker/config.yml"
+
+[[session]]
+name = "🗄 LazySQL"
 alias = "lsq"
+alias_auto_connect = true
 path = "~/Library/Application Support/lazysql"
-startup_command = "vp config.toml"
+startup_command = "lazysql"
 preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
 [[session]]

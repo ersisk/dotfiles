@@ -134,6 +134,8 @@ alias jtb="jira-to-branch"
 alias dnv="diffnav"
 alias sduck="s -p duckduckgo"
 alias wt='git worktree'
+alias sq="sesh connect lsq"
+alias lzd="sesh connect lzd"
 
 # The next line updates PATH for the Google Cloud SDK.
 if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/path.fish.inc; end
