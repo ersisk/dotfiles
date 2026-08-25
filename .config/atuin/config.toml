@@ -22,3 +22,6 @@ history_filter = [
 
 [search]
 filters = ["workspace", "global", "directory", "host"]
+
+[theme]
+name = "kanagawa"

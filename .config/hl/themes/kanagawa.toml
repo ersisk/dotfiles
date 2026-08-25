@@ -1,0 +1,75 @@
+#:schema https://raw.githubusercontent.com/pamburus/hl/v0.36.3/schema/json/theme.schema.v1.json
+
+version = "1.1"
+tags = ["dark", "truecolor"]
+
+[styles]
+[styles.primary]
+foreground = "#dcd7ba"
+
+[styles.secondary]
+modes = ["-faint"]
+foreground = "#727169"
+
+[styles.muted]
+foreground = "#54546d"
+
+[styles.strong]
+modes = ["-bold"]
+foreground = "#c8c093"
+
+[styles.accent]
+foreground = "#7e9cd8"
+
+[styles.accent-secondary]
+style = "secondary"
+foreground = "#6a9589"
+
+[styles.syntax]
+modes = ["bold"]
+foreground = "default"
+
+[styles.trace]
+foreground = "#54546d"
+
+[styles.debug]
+foreground = "#957fb8"
+
+[styles.info]
+foreground = "#7aa89f"
+
+[styles.warning]
+foreground = "#e6c384"
+
+[styles.error]
+foreground = "#ff5d62"
+
+[elements]
+[elements.field]
+style = "accent-secondary"
+
+[elements.level]
+style = "accent-secondary"
+
+[elements.number]
+foreground = "#98bb6c"
+
+[elements.boolean-true]
+foreground = "#98bb6c"
+
+[elements.boolean-false]
+foreground = "#c34043"
+
+[elements.null]
+foreground = "#ff5d62"
+
+[levels]
+[levels.warning]
+message.style = ["message", "warning"]
+
+[levels.error]
+message.style = ["message", "error"]
+
+[indicators.sync.failed.inner.style]
+foreground = "#e6c384"
+modes = ["bold"]

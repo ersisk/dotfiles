@@ -74,6 +74,21 @@ theme:
         table:
             showSeparator: true
             compact: false
+    # Kanagawa Wave; gh-dash varsayilani sabit hex kullaniyor, terminal paletini miras almiyor.
+    colors:
+        text:
+            primary: "#dcd7ba"
+            secondary: "#7e9cd8"
+            inverted: "#1f1f28"
+            faint: "#727169"
+            warning: "#ff5d62"
+            success: "#98bb6c"
+        background:
+            selected: "#2a2a37"
+        border:
+            primary: "#ffa066"
+            secondary: "#54546d"
+            faint: "#2a2a37"
 pager:
     diff: "diffnav"
 confirmQuit: false

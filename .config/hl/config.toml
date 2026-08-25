@@ -1,0 +1,3 @@
+#:schema https://raw.githubusercontent.com/pamburus/hl/v0.36.3/schema/json/config.schema.json
+
+theme = "kanagawa"

@@ -35,6 +35,13 @@ ln -sf ~/workspace/dotfiles/.config/lazygit/config.yml \
   "$HOME/Library/Application Support/lazygit/config.yml"
 ```
 
+8. Link the lazydocker config, same reason as lazygit.
+
+```sh
+ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
+  "$HOME/Library/Application Support/lazydocker/config.yml"
+```
+
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)

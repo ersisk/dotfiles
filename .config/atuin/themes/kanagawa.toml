@@ -1,0 +1,20 @@
+[theme]
+name = "kanagawa"
+
+# Kanagawa Wave; ton degerleri kitty/tmux/fzf ile ayni.
+[colors]
+AlertInfo = "#98bb6c"
+AlertWarn = "#e6c384"
+AlertError = "#ff5d62"
+Annotation = "#727169"
+Base = "#dcd7ba"
+Guidance = "#7aa89f"
+Important = "#ffa066"
+Title = "#7e9cd8"
+Muted = "#54546d"
+SyntaxCommand = "#7e9cd8"
+SyntaxFlag = "#e6c384"
+SyntaxString = "#98bb6c"
+SyntaxVariable = "#957fb8"
+SyntaxOperator = "#7fb4ca"
+SyntaxComment = "#727169"

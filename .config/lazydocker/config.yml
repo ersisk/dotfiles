@@ -1,0 +1,12 @@
+gui:
+  # Kanagawa; lazygit'teki ton degerleriyle ayni.
+  theme:
+    activeBorderColor:
+      - "#FFA066"
+      - "bold"
+    inactiveBorderColor:
+      - "#54546D"
+    selectedLineBgColor:
+      - "#2A2A37"
+    optionsTextColor:
+      - "#7E9CD8"
