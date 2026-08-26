@@ -232,11 +232,6 @@ final class Controller: NSObject, NSMenuDelegate {
                     : $0.updatedAt > $1.updatedAt
             }
 
-        // Hide a placeholder the moment the real session writes its own file; prune
-        // deletes the leftover on the next tick.
-        let real = Set(sessions.filter { !$0.isRecovered }.map(\.tmuxPane))
-        sessions.removeAll { $0.isRecovered && real.contains($0.tmuxPane) }
-
         updateIcon()
     }
 
@@ -474,7 +469,17 @@ final class Controller: NSObject, NSMenuDelegate {
 
     // MARK: Icon
 
-    private var active: [Session] { sessions.filter { $0.phase != .idle } }
+    // A placeholder is hidden the moment the real session writes its own file. It stays
+    // in `sessions` so prune still sees it and deletes the leftover file — dropping it
+    // here instead would leave the file behind forever, and claude-next.sh reads the
+    // files directly, so prefix + j would keep landing on a session that is no longer
+    // waiting.
+    private var displayed: [Session] {
+        let real = Set(sessions.filter { !$0.isRecovered }.map(\.tmuxPane))
+        return sessions.filter { !($0.isRecovered && real.contains($0.tmuxPane)) }
+    }
+
+    private var active: [Session] { displayed.filter { $0.phase != .idle } }
 
     // A prompt that has gone unanswered for a while gets its own colour; everything
     // else keeps the colour of its phase.
@@ -507,9 +512,10 @@ final class Controller: NSObject, NSMenuDelegate {
         // Count only when it adds information: several sessions want attention.
         let peers = active.filter { $0.phase == phase }.count
         item.button?.title = peers > 1 ? " \(peers)" : ""
-        item.button?.toolTip = sessions.isEmpty
+        let rows = displayed
+        item.button?.toolTip = rows.isEmpty
             ? "Claude Code — no sessions"
-            : sessions
+            : rows
                 .map { "\($0.project) — \($0.phase.label), \(shortAge($0.updatedAt))" }
                 .joined(separator: "\n")
     }
@@ -520,17 +526,18 @@ final class Controller: NSObject, NSMenuDelegate {
         reload()
         menu.removeAllItems()
 
-        if sessions.isEmpty {
+        let rows = displayed
+        if rows.isEmpty {
             let empty = NSMenuItem(title: "No Claude sessions", action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         } else {
-            for session in sessions { menu.addItem(row(for: session)) }
+            for session in rows { menu.addItem(row(for: session)) }
         }
 
         menu.addItem(.separator())
 
-        if sessions.contains(where: { $0.phase.clearsWhenSeen }) {
+        if rows.contains(where: { $0.phase.clearsWhenSeen }) {
             let clear = NSMenuItem(title: "Clear finished", action: #selector(clearFinished), keyEquivalent: "")
             clear.target = self
             menu.addItem(clear)
@@ -610,7 +617,7 @@ final class Controller: NSObject, NSMenuDelegate {
     }
 
     @objc private func clearFinished() {
-        for session in sessions where session.phase.clearsWhenSeen {
+        for session in displayed where session.phase.clearsWhenSeen {
             acknowledge(session)
             try? FileManager.default.removeItem(at: session.file)
         }

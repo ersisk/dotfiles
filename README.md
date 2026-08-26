@@ -56,6 +56,41 @@ launchctl bootstrap "gui/$(id -u)" \
   "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
 ```
 
+# Claude Code session state
+
+Three things share one directory, `~/.local/state/claude-menubar/sessions`, so the
+contract between them is worth writing down: the `claude-tmux-notify` hook, the
+`claude-menubar` app, and `claude-next.sh` (prefix + j).
+
+- **One file per Claude session**, single-line JSON, always replaced by writing a
+  temp file and renaming it. The rename is what wakes the menu bar app's directory
+  watcher — an in-place rewrite leaves the icon stale. Single line so
+  `claude-next.sh` can parse it with bash alone, without spawning `jq` on a keypress.
+- **`claude-tmux-notify` is the primary writer**, one write per hook event. The
+  menu bar app only fills gaps: a pane running `claude` with no file at all gets one
+  written from what tmux still knows, marked `"recovered": true`. Without that, a
+  session already waiting for input when its file went missing could never announce
+  itself again — the next hook event is exactly what is not coming.
+- **`@claude_state` (per tmux window) means "unacknowledged work"**, and it is the
+  second half of the contract: the hook sets the state glyph, and the app *unsets* it
+  when it clears an entry you have looked at. Without that durable acknowledgement,
+  recovery would resurrect every finished session from the glyph on the next tick.
+  The glyph list therefore lives in two places — `claude-tmux-notify`
+  (`set_window_state`) and `ClaudeMenubar.swift` (`phaseByGlyph`).
+- **An entry is dropped** when its pane is gone, when no `claude` is left on its
+  recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
+  its pane is on screen. Every drop is logged with its reason to
+  `/tmp/claude-menubar.err.log`.
+- **The two surfaces have separate jobs.** The menu bar is the ambient one: it is on
+  screen even when kitty is not focused, and it tracks every session including the
+  finished and idle ones. `prefix + j` is the keyboard one, and it is the only way to
+  jump without reaching for the mouse. The tmux status bar used to carry a third copy
+  of the same signal; it was removed rather than kept in sync.
+- **launchd gives the app no UTF-8 locale**, and tmux then mangles its own output:
+  a tab in a format string becomes `_` and emoji session names become `__ Main`.
+  Hence `LANG` in the LaunchAgent plist. Related rule: an unparsable `list-panes`
+  answer must be treated as "cannot tell", never as "every pane is gone".
+
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)
