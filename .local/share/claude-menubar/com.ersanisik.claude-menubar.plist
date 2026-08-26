@@ -13,6 +13,10 @@
     <!-- launchd hands down a bare PATH; claude-jump needs brew's tmux. -->
     <key>PATH</key>
     <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <!-- Without a UTF-8 locale tmux mangles its own output: emoji session names come
+         back as "__ Main" and a tab in a format string turns into "_". -->
+    <key>LANG</key>
+    <string>en_US.UTF-8</string>
   </dict>
   <key>RunAtLoad</key>
   <true/>

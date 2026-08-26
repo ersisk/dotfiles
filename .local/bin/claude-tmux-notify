@@ -116,10 +116,11 @@ is_kitty_focused() {
 TARGET_VIS=""
 TMUX_SESS=""
 TMUX_WIN=""
+TMUX_TTY=""
 if [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null; then
-  IFS=$'\t' read -r TARGET_VIS TMUX_SESS TMUX_WIN < <(
+  IFS=$'\t' read -r TARGET_VIS TMUX_SESS TMUX_WIN TMUX_TTY < <(
     tmux display-message -p -t "$TARGET" \
-      $'#{pane_active}#{window_active}#{?#{session_attached},1,0}\t#S\t#I' 2>/dev/null
+      $'#{pane_active}#{window_active}#{?#{session_attached},1,0}\t#S\t#I\t#{pane_tty}' 2>/dev/null
   ) || true
 fi
 
@@ -160,7 +161,9 @@ state_file() {
 
 # Replaces the state file atomically. The rename is what wakes the app's directory
 # watcher, so writing into the final path directly would leave the icon stale.
-# The recorded tmux coordinates are what claude-jump uses to focus this pane.
+# The recorded tmux coordinates are what claude-jump uses to focus this pane; the
+# tty is how the app notices Claude died without a SessionEnd. One line per file,
+# so claude-status.sh / claude-next.sh can parse it without spawning jq.
 write_state() {
   local state="$1" detail="${2:-}" file tmp socket=""
   file=$(state_file)
@@ -170,7 +173,7 @@ write_state() {
   mkdir -p "$MENUBAR_DIR" 2>/dev/null || return 0
 
   if command -v jq &>/dev/null; then
-    jq -n \
+    jq -nc \
       --arg session_id "$SESSION_ID" \
       --arg state "$state" \
       --arg project "$PROJECT" \
@@ -180,14 +183,15 @@ write_state() {
       --arg tmux_session "$TMUX_SESS" \
       --arg tmux_window "$TMUX_WIN" \
       --arg tmux_pane "${TMUX_PANE:-}" \
+      --arg tmux_tty "$TMUX_TTY" \
       --argjson updated_at "$(date +%s)" \
       '$ARGS.named' > "$tmp" 2>/dev/null || { rm -f "$tmp"; return 0; }
   else
-    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","updated_at":%s}\n' \
+    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","updated_at":%s}\n' \
       "$(json_escape "$SESSION_ID")" "$state" "$(json_escape "$PROJECT")" \
       "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$socket")" \
       "$(json_escape "$TMUX_SESS")" "$(json_escape "$TMUX_WIN")" \
-      "$(json_escape "${TMUX_PANE:-}")" "$(date +%s)" > "$tmp" 2>/dev/null \
+      "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$(date +%s)" > "$tmp" 2>/dev/null \
       || { rm -f "$tmp"; return 0; }
   fi
 
@@ -238,7 +242,10 @@ tmux_styled() {
 #     (idempotent — re-applying never stacks). Also keep @claude_state in sync so
 #     the glyph reappears if auto-rename is later turned back on.
 # Nerd Font durum glyph'leri (Kanagawa ile renklendirilebilsin diye emoji degil).
-# Bu liste degisirse claude-status.sh / claude-next.sh / claude-sesh.sh da guncellenmeli.
+# Bu liste degisirse claude-next.sh (glyph_for) ve ClaudeMenubar.swift
+# (phaseByGlyph) da guncellenmeli; claude-sesh.sh glyph'i oldugu gibi gosterir.
+# @claude_state ayni zamanda "onaylanmamis is var" isareti: claude-menubar,
+# biten bir oturumun pane'ine bakildigini gorunce bu option'i siler.
 STATE_GLYPHS='󰓦󰛐󱎫'
 # Onceki emoji durum seti: pencere adinda kalmis olabilir, yeniden
 # adlandirirken soyulmalari icin tanimli tutuluyor.
@@ -387,9 +394,10 @@ if [[ "$EVENT" == "SubagentStop" ]]; then
     rm -f "$BG_FILE"
     SHORT=$(short_str "$DESC" 50)
     set_window_state done-bg
-    # `done`, not `working`: if the main agent is still going its next tool
-    # call flips it back, whereas a stale `working` would sit until session end.
-    write_state done "bg done · ${SHORT}"
+    # A terminal state, not `working`: if the main agent is still going its next
+    # tool call flips it back, whereas a stale `working` would sit until session
+    # end. `done-bg` keeps the crystalBlue colour claude-status.sh gives it.
+    write_state done-bg "bg done · ${SHORT}"
     notify "$(tmux_styled "$KW_BLUE" '' 'BG' "$SHORT")"
   fi
   exit 0
