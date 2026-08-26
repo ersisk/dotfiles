@@ -396,9 +396,37 @@ final class Controller: NSObject, NSMenuDelegate {
     private func acknowledge(_ session: Session) {
         guard let tmux = tmuxBin, !session.tmuxSocket.isEmpty, !session.tmuxPane.isEmpty
         else { return }
-        _ = capture(tmux, [
-            "-S", session.tmuxSocket, "set-option", "-uw", "-t", session.tmuxPane, "@claude_state",
+        let server = ["-S", session.tmuxSocket]
+
+        // Read the name before clearing. With automatic-rename off — which is how a
+        // window whose title Claude Code owns arrives — the format that renders
+        // @claude_state never runs, so the glyph is baked into the name and unsetting
+        // the option alone would leave it sitting there until the next hook event.
+        let info = capture(tmux, server + [
+            "display-message", "-p", "-t", session.tmuxPane, "#{automatic-rename}|#{window_name}",
         ])
+
+        _ = capture(tmux, server + [
+            "set-option", "-uw", "-t", session.tmuxPane, "@claude_state",
+        ])
+
+        guard let info else { return }
+        let parts = info.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
+        guard parts.count == 2, parts[0] == "0" else { return }
+
+        // Idempotent, and only the five state glyphs: a window can also carry a
+        // permanent icon of its own, which is not a state and must survive.
+        var name = String(parts[1])
+        var changed = false
+        while let first = name.first, Self.phaseByGlyph.keys.contains(String(first)) {
+            name.removeFirst()
+            while name.first == " " { name.removeFirst() }
+            changed = true
+        }
+
+        guard changed else { return }
+        _ = capture(tmux, server + ["rename-window", "-t", session.tmuxPane, name])
+        log("cleared state glyph from \(session.tmuxSession):\(session.tmuxWindow)")
     }
 
     // A Claude that was already waiting when its state file went missing would never

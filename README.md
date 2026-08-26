@@ -73,8 +73,10 @@ contract between them is worth writing down: the `claude-tmux-notify` hook, the
   itself again — the next hook event is exactly what is not coming.
 - **`@claude_state` (per tmux window) means "unacknowledged work"**, and it is the
   second half of the contract: the hook sets the state glyph, and the app *unsets* it
-  when it clears an entry you have looked at. Without that durable acknowledgement,
-  recovery would resurrect every finished session from the glyph on the next tick.
+  when it clears an entry you have looked at — also stripping the glyph from the window
+  *name*, since a window with `automatic-rename off` never re-renders it from the
+  option. Without that durable acknowledgement, recovery would resurrect every
+  finished session from the glyph on the next tick.
   The glyph list therefore lives in two places — `claude-tmux-notify`
   (`set_window_state`) and `ClaudeMenubar.swift` (`phaseByGlyph`).
 - **An entry is dropped** when its pane is gone, when no `claude` is left on its
