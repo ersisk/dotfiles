@@ -42,11 +42,13 @@ function ccr --description 'Claude Code oturumunu fzf ile seçip resume et'
     # --here / -h : sadece bulunduğun dizinin oturumları
     # var olan bir dizin argümanı: sadece o dizinin oturumları | kalanlar fzf ön-sorgusu
     set -l here 0
+    set -l list_mode 0
     set -l path_filter ""
     set -l query ""
     for a in $argv
         switch $a
             case --here -h; set here 1
+            case --_list; set list_mode 1
             case '*'
                 if test -d "$a"
                     set path_filter (realpath -- "$a")
@@ -207,19 +209,36 @@ function ccr --description 'Claude Code oturumunu fzf ile seçip resume et'
         test (count $filtered) -gt 0; and set lines $filtered
     end
 
+    if test $list_mode -eq 1
+        printf '%s\n' $lines
+        return 0
+    end
+
     set -l header (printf '%b  %-20s  %s   %s%b' $c_date 'PROJE' 'BRANCH' 'ÖZET' $c_off)
 
-    set -l sel (printf '%s\n' $lines | fzf \
+    # Liste fzf icinde doldurulur: tarama ~1 sn suruyor ve o sure boyunca pencere
+    # bombos kaliyor, tusa basildi mi belli olmuyordu.
+    # --no-config: config.fish yuklemek subshell'e ~250ms ekliyor, fonksiyonu
+    # dogrudan source etmek yetiyor (PATH zaten env'den geliyor).
+    set -l list_args --_list
+    test $here -eq 1; and set -a list_args --here
+    test -n "$path_filter"; and set -a list_args "$path_filter"
+    set -l inner "source "(string escape -- (status filename))"; ccr "(string join -- ' ' (string escape -- $list_args))
+    set -l load "fish --no-config -c "(string escape -- $inner)" 2>/dev/null"
+
+    set -l sel (fzf \
         --ansi \
         --delimiter \t --with-nth 1 --query "$query" \
         --height 90% --reverse --border rounded \
         --prompt '  resume ❯ ' \
         --pointer '▶' --marker '✓' \
         --info inline \
-        --header "$header" --header-first \
+        --header '⧗ taraniyor…' --header-first \
+        --bind "start:reload($load)" \
+        --bind "load:change-header($header)" \
         --color 'fg:#DCD7BA,bg:-1,hl:#7E9CD8,fg+:#C8C093,bg+:#2D4F67,hl+:#7FB4CA,prompt:#98BB6C,pointer:#98BB6C,marker:#98BB6C,info:#727169,header:italic:#957FB8,border:#54546D,gutter:-1' \
         --preview "tail -n 1500 {4} | jq -rs '$preview_jq'" \
-        --preview-window 'right:55%:wrap:border-left')
+        --preview-window 'right:55%:wrap:border-left' </dev/null)
     test -n "$sel"; or return 0
 
     set -l p (string split \t -- $sel)
