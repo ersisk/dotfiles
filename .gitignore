@@ -14,3 +14,6 @@
 # Derlenmis binary'ler - repoda tutulmaz (biri x86_64, Rosetta ile calisiyor)
 .config/bin/aws-ssh
 .config/bin/merged-branches
+
+# Derlenmis menubar binary - kaynak .local/share/claude-menubar/ altinda
+.local/bin/claude-menubar

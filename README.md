@@ -42,6 +42,20 @@ ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
   "$HOME/Library/Application Support/lazydocker/config.yml"
 ```
 
+9. Build the Claude Code menu bar indicator and load it at login. It shows the
+   state of every running Claude Code session (needs input / working / background
+   task / finished) and jumps to the session's tmux pane when clicked, which is
+   what the `claude-tmux-notify` hook feeds through
+   `~/.local/state/claude-menubar/sessions`.
+
+```sh
+~/.local/share/claude-menubar/build.sh
+ln -sf ~/workspace/dotfiles/.local/share/claude-menubar/com.ersanisik.claude-menubar.plist \
+  "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
+launchctl bootstrap "gui/$(id -u)" \
+  "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
+```
+
 # Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)

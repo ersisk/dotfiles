@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# claude-jump — raise kitty and focus the tmux pane a Claude session runs in.
+#
+# Called by the claude-menubar app with the tmux coordinates the
+# claude-tmux-notify hook recorded:
+#   claude-jump <socket> <session> <window> <pane-id>
+#
+# Runs outside tmux, so the server is addressed through -S <socket> and
+# switch-client needs an explicit client: without $TMUX there is no current one.
+set -uo pipefail
+
+socket="${1:-}"
+session="${2:-}"
+window="${3:-}"
+pane="${4:-}"
+
+bundle_id="${CLAUDE_NOTIFY_ACTIVATE:-net.kovidgoyal.kitty}"
+open -b "$bundle_id" 2>/dev/null || true
+
+[[ -n "$socket" && -n "$session" ]] || exit 0
+command -v tmux &>/dev/null || exit 0
+
+tmux() { command tmux -S "$socket" "$@"; }
+
+# A client already on the target session is the natural one to move, but the usual
+# case is jumping to a session nobody is attached to — then any attached client
+# will do. Without a client the select-* calls would only rearrange a session that
+# is not on screen, which looks exactly like nothing happening.
+client=$(tmux list-clients -t "$session" -F '#{client_name}' 2>/dev/null | head -1)
+[[ -n "$client" ]] || client=$(tmux list-clients -F '#{client_name}' 2>/dev/null | head -1)
+[[ -n "$client" ]] && tmux switch-client -c "$client" -t "$session" 2>/dev/null || true
+
+[[ -n "$window" ]] && tmux select-window -t "${session}:${window}" 2>/dev/null || true
+[[ -n "$pane" ]] && tmux select-pane -t "$pane" 2>/dev/null || true
+
+exit 0

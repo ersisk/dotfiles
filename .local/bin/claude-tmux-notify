@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # claude-tmux-notify
-# Claude Code hook script: posts a macOS notification (and a tmux status-line
-# message when inside tmux) when Claude stops, needs input, or finishes a
-# long-running bash command / background task.
+# Claude Code hook script: records per-session state for the claude-menubar app
+# (and shows a tmux status-line message when inside tmux) when Claude stops,
+# needs input, or finishes a long-running bash command / background task.
 #
 # Install:
 #   mkdir -p ~/.local/bin
@@ -10,16 +10,19 @@
 #   chmod +x ~/.local/bin/claude-tmux-notify
 #
 # How it works:
+#   SessionStart / SessionEnd  → register / drop the session (silent)
+#   UserPromptSubmit           → mark working (silent)
 #   Stop / Notification        → always notify
-#   PreToolUse  (Bash)         → stash start timestamp (silent)
+#   PreToolUse  (Bash)         → stash start timestamp, mark working
 #   PostToolUse (Bash)         → notify only if elapsed >= threshold
-#   PreToolUse  (Task)         → stash run_in_background flag (silent)
+#   PreToolUse  (Task)         → stash run_in_background flag, mark bg-running
 #   SubagentStop               → notify only if the subagent was background
 #
-# Where a notification goes depends on whether the pane is on screen right now:
+# Every event writes the session's state to $MENUBAR_DIR, which the menu bar app
+# watches. The tmux status line is used only where it can actually be seen:
 #   visible (kitty focused, active pane of active window) → nothing, you're watching
 #   kitty focused, pane in another session/window/pane    → tmux status line
-#   kitty backgrounded, or the pane's session detached    → macOS notification
+#   kitty backgrounded, or the pane's session detached    → menu bar only
 
 set -euo pipefail
 
@@ -32,15 +35,9 @@ STATE_DIR="${TMPDIR:-/tmp}/claude-tmux-notify"
 DISPLAY_MS=5000
 # Set to 0 to disable the semantic window-name state prefix (icon glyph).
 WINDOW_STATE="${CLAUDE_WINDOW_STATE:-1}"
-# Bundle ID raised when a macOS notification is clicked (requires terminal-notifier).
-# Raised via -execute (open -b <id>) because -activate is unreliable on recent macOS;
-# -execute also lets the click jump tmux to the originating pane (see notify_click_cmd).
-NOTIFY_ACTIVATE_BUNDLE_ID="${CLAUDE_NOTIFY_ACTIVATE:-net.kovidgoyal.kitty}"
-# Path to the icon shown on the right side of macOS notifications.
-# Use a PNG — terminal-notifier's -appIcon does not reliably render .icns on recent macOS.
-NOTIFY_APP_ICON="${CLAUDE_NOTIFY_APP_ICON:-$HOME/.local/share/claude-tmux-notify/kitty.png}"
-# Raycast deeplink fired alongside the Stop notification. Set to empty to disable.
-CONFETTI_URL="${CLAUDE_CONFETTI_URL:-raycast://extensions/raycast/raycast/confetti}"
+# Session state files consumed by the claude-menubar app. Persistent, not $TMPDIR:
+# launchd hands the app a different TMPDIR than an interactive shell.
+MENUBAR_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
 # -----------------------------------------------------------------------------
 
 # Read the hook payload from stdin
@@ -84,11 +81,14 @@ short_str() {
   fi
 }
 
-# Escape double quotes and backslashes for AppleScript string literals.
-as_escape() {
+# Escape a value for a JSON string literal (jq-less fallback path only).
+json_escape() {
   local s="$1"
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
+  s="${s//$'\n'/ }"
+  s="${s//$'\r'/ }"
+  s="${s//$'\t'/ }"
   printf '%s' "$s"
 }
 
@@ -110,12 +110,17 @@ is_kitty_focused() {
 # session with no attached client is one the user has switched away from, so its
 # pane is not on screen — but it is still reachable in a keystroke, so it is NOT
 # treated as unreachable (see DISPLAY_CLIENT below).
-# Queried once per hook run; empty outside tmux.
+# Queried once per hook run; empty outside tmux. The pane's own session and window
+# ride along in the same call — tmux_context and the menubar state file both need
+# them, and one display-message is three fewer process spawns per hook.
+TARGET_VIS=""
+TMUX_SESS=""
+TMUX_WIN=""
 if [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null; then
-  TARGET_VIS=$(tmux display-message -p -t "$TARGET" \
-    '#{pane_active}#{window_active}#{?#{session_attached},1,0}' 2>/dev/null) || TARGET_VIS=""
-else
-  TARGET_VIS=""
+  IFS=$'\t' read -r TARGET_VIS TMUX_SESS TMUX_WIN < <(
+    tmux display-message -p -t "$TARGET" \
+      $'#{pane_active}#{window_active}#{?#{session_attached},1,0}\t#S\t#I' 2>/dev/null
+  ) || true
 fi
 
 # Returns 0 when the target pane is what the user is actually looking at: the
@@ -130,7 +135,7 @@ is_target_visible() {
 # session would print to nobody. Any attached client on this server is looking at
 # the same terminal, so it is the right place to show the message — the styled
 # line carries the pane's own session:window, which says where to go.
-# Empty when no client is attached (nothing on screen; macOS notification instead).
+# Empty when no client is attached (nothing on screen; the menu bar carries it).
 if [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null; then
   DISPLAY_CLIENT=$(tmux list-clients -F '#{client_name}' 2>/dev/null | head -1) || DISPLAY_CLIENT=""
 else
@@ -138,39 +143,59 @@ else
 fi
 
 # Bare tmux session:window for the target pane, e.g. "Home:2". Empty when unavailable.
-# Targets $TARGET explicitly so the info matches Claude's pane, not the currently-active one.
+# Reads the values captured above, so it describes Claude's pane rather than the
+# currently-active one.
 tmux_context() {
-  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
-  tmux display-message -p -t "$TARGET" '#S:#I' 2>/dev/null || return 0
+  [[ -n "$TMUX_SESS" ]] || return 0
+  printf '%s:%s' "$TMUX_SESS" "$TMUX_WIN"
 }
 
-# Shell command run when a macOS notification is clicked: raise kitty, then jump
-# tmux to the exact session/window/pane this hook fired from.
-#
-# The click handler runs outside tmux (no $TMUX), so the socket path is captured
-# here and passed back via `tmux -S`. switch-client needs an explicit client too
-# (-c), since without $TMUX tmux has no notion of a "current" client.
-# Falls back to plain kitty activation when any part is unavailable.
-notify_click_cmd() {
-  local activate="open -b $NOTIFY_ACTIVATE_BUNDLE_ID"
-  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || { printf '%s' "$activate"; return 0; }
+# State file the claude-menubar app reads for this session. Keyed by session id so
+# a resumed session updates its own entry instead of leaving a stale twin behind;
+# falls back to the pane key when the payload carries no id.
+state_file() {
+  local key="${SESSION_ID:-$KEY}"
+  printf '%s/%s.json' "$MENUBAR_DIR" "${key//[^A-Za-z0-9._-]/_}"
+}
 
-  local socket sess win pane client tmux_bin
-  socket="${TMUX%%,*}"
-  tmux_bin=$(command -v tmux)
-  read -r sess win pane < <(tmux display-message -p -t "$TARGET" '#S #I #P' 2>/dev/null) \
-    || { printf '%s' "$activate"; return 0; }
+# Replaces the state file atomically. The rename is what wakes the app's directory
+# watcher, so writing into the final path directly would leave the icon stale.
+# The recorded tmux coordinates are what claude-jump uses to focus this pane.
+write_state() {
+  local state="$1" detail="${2:-}" file tmp socket=""
+  file=$(state_file)
+  tmp="${file}.$$"
+  [[ -n "${TMUX:-}" ]] && socket="${TMUX%%,*}"
 
-  # Any client attached to this session is a valid switch target; the first one wins.
-  client=$(tmux list-clients -t "$sess" -F '#{client_name}' 2>/dev/null | head -1)
+  mkdir -p "$MENUBAR_DIR" 2>/dev/null || return 0
 
-  local cmd="$activate"
-  if [[ -n "$client" ]]; then
-    cmd+="; $tmux_bin -S '$socket' switch-client -c '$client' -t '$sess'"
+  if command -v jq &>/dev/null; then
+    jq -n \
+      --arg session_id "$SESSION_ID" \
+      --arg state "$state" \
+      --arg project "$PROJECT" \
+      --arg cwd "$CWD" \
+      --arg detail "$detail" \
+      --arg tmux_socket "$socket" \
+      --arg tmux_session "$TMUX_SESS" \
+      --arg tmux_window "$TMUX_WIN" \
+      --arg tmux_pane "${TMUX_PANE:-}" \
+      --argjson updated_at "$(date +%s)" \
+      '$ARGS.named' > "$tmp" 2>/dev/null || { rm -f "$tmp"; return 0; }
+  else
+    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","updated_at":%s}\n' \
+      "$(json_escape "$SESSION_ID")" "$state" "$(json_escape "$PROJECT")" \
+      "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$socket")" \
+      "$(json_escape "$TMUX_SESS")" "$(json_escape "$TMUX_WIN")" \
+      "$(json_escape "${TMUX_PANE:-}")" "$(date +%s)" > "$tmp" 2>/dev/null \
+      || { rm -f "$tmp"; return 0; }
   fi
-  cmd+="; $tmux_bin -S '$socket' select-window -t '${sess}:${win}'"
-  cmd+="; $tmux_bin -S '$socket' select-pane -t '${sess}:${win}.${pane}'"
-  printf '%s' "$cmd"
+
+  mv -f "$tmp" "$file" 2>/dev/null || rm -f "$tmp"
+}
+
+remove_state() {
+  rm -f "$(state_file)" 2>/dev/null || true
 }
 
 # Kanagawa Wave palette — inline styling for tmux display-message.
@@ -265,77 +290,55 @@ set_window_state() {
   fi
 }
 
-# Son kullanici-gorunur mesaji pencereye yazar; claude-next.sh onizlemede gosterir.
+# Son kullanici-gorunur mesaji LAST_MSG'e ve tmux varsa pencere option'ina yazar;
+# claude-next.sh onizlemede, menubar da satir aciklamasinda gosterir.
 # Transcript yoksa sessizce atlanir - rozet ve glyph akisi bundan bagimsiz calisir.
+LAST_MSG=""
 set_last_message() {
-  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
   [[ -n "${TRANSCRIPT:-}" && -r "$TRANSCRIPT" ]] || return 0
   local msg
   msg=$(~/.config/tmux/claude-last-msg.sh "$TRANSCRIPT" 2>/dev/null) || return 0
   [[ -n "$msg" ]] || return 0
+  LAST_MSG="$msg"
+  [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
   tmux set-option -w -t "$TARGET" @claude_last "$msg" 2>/dev/null || true
 }
 
+# Shows the pre-rendered tmux_styled line, but only in the one case where it helps:
+# kitty is focused and the pane is somewhere else. Watching the pane needs no
+# message, and off screen the menu bar icon is the signal.
 notify() {
-  local message="$1" title="${2:-Claude Code}" tmux_line="${3:-$message}" confetti="${4:-0}"
+  local tmux_line="$1"
 
-  # Subtitle: project name, plus the tmux session:window when available, so the
-  # notification identifies which pane it came from at a glance.
-  local subtitle sw
-  subtitle="$PROJECT"
-  sw=$(tmux_context) && [[ -n "$sw" ]] && subtitle="$sw"
-
-  # Routing, by whether the user can actually see this pane right now:
-  #   kitty focused + pane on screen        → nothing, you are already watching it
-  #   kitty focused, pane anywhere else     → tmux status line on the live client
-  #   kitty backgrounded, or no tmux client → macOS notification
-  local focused=0
-  is_kitty_focused && focused=1
-
-  if [[ "$focused" == "1" ]] && is_target_visible; then
-    return 0
-  fi
-
-  local use_tmux=0
-  if [[ "$focused" == "1" && -n "$DISPLAY_CLIENT" ]]; then
-    use_tmux=1
-  fi
-
-  if [[ "$use_tmux" == "0" ]]; then
-    # Fire-and-forget so the Raycast launch never delays the hook.
-    if [[ "$confetti" == "1" && -n "$CONFETTI_URL" ]] && command -v open &>/dev/null; then
-      open -g "$CONFETTI_URL" >/dev/null 2>&1 &
-    fi
-    if command -v terminal-notifier &>/dev/null; then
-      # -group collapses repeated notifications for this session+pane into one
-      # (a new one replaces the previous), so Notification Center doesn't pile up.
-      local -a args=(
-        -title "$title"
-        -subtitle "$subtitle"
-        -message "$message"
-        -group "$KEY"
-        -execute "$(notify_click_cmd)"
-      )
-      # -appIcon replaces the left app icon; -contentImage shows the logo large
-      # on the right. Provide both so kitty is visible regardless of layout.
-      if [[ -n "$NOTIFY_APP_ICON" && -f "$NOTIFY_APP_ICON" ]]; then
-        args+=(-appIcon "$NOTIFY_APP_ICON" -contentImage "$NOTIFY_APP_ICON")
-      fi
-      terminal-notifier "${args[@]}" >/dev/null 2>&1 || true
-    elif command -v osascript &>/dev/null; then
-      local m t
-      m=$(as_escape "$message")
-      t=$(as_escape "$title")
-      osascript -e "display notification \"$m\" with title \"$t\"" >/dev/null 2>&1 || true
-    fi
-  fi
+  is_kitty_focused || return 0
+  [[ -n "$DISPLAY_CLIENT" ]] || return 0
+  is_target_visible && return 0
 
   # -c targets the live client, not the pane: a pane in a switched-away session
   # has no client of its own, so -t would render the message to nobody.
-  if [[ "$use_tmux" == "1" ]]; then
-    tmux display-message -d "$DISPLAY_MS" -c "$DISPLAY_CLIENT" "$tmux_line" 2>/dev/null || true
-  fi
+  tmux display-message -d "$DISPLAY_MS" -c "$DISPLAY_CLIENT" "$tmux_line" 2>/dev/null || true
 }
+
+# --- SessionStart / SessionEnd: menubar bookkeeping only ---------------------
+# Nothing is written to stdout: for these events Claude Code would feed it back
+# into the session as context.
+if [[ "$EVENT" == "SessionStart" ]]; then
+  write_state idle ""
+  exit 0
+fi
+
+if [[ "$EVENT" == "SessionEnd" ]]; then
+  set_window_state idle
+  remove_state
+  exit 0
+fi
+
+# --- UserPromptSubmit: Claude is busy before it reaches for any tool ----------
+if [[ "$EVENT" == "UserPromptSubmit" ]]; then
+  set_window_state working
+  write_state working ""
+  exit 0
+fi
 
 # --- PreToolUse: stash state, exit silently ----------------------------------
 if [[ "$EVENT" == "PreToolUse" ]]; then
@@ -343,6 +346,7 @@ if [[ "$EVENT" == "PreToolUse" ]]; then
   if [[ "$TOOL" == "Task" && "$RUN_BG" == "true" ]]; then
     echo "$TOOL_DESC" > "${STATE_DIR}/bg_task_${KEY}"
     set_window_state bg-running
+    write_state bg-running "$(short_str "${TOOL_DESC:-background task}" 60)"
     exit 0
   fi
 
@@ -351,6 +355,7 @@ if [[ "$EVENT" == "PreToolUse" ]]; then
   fi
 
   set_window_state working
+  write_state working "$(short_str "${TOOL_DESC:-$TOOL_CMD}" 60)"
   exit 0
 fi
 
@@ -366,8 +371,8 @@ if [[ "$EVENT" == "PostToolUse" && "$TOOL" == "Bash" ]]; then
 
     if (( ELAPSED >= NOTIFY_THRESHOLD )); then
       SHORT=$(short_str "$TOOL_CMD")
-      notify "Done (${ELAPSED}s): ${SHORT}" "Claude Code — ${PROJECT}" \
-        "$(tmux_styled "$KW_YELLOW" '⚡' 'BASH' "${SHORT} · ${ELAPSED}s")"
+      write_state working "✓ ${ELAPSED}s · ${SHORT}"
+      notify "$(tmux_styled "$KW_YELLOW" '⚡' 'BASH' "${SHORT} · ${ELAPSED}s")"
     fi
   fi
   exit 0
@@ -382,8 +387,10 @@ if [[ "$EVENT" == "SubagentStop" ]]; then
     rm -f "$BG_FILE"
     SHORT=$(short_str "$DESC" 50)
     set_window_state done-bg
-    notify "Background task done: ${SHORT}" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_BLUE" '' 'BG' "$SHORT")"
+    # `done`, not `working`: if the main agent is still going its next tool
+    # call flips it back, whereas a stale `working` would sit until session end.
+    write_state done "bg done · ${SHORT}"
+    notify "$(tmux_styled "$KW_BLUE" '' 'BG' "$SHORT")"
   fi
   exit 0
 fi
@@ -393,18 +400,18 @@ case "$EVENT" in
   Stop)
     set_window_state done
     set_last_message
-    notify "Claude finished" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_GREEN" '' 'DONE' "finished in ${PROJECT}")" 1
+    write_state done "${LAST_MSG:-Claude finished}"
+    notify "$(tmux_styled "$KW_GREEN" '' 'DONE' "finished in ${PROJECT}")"
     ;;
   Notification)
     set_window_state waiting
     set_last_message
-    notify "Claude needs input" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_ORANGE" '󰛐' 'INPUT' "needs input in ${PROJECT}")"
+    write_state waiting "${LAST_MSG:-needs input}"
+    notify "$(tmux_styled "$KW_ORANGE" '󰛐' 'INPUT' "needs input in ${PROJECT}")"
     ;;
   *)
-    notify "Event: ${EVENT}" "Claude Code — ${PROJECT}" \
-      "$(tmux_styled "$KW_WHITE" '󱜙' 'EVENT' "${EVENT} in ${PROJECT}")"
+    write_state working "${EVENT}"
+    notify "$(tmux_styled "$KW_WHITE" '󱜙' 'EVENT' "${EVENT} in ${PROJECT}")"
     ;;
 esac
 
