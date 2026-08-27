@@ -62,8 +62,12 @@ keybindings:
     prs:
         - key: C
           name: code review
+          # -d: odak kalsin, arka arkaya birden fazla review baslatilabilsin.
+          # remain-on-exit failed: -d ile acilan pencere hemen patlarsa gormezsin;
+          # basarisiz olan pencere ekranda kalir, basarili olan eskisi gibi kapanir.
+          # xargs yer tutucusu % — {} gh-dash sablonuyla karismasin.
           command: >-
-            tmux new-window -d -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'"
+            tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: D
           name: codediff in nvim
           command: >-

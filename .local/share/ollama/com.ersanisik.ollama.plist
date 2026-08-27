@@ -16,6 +16,13 @@
          11435'i deniyor, sonra 11434'e bakiyor. -->
     <key>OLLAMA_HOST</key>
     <string>127.0.0.1:11435</string>
+    <!-- Beekeeper Studio eklenti gorunumlerini kendi semasinda calistiriyor ve
+         ollama'nin varsayilan origin listesinde plugin:// yok — AI Shell'in
+         preflight'i (OPTIONS /v1/models) 403 yiyordu. Sadece bu sema aciliyor:
+         hicbir web sayfasi plugin:// origin'i uretemez, "*" veya "null" acmanin
+         aksine disaridan erisim yuzeyi olusmuyor. -->
+    <key>OLLAMA_ORIGINS</key>
+    <string>plugin://*</string>
   </dict>
   <key>RunAtLoad</key>
   <true/>
