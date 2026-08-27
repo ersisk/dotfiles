@@ -22,11 +22,15 @@ stow . -t ~
    Work session paths in `sesh.toml` read from it; without the file the
    work sessions are skipped and everything else keeps working.
 
-6. `jira-to-branch` needs three Raycast commands: the `screenocr` extension
-   plus two personal AI commands (`parse-jira-title`, `generate-branch`).
-   Without them the script times out waiting for the clipboard.
+6. Point Raycast at the script commands: Settings → Extensions → Script
+   Commands → Add Directory → `~/.config/raycast/scripts`. Stow already put the
+   directory there; see its README for the commands and their hotkeys.
 
-7. Link the lazygit config. On macOS lazygit reads
+7. Recreate the Raycast AI commands by hand from
+   `.config/raycast/ai-commands/` — Raycast keeps them in an encrypted
+   database, so stow cannot install them.
+
+8. Link the lazygit config. On macOS lazygit reads
    `~/Library/Application Support/lazygit`, not `~/.config`, so stow does not
    cover it.
 
@@ -35,14 +39,21 @@ ln -sf ~/workspace/dotfiles/.config/lazygit/config.yml \
   "$HOME/Library/Application Support/lazygit/config.yml"
 ```
 
-8. Link the lazydocker config, same reason as lazygit.
+9. Link the lazydocker config, same reason as lazygit.
 
 ```sh
 ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
   "$HOME/Library/Application Support/lazydocker/config.yml"
 ```
 
-9. Build the Claude Code menu bar indicator and load it at login. It shows the
+10. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
+   the Vision framework, so nothing is installed beyond what macOS ships.
+
+```sh
+~/.local/share/screen-ocr/build.sh
+```
+
+11. Build the Claude Code menu bar indicator and load it at login. It shows the
    state of every running Claude Code session (needs input / working / background
    task / finished) and jumps to the session's tmux pane when clicked, which is
    what the `claude-tmux-notify` hook feeds through
@@ -58,9 +69,10 @@ launchctl bootstrap "gui/$(id -u)" \
 
 # Claude Code session state
 
-Three things share one directory, `~/.local/state/claude-menubar/sessions`, so the
+Four things share one directory, `~/.local/state/claude-menubar/sessions`, so the
 contract between them is worth writing down: the `claude-tmux-notify` hook, the
-`claude-menubar` app, and `claude-next.sh` (prefix + j).
+`claude-menubar` app, `claude-next.sh` (prefix + j), and the Raycast script
+commands in `.config/raycast/scripts`.
 
 - **One file per Claude session**, single-line JSON, always replaced by writing a
   temp file and renaming it. The rename is what wakes the menu bar app's directory
@@ -83,11 +95,13 @@ contract between them is worth writing down: the `claude-tmux-notify` hook, the
   recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
   its pane is on screen. Every drop is logged with its reason to
   `/tmp/claude-menubar.err.log`.
-- **The two surfaces have separate jobs.** The menu bar is the ambient one: it is on
-  screen even when kitty is not focused, and it tracks every session including the
-  finished and idle ones. `prefix + j` is the keyboard one, and it is the only way to
-  jump without reaching for the mouse. The tmux status bar used to carry a third copy
-  of the same signal; it was removed rather than kept in sync.
+- **The three surfaces have separate jobs.** The menu bar is the ambient one: it is
+  on screen even when kitty is not focused, and it tracks every session including the
+  finished and idle ones. `prefix + j` is the keyboard one, but it only exists once you
+  are already in tmux. Raycast (`⌃⌥J`) is the one that works from Slack or a browser;
+  it reuses `claude-jump` rather than reimplementing the switch. The tmux status bar
+  used to carry a fourth copy of the same signal; it was removed rather than kept in
+  sync.
 - **launchd gives the app no UTF-8 locale**, and tmux then mangles its own output:
   a tab in a format string becomes `_` and emoji session names become `__ Main`.
   Hence `LANG` in the LaunchAgent plist. Related rule: an unparsable `list-panes`

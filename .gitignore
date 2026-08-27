@@ -17,3 +17,11 @@
 
 # Derlenmis menubar binary - kaynak .local/share/claude-menubar/ altinda
 .local/bin/claude-menubar
+
+# Derlenmis OCR binary - kaynak .local/share/screen-ocr/ altinda
+.local/bin/screen-ocr
+
+# Raycast'in kendi state'i - API token'i ve kurulu extension'lar, repoda tutulmaz
+.config/raycast/config.json
+.config/raycast/extensions/
+.config/raycast/ai/

@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+#
+# ai-oneshot — prompt stdin'den, cevap stdout'a. Tek atislik, konusma yok.
+#
+# Iki arka uc var ve hangisinin kazandigi girdi boyutuna bagli, olculdu:
+#
+#   gorev                       ollama (qwen3, sicak)   claude -p (haiku)
+#   Jira basligi cevirisi       0.9s                    13.3s
+#   541 satirlik diff           45.2s + bozuk format    14-16s
+#
+# Yerel model kucuk promptta acik ara kazaniyor; buyuk diff'te prefill'i M3
+# Pro'da pahaliya patliyor ve uzun girdide formati tutturamiyor. O yuzden secim
+# cagirana birakildi: AI_ONESHOT_BACKEND=claude diyen dogrudan uzaga gider.
+#
+# Docker Desktop'in Model Runner'i 11434'u isgal ediyor ve bos bir model listesi
+# donduruyor; bu yuzden port listesi sirayla denenir, ilk cevap veren degil
+# modeli GERCEKTEN barindiran kullanilir.
+
+set -uo pipefail
+
+usage() {
+  cat >&2 <<'USAGE'
+ai-oneshot — tek atislik soru, tek cevap
+
+KULLANIM
+  ai-oneshot [-c] [soru...]
+  <komut> | ai-oneshot [-c] [talimat...]
+
+  Argüman varsa soru odur; boru da varsa boru içeriği verinin kendisi olur:
+    git diff | ai "bu değişikliği özetle"
+
+SEÇENEKLER
+  -c, --claude   yerel modeli atla, doğrudan claude -p
+  -h, --help     bu yardım
+
+ORTAM
+  AI_ONESHOT_BACKEND         auto (varsayılan) | ollama | claude
+  AI_ONESHOT_OLLAMA_MODEL    varsayılan: qwen3:latest
+  AI_ONESHOT_CLAUDE_MODEL    varsayılan: claude-haiku-4-5-20251001
+  AI_ONESHOT_OLLAMA_HOSTS    sırayla denenecek adresler
+USAGE
+}
+
+BACKEND="${AI_ONESHOT_BACKEND:-auto}"
+OLLAMA_MODEL="${AI_ONESHOT_OLLAMA_MODEL:-qwen3:latest}"
+CLAUDE_MODEL="${AI_ONESHOT_CLAUDE_MODEL:-claude-haiku-4-5-20251001}"
+HOSTS="${AI_ONESHOT_OLLAMA_HOSTS:-http://127.0.0.1:11435 http://127.0.0.1:11434}"
+# Ollama'nin varsayilani 5 dakika: her cagri arasinda model bellekten dusuyor ve
+# yeniden yukleme tek basina ~8s ekliyor (soguk 10s, sicak 1.6s — olculdu).
+KEEP_ALIVE="${AI_ONESHOT_KEEP_ALIVE:-30m}"
+
+while (( $# )); do
+  case "$1" in
+    -c|--claude) BACKEND=claude; shift ;;
+    -h|--help)   usage; exit 0 ;;
+    --)          shift; break ;;
+    *)           break ;;
+  esac
+done
+
+# Argüman = talimat, boru = veri. Ikisi birden varsa talimat basa gecer; sadece
+# boru varsa (cagiran scriptlerin yolu) davranis degismez.
+if (( $# )); then
+  prompt="$*"
+  [[ -t 0 ]] || prompt="$prompt"$'\n\n'"$(cat)"
+else
+  prompt=$(cat)
+fi
+[[ -n "$prompt" ]] || { usage; exit 1; }
+
+run_claude() {
+  command -v claude &>/dev/null || { echo "ai-oneshot: claude yok" >&2; return 1; }
+  printf '%s' "$prompt" | claude -p --model "$CLAUDE_MODEL" 2>/dev/null
+}
+
+run_ollama() {
+  command -v jq &>/dev/null || return 1
+  local host out
+  for host in $HOSTS; do
+    curl -sf -m 1 "$host/api/tags" 2>/dev/null \
+      | jq -e --arg m "$OLLAMA_MODEL" '.models // [] | any(.name == $m)' >/dev/null 2>&1 || continue
+    # think:false — qwen3 gibi dusunen modeller yoksa cevabin onune <think> blogu koyar.
+    out=$(jq -nc --arg m "$OLLAMA_MODEL" --arg p "$prompt" --arg k "$KEEP_ALIVE" \
+            '{model:$m, prompt:$p, stream:false, think:false, keep_alive:$k, options:{temperature:0.2}}' \
+          | curl -sf -m 180 "$host/api/generate" -d @- 2>/dev/null \
+          | jq -r '.response // empty')
+    [[ -n "$out" ]] || continue
+    printf '%s\n' "$out"
+    return 0
+  done
+  return 1
+}
+
+case "$BACKEND" in
+  claude) run_claude ;;
+  ollama) run_ollama ;;
+  *)      run_ollama || run_claude ;;
+esac

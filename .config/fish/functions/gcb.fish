@@ -90,15 +90,16 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
     end
     test -z "$base"; and return 0
 
-    # Branch adı: -n ile verilmediyse jira-to-branch üretir (clipboard'a yazar)
+    # Branch adı: -n ile verilmediyse jira-to-branch üretir, stdout'tan okunur.
+    # Boru eklersen $status boruyu izler, jira-to-branch'i değil — hatası yutulur.
     if test -z "$name"
         set -l jtb ~/.config/bin/jira-to-branch
         test -x $jtb; or begin
             echo "gcb: $jtb bulunamadı (-n ile ad verebilirsin)" >&2
             return 1
         end
-        $jtb; or return 1
-        set name (pbpaste 2>/dev/null | string collect | string trim)
+        set name ($jtb)
+        or return 1
     end
 
     if test -z "$name"

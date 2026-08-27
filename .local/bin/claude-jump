@@ -15,7 +15,23 @@ window="${3:-}"
 pane="${4:-}"
 
 bundle_id="${CLAUDE_NOTIFY_ACTIVATE:-net.kovidgoyal.kitty}"
-open -b "$bundle_id" 2>/dev/null || true
+
+# `open -b` alone loses a race with AeroSpace when the terminal sits on another
+# workspace: measured one raise in three tries from a different workspace, while
+# asking AeroSpace directly worked three times out of three. It stays as the
+# fallback for when AeroSpace is not the window manager.
+raise_terminal() {
+  local wid
+  if command -v aerospace &>/dev/null; then
+    wid=$(aerospace list-windows --all --format '%{window-id} %{app-bundle-id}' 2>/dev/null \
+      | awk -v b="$bundle_id" '$2 == b { print $1; exit }')
+    if [[ -n "$wid" ]] && aerospace focus --window-id "$wid" 2>/dev/null; then
+      return 0
+    fi
+  fi
+  open -b "$bundle_id" 2>/dev/null || true
+}
+raise_terminal
 
 [[ -n "$socket" && -n "$session" ]] || exit 0
 command -v tmux &>/dev/null || exit 0
