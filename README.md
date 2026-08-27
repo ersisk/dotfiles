@@ -113,8 +113,12 @@ commands in `.config/raycast/scripts`.
 
 - **One file per Claude session**, single-line JSON, always replaced by writing a
   temp file and renaming it. The rename is what wakes the menu bar app's directory
-  watcher — an in-place rewrite leaves the icon stale. Single line so
-  `claude-next.sh` can parse it with bash alone, without spawning `jq` on a keypress.
+  watcher — an in-place rewrite leaves the icon stale. Single line so the reader can
+  parse it with bash alone, without spawning `jq` on a keypress.
+- **One reader, `claude-state.sh`**, next to the app that defines the contract.
+  `claude-next.sh` and both Raycast scripts source it. The tmux side used to carry
+  its own copy to avoid sourcing a file on a keypress; measured, that costs nothing
+  (2.2 ms for an empty bash, 2.0 ms with the source), so the copy is gone.
 - **`claude-tmux-notify` is the primary writer**, one write per hook event. The
   menu bar app only fills gaps: a pane running `claude` with no file at all gets one
   written from what tmux still knows, marked `"recovered": true`. Without that, a

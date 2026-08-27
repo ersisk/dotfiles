@@ -68,8 +68,24 @@ else
 fi
 [[ -n "$prompt" ]] || { usage; exit 1; }
 
+# Akis yalnizca cikti bir terminale gidiyorken. Cagiran scriptler (aimsg, aipr,
+# jira-to-branch) ciktiyi yakaliyor; onlarda tamponlu kalmasi gerekiyor, cunku
+# bos cevabi ancak tamamini gordukten sonra anlayip digerine dusebiliyoruz.
+streaming() { [[ -t 1 ]]; }
+
 run_claude() {
   command -v claude &>/dev/null || { echo "ai-oneshot: claude yok" >&2; return 1; }
+  if streaming && command -v jq &>/dev/null; then
+    # thinking_delta de geliyor, sadece text_delta basilir.
+    printf '%s' "$prompt" | claude -p --model "$CLAUDE_MODEL" \
+        --output-format stream-json --include-partial-messages --verbose 2>/dev/null \
+      | jq --unbuffered -j 'select(.type == "stream_event")
+                            | .event.delta? // empty
+                            | select(.type == "text_delta")
+                            | .text'
+    echo
+    return 0
+  fi
   printf '%s' "$prompt" | claude -p --model "$CLAUDE_MODEL" 2>/dev/null
 }
 
@@ -80,6 +96,18 @@ run_ollama() {
     curl -sf -m 1 "$host/api/tags" 2>/dev/null \
       | jq -e --arg m "$OLLAMA_MODEL" '.models // [] | any(.name == $m)' >/dev/null 2>&1 || continue
     # think:false — qwen3 gibi dusunen modeller yoksa cevabin onune <think> blogu koyar.
+    if streaming; then
+      # Bos cevabi yakalayabilmek icin tee ile isaret dosyasina da yazilir;
+      # ekrana akis bozulmaz.
+      local mark; mark=$(mktemp)
+      jq -nc --arg m "$OLLAMA_MODEL" --arg p "$prompt" --arg k "$KEEP_ALIVE" \
+          '{model:$m, prompt:$p, stream:true, think:false, keep_alive:$k, options:{temperature:0.2}}' \
+        | curl -sfN -m 180 "$host/api/generate" -d @- 2>/dev/null \
+        | jq --unbuffered -j '.response // empty' \
+        | tee "$mark"
+      if [[ -s "$mark" ]]; then rm -f "$mark"; echo; return 0; fi
+      rm -f "$mark"; continue
+    fi
     out=$(jq -nc --arg m "$OLLAMA_MODEL" --arg p "$prompt" --arg k "$KEEP_ALIVE" \
             '{model:$m, prompt:$p, stream:false, think:false, keep_alive:$k, options:{temperature:0.2}}' \
           | curl -sf -m 180 "$host/api/generate" -d @- 2>/dev/null \

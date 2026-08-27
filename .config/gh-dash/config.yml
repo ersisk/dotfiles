@@ -63,7 +63,7 @@ keybindings:
         - key: C
           name: code review
           command: >-
-            tmux new-window -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'"
+            tmux new-window -d -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'"
         - key: D
           name: codediff in nvim
           command: >-

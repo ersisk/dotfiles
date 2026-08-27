@@ -20,40 +20,12 @@
 
 set -uo pipefail
 
-STATE_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
+# Okuyucu paylasilan: ayni JSON sozlesmesini Raycast script'leri de ayristiriyor,
+# ucuncu bir kopya tutmanin bedeli yok (olculdu: bos bash 2.2 ms, source'lu 2.0 ms).
+. "${CLAUDE_STATE_LIB:-$HOME/.local/share/claude-menubar/claude-state.sh}"
 
-# Tek satirlik JSON'dan tek alan cikarir. Bastaki virgul sart: bir alan degerinin
-# icindeki alinti isareti sahte anahtar eslesmesi uretmesin.
-json_field() {
-  local re=",\"$2\":\"([^\"]*)\""
-  [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
-}
-
-# Dikkat bekleyen her oturum icin: session, pencere, pane.
-# Onceki oncelik alanina gore siralanir, sonra atilir: cevap bekleyen once gelsin,
-# yani prefix+j'nin ilk duragi en acil olan olsun. Ayni oncelikte session adina gore,
-# boylece sira cagrilar arasinda sabit.
-# Her zaman process substitution icinde calisir, glob'suz dizin sorun degil.
-emit_rows() {
-  local f line state sess prio
-  for f in "$STATE_DIR"/*.json; do
-    [[ -r "$f" ]] || continue
-    line=$(< "$f")
-    state=$(json_field "$line" state)
-    case "$state" in
-      waiting) prio=0 ;;
-      done-bg) prio=1 ;;
-      done) prio=2 ;;
-      *) continue ;;
-    esac
-    sess=$(json_field "$line" tmux_session)
-    [[ -n "$sess" ]] || continue
-    printf '%s\t%s\t%s\t%s\n' "$prio" "$sess" "$(json_field "$line" tmux_window)" \
-      "$(json_field "$line" tmux_pane)"
-  done | sort | cut -f2-
-}
-
-mapfile -t rows < <(emit_rows)
+# prio < 3: waiting / done-bg / done. Calisan oturumda cevaplanacak bir sey yok.
+mapfile -t rows < <(emit_rows | awk -F'\t' '$1 < 3')
 
 if (( ${#rows[@]} == 0 )); then
   tmux display-message -d 1500 "#[fg=#16161d,bg=#7e9cd8,bold] 󰘦  CLAUDE #[fg=#7e9cd8,bg=#1f1f28,nobold]#[fg=#dcd7ba,bg=#1f1f28] no pane waiting "
@@ -62,7 +34,7 @@ fi
 
 targets=()
 for row in "${rows[@]}"; do
-  IFS=$'\t' read -r sess widx _ <<< "$row"
+  IFS=$'\t' read -r _ _ _ _ sess widx _ <<< "$row"
   targets+=("${sess}:${widx}")
 done
 
@@ -77,7 +49,7 @@ for i in "${!targets[@]}"; do
   fi
 done
 
-IFS=$'\t' read -r _ _ pane <<< "${rows[idx]}"
+IFS=$'\t' read -r _ _ _ _ _ _ pane _ <<< "${rows[idx]}"
 target="${targets[idx]}"
 
 tmux switch-client -t "${target%%:*}" 2>/dev/null

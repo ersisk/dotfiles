@@ -11,7 +11,7 @@
 export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -uo pipefail
 
-. "$(dirname "$0")/lib/claude-state.sh"
+. "${CLAUDE_STATE_LIB:-$HOME/.local/share/claude-menubar/claude-state.sh}"
 
 rows=$(emit_rows)
 if [[ -z "$rows" ]]; then

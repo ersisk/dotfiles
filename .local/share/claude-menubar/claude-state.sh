@@ -1,12 +1,17 @@
-# Reader for the claude-menubar state files, sourced by the Raycast script
-# commands. Same single-line JSON contract claude-next.sh parses; that one keeps
-# its own copy on purpose — it runs on a tmux keypress and must not pay for
-# sourcing a file it does not otherwise need.
+# claude-state — ~/.local/state/claude-menubar/sessions okuyucusu.
+#
+# Kontrat ana README'de yazili. Okuyucu burada duruyor cunku sozlesmeyi tanimlayan
+# uygulama (ClaudeMenubar.swift) da bu dizinde; uc ayri cagiran source ediyor:
+#   claude-next.sh                      (tmux, prefix + j)
+#   .config/raycast/scripts/claude-jump.sh
+#   .config/raycast/scripts/claude-sessions.sh
+# Eskiden tmux tarafi kendi kopyasini tasiyordu, "tus basiminda dosya source etme"
+# gerekcesiyle. Olculdu: fark yok (bos bash 2.2 ms, source'lu 2.0 ms).
 
 STATE_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
-JUMP="${CLAUDE_JUMP:-$HOME/.local/bin/claude-jump}"
 
-# Leading comma is required: it stops a quote inside a value from matching as a key.
+# Bastaki virgul sart: bir alan degerinin icindeki alinti isareti sahte anahtar
+# eslesmesi uretmesin.
 json_field() {
   local re=",\"$2\":\"([^\"]*)\""
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
@@ -17,8 +22,8 @@ json_num() {
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
 }
 
-# Attention order, not the menu bar's icon order: what you would want to look at
-# first, so row 1 is always the right jump target.
+# Dikkat sirasi, menu cubugunun ikon sirasi degil: once bakman gerekeni yaz, boylece
+# ilk satir her zaman dogru atlama hedefi olur. prio < 3 = cevap bekleyen.
 state_prio() {
   case "$1" in
     waiting)    printf 0 ;;
@@ -46,17 +51,18 @@ state_label() {
 }
 
 short_age() {
-  local secs=$(( $(date +%s) - ${1:-0} ))
+  local secs=$(( ${2:-$(date +%s)} - ${1:-0} ))
   (( secs < 0 )) && secs=0
-  if   (( secs < 60 ));   then printf '%ds' "$secs"
-  elif (( secs < 3600 )); then printf '%dm' $(( secs / 60 ))
+  if   (( secs < 60 ));    then printf '%ds' "$secs"
+  elif (( secs < 3600 ));  then printf '%dm' $(( secs / 60 ))
   elif (( secs < 86400 )); then printf '%dh' $(( secs / 3600 ))
   else printf '%dd' $(( secs / 86400 )); fi
 }
 
 # prio \t state \t project \t age \t session \t window \t pane \t socket \t detail
 emit_rows() {
-  local f line state sess
+  local f line state sess now
+  now=$(date +%s)   # satir basina degil, bir kez
   for f in "$STATE_DIR"/*.json; do
     [[ -r "$f" ]] || continue
     line=$(< "$f")
@@ -66,7 +72,7 @@ emit_rows() {
     printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$(state_prio "$state")" "$state" \
       "$(json_field "$line" project)" \
-      "$(short_age "$(json_num "$line" updated_at)")" \
+      "$(short_age "$(json_num "$line" updated_at)" "$now")" \
       "$sess" \
       "$(json_field "$line" tmux_window)" \
       "$(json_field "$line" tmux_pane)" \

@@ -11,7 +11,7 @@ Kurulum: Raycast → `Create AI Command` → başlığı dosya adından, prompt'
 | Komut | Alias | Girdi | Prompt burada mı? |
 | --- | --- | --- | --- |
 | Explain Error | `ee` | `{selection}` | ✔ |
-| Commit Message | `cm` | `{clipboard}` (`git diff --staged \| pbcopy`) | ✔ |
+| Commit Message | `cm` | `{clipboard}` (`git diff --staged \| pbcopy`) | ✔ — ama `aimsg` daha iyisini yapıyor |
 | Translate TR ↔ EN | `te` | `{selection}` | ✔ |
 
 `jira-to-branch` eskiden buradan iki AI komutu (`parse-jira-title`,

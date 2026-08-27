@@ -8,7 +8,6 @@ okur; AI Command'lerin aksine bunlar gerçekten versiyonlanıyor.
 | --- | --- | --- |
 | Jump to Claude | `⌃⌥J` | Dikkat bekleyen Claude oturumuna kitty'yi kaldırıp atlar |
 | Claude Sessions | `⌃⌥K` | Çalışan tüm oturumları, en acili başta listeler |
-| Commit Message | `⌃⌥C` | Staged diff'i kopyalayıp `commit-message` AI komutuna verir |
 | Screen OCR | `⌃⌥O` | Ekran bölgesi seç, metni panoya kopyala (macOS Vision) |
 | Sesh Session | `⌃⌥S` | kitty'yi kaldır ve eşleşen sesh oturumuna geç |
 
@@ -22,10 +21,15 @@ okur; AI Command'lerin aksine bunlar gerçekten versiyonlanıyor.
   3.2'sine düşersin. 3.2'yi hedefle: `mapfile` ve associative array yok.
 - **PATH'i elle kur.** Aynı sebeple `tmux`, `git`, `jq` görünmez; her script
   başında `PATH="/opt/homebrew/bin:/usr/bin:/bin:..."` var.
-- **`lib/` bir komut değil.** İçindeki dosyalarda `@raycast.schemaVersion` yok ve
-  executable bit'leri kapalı, Raycast onları listelemiyor.
+- **Paylaşılan okuyucu burada değil.** Claude oturum durumunu ayrıştıran kod
+  `~/.local/share/claude-menubar/claude-state.sh`'te — sözleşmeyi tanımlayan
+  uygulamanın yanında, `claude-next.sh` de aynı dosyayı source ediyor.
 
 ## Claude oturum durumu
+
+Commit mesajı buradan kaldırıldı: `aimsg` (`⌘+b`) aynı işi Raycast'e hiç
+uğramadan yapıyor — üç aday, fzf seçimi, `ctrl-r` ile claude, scope branch
+adındaki Jira key'inden. Bu dizindeki hiçbir komut artık Raycast AI'ya bağlı değil.
 
 `screen-ocr.sh`, `jira-to-branch`'in kullandığı Vision sarmalayıcısını çağırır;
 `huzef44/screenocr` extension'ına artık gerek yok. `sesh.sh` de atlamayı
@@ -36,10 +40,9 @@ altındaki tek satırlık JSON'ları okur — kontratı ana README'de yazılı. 
 kendileri yapmaz, `~/.local/bin/claude-jump`'a devrederler: tmux dışından
 `switch-client` açık bir client ister, o script zaten bunun için var.
 
-`lib/claude-state.sh` okuyucusu `claude-next.sh`'nin (prefix + j) okuyucusuyla
-aynı işi ikinci kez yapıyor. Bilinçli: `claude-next.sh` bir tmux tuşuna basınca
-çalışıyor ve başka türlü ihtiyaç duymadığı bir dosyayı source etmenin bedelini
-ödememeli. Durum alanları değişirse iki yer birden güncellenmeli.
+Okuyucu tek: `~/.local/share/claude-menubar/claude-state.sh`. Eskiden tmux
+tarafı kendi kopyasını taşıyordu, "tuş basımında dosya source etme" gerekçesiyle;
+ölçüldü, fark yok (boş bash 2.2 ms, source'lu 2.0 ms) ve kopya kaldırıldı.
 
 `claude-jump.sh` de prefix + j gibi sadece `waiting`, `done-bg`, `done`
 oturumlarına gider ve aynı sırayla döner: art arda basınca ilerler, aynı pane'e
