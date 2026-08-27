@@ -120,17 +120,15 @@ function aimsg --description 'git diff'"'"'ten commit mesajı üret, seçeneği 
         end
     end
 
+    # Takipsiz dosyalar da degisikligin parcasi, o yuzden diff'ten ONCE -N ile
+    # goruntulurler. Eskiden yalnizca unstaged diff BOSSA bakiliyordu; hem
+    # degistirilmis hem yeni dosya varken (en sik durum) yeniler sessizce dusuyor
+    # ve mesaj isin yarisini anlatiyordu.
+    set -l marked (git ls-files --others --exclude-standard)
+    test (count $marked) -gt 0; and git add -N -- $marked 2>/dev/null
+
     set -l diff_output (git --no-pager diff)
     test -z "$diff_output"; and set diff_output (git --no-pager diff --cached)
-
-    set -l marked
-    if test -z "$diff_output"
-        set marked (git ls-files --others --exclude-standard)
-        if test (count $marked) -gt 0
-            git add -N -- $marked 2>/dev/null
-            set diff_output (git --no-pager diff)
-        end
-    end
 
     # Worktree akisinda is zaten commit'lenmis oluyor, calisma agaci temiz kaliyor.
     # O durumda branch'i base'ine gore diff'le: base, HEAD'e en yakin aday ref'in
