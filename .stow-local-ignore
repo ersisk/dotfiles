@@ -23,3 +23,6 @@ dist/
 build/
 \.npm/
 \.cache/
+
+# Canli dosyaya Claude Code org-ici baglam yaziyor; repo public, stow'a hic girmesin
+^/\.claude/settings\.json$

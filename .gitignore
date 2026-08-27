@@ -4,9 +4,11 @@
 .config/tmux/plugins
 .config/yazi/flavors/
 
-# ~/.claude runtime state — sadece settings.json versiyonlanır
+# ~/.claude runtime state. settings.json BILEREK takip edilmiyor: Claude Code
+# oraya autoMode.environment yaziyor — organizasyon adi, private repo adlari,
+# CI secret isimleri, deploy hedefleri. Bu repo public. Sadece ornek versiyonlanir.
 .claude/*
-!.claude/settings.json
+!.claude/settings.json.example
 
 # Is yerine ait gercek yollar - repoda tutulmaz
 .config/fish/conf.d/work-paths.fish
