@@ -1,0 +1,22 @@
+# Yazi varsayilanlariyla birlesir: [opener] altina yeni bir isim eklemek mevcut
+# opener'lari silmez, prepend_rules da varsayilan kural listesini ezmez (yalnizca
+# onune eklenir). Bu yuzden burada sadece eklenenler var.
+
+[opener]
+browser = [
+  # Zen varsayilan tarayici (LaunchServices'ta http/https -> app.zen-browser.zen).
+  # Bundle id kullaniliyor: uygulama adi degisse de calisir.
+  { run = 'open -b app.zen-browser.zen "$@"', desc = "Tarayıcıda aç", orphan = true, for = "macos" },
+]
+
+[open]
+# Sadece tarayicida anlamli olan turler. Kurallar sirayla degerlendirilip ilki
+# kazandigi icin "*" yazmak varsayilan davranisi komple ele gecirirdi; o yuzden
+# tur tur ekleniyor ve her birinde varsayilan opener da listede birakiliyor.
+prepend_rules = [
+  { mime = "text/html",       use = [ "browser", "edit", "reveal" ] },
+  { mime = "application/pdf", use = [ "browser", "open", "reveal" ] },
+  { mime = "image/svg+xml",   use = [ "browser", "open", "edit", "reveal" ] },
+  { mime = "application/json", use = [ "edit", "browser", "reveal" ] },
+  { mime = "text/csv",        use = [ "edit", "browser", "reveal" ] },
+]
