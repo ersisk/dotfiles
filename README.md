@@ -30,7 +30,22 @@ stow . -t ~
    `.config/raycast/ai-commands/` — Raycast keeps them in an encrypted
    database, so stow cannot install them.
 
-8. Link the lazygit config. On macOS lazygit reads
+8. Copy the Claude Code settings from the example. The live file is
+   deliberately **not** tracked: Claude Code writes `autoMode.environment` into
+   it — organisation name, private repo names, CI secret names, deploy targets —
+   and this repo is public. The example is a generated snapshot, so it goes
+   stale on its own; regenerate it after changing settings, and read the diff
+   before committing rather than trusting the filter to know what is sensitive.
+
+```sh
+cp .claude/settings.json.example ~/.claude/settings.json
+
+# refresh the example after changing settings
+jq 'del(.autoMode.environment)' ~/.claude/settings.json \
+  > ~/workspace/dotfiles/.claude/settings.json.example
+```
+
+9. Link the lazygit config. On macOS lazygit reads
    `~/Library/Application Support/lazygit`, not `~/.config`, so stow does not
    cover it.
 
@@ -39,21 +54,21 @@ ln -sf ~/workspace/dotfiles/.config/lazygit/config.yml \
   "$HOME/Library/Application Support/lazygit/config.yml"
 ```
 
-9. Link the lazydocker config, same reason as lazygit.
+10. Link the lazydocker config, same reason as lazygit.
 
 ```sh
 ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
   "$HOME/Library/Application Support/lazydocker/config.yml"
 ```
 
-10. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
+11. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
    the Vision framework, so nothing is installed beyond what macOS ships.
 
 ```sh
 ~/.local/share/screen-ocr/build.sh
 ```
 
-11. Build the Claude Code menu bar indicator and load it at login. It shows the
+12. Build the Claude Code menu bar indicator and load it at login. It shows the
    state of every running Claude Code session (needs input / working / background
    task / finished) and jumps to the session's tmux pane when clicked, which is
    what the `claude-tmux-notify` hook feeds through
@@ -67,7 +82,7 @@ launchctl bootstrap "gui/$(id -u)" \
   "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
 ```
 
-12. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
+13. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
    ollama's default 11434, because the `rubberduck-ollama` container publishes
    that port and answers with an empty model list — `ai-oneshot` probes 11435
    first and falls back to 11434, then to `claude -p`.

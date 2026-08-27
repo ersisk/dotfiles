@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "hooks": {
     "Stop": [
       {
@@ -76,6 +79,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bash '/Users/ersanisik/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "~/.local/bin/claude-tmux-notify",
             "timeout": 10
           }
@@ -113,12 +121,14 @@
   },
   "enabledPlugins": {
     "php-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": false,
     "claude-hud@claude-hud": true,
     "atlassian@claude-plugins-official": true,
-    "andrej-karpathy-skills@karpathy-skills": true,
-    "claude-mem@thedotmack": true
+    "andrej-karpathy-skills@karpathy-skills": false,
+    "claude-mem@thedotmack": true,
+    "lua-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-hud": {
@@ -147,16 +157,30 @@
     }
   },
   "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
   "editorMode": "vim",
   "teammateMode": "tmux",
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(composer install:*)",
+      "Bash(composer require:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(rm -rf config/cert/*)"
+    ]
+  },
   "mcpServers": {
     "qmd": {
       "command": "qmd",
-      "args": ["mcp"]
+      "args": [
+        "mcp"
+      ]
     }
   },
   "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": 1,
