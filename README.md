@@ -45,7 +45,16 @@ jq 'del(.autoMode.environment)' ~/.claude/settings.json \
   > ~/workspace/dotfiles/.claude/settings.json.example
 ```
 
-9. Link the lazygit config. On macOS lazygit reads
+9. Point git at the versioned hooks. `core.hooksPath` is local config, so a
+   fresh clone has no hooks until this runs — and the pre-commit hook is what
+   keeps `.claude/settings.json.example` from silently going stale or carrying
+   `autoMode.environment` into this public repo.
+
+```sh
+git config core.hooksPath .config/git/hooks
+```
+
+10. Link the lazygit config. On macOS lazygit reads
    `~/Library/Application Support/lazygit`, not `~/.config`, so stow does not
    cover it.
 
@@ -54,21 +63,21 @@ ln -sf ~/workspace/dotfiles/.config/lazygit/config.yml \
   "$HOME/Library/Application Support/lazygit/config.yml"
 ```
 
-10. Link the lazydocker config, same reason as lazygit.
+11. Link the lazydocker config, same reason as lazygit.
 
 ```sh
 ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
   "$HOME/Library/Application Support/lazydocker/config.yml"
 ```
 
-11. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
+12. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
    the Vision framework, so nothing is installed beyond what macOS ships.
 
 ```sh
 ~/.local/share/screen-ocr/build.sh
 ```
 
-12. Build the Claude Code menu bar indicator and load it at login. It shows the
+13. Build the Claude Code menu bar indicator and load it at login. It shows the
    state of every running Claude Code session (needs input / working / background
    task / finished) and jumps to the session's tmux pane when clicked, which is
    what the `claude-tmux-notify` hook feeds through
@@ -82,7 +91,7 @@ launchctl bootstrap "gui/$(id -u)" \
   "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
 ```
 
-13. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
+14. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
    ollama's default 11434, because the `rubberduck-ollama` container publishes
    that port and answers with an empty model list — `ai-oneshot` probes 11435
    first and falls back to 11434, then to `claude -p`.

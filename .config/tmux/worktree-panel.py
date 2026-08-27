@@ -4,28 +4,38 @@ Her satir: <yol>\t<gorunen metin>
 PR merged + calisma agaci temiz olanlar "temizlenebilir" olarak isaretlenir;
 karar kullaniciya birakilir, script hicbir seyi silmez.
 """
-import json, subprocess, sys, time, os
+import hashlib, json, subprocess, sys, time, os
 from concurrent.futures import ThreadPoolExecutor
 
 KW = {"green": "\033[38;2;152;187;108m", "yellow": "\033[38;2;230;195;132m",
       "orange": "\033[38;2;255;158;59m", "blue": "\033[38;2;126;156;216m",
       "grey": "\033[38;2;114;113;105m", "off": "\033[0m"}
 
-CACHE = os.path.join(os.environ.get("TMPDIR", "/tmp"), "worktree-panel-pr.json")
 CACHE_TTL = 300  # PR durumu bu kadar hizli degismiyor; panel aninda acilsin
 
-def cache_load():
+def cache_path(repo):
+    """Repo basina ayri dosya.
+
+    Tek paylasilan dosya, PR durumunu yalnizca dal adina gore anahtarliyordu:
+    iki repoda ayni adli dal varsa (feat/x) biri otekinin merged PR'ini okuyup
+    "temizlenebilir" diyordu. Anahtar artik repo kimligini de tasiyor.
+    """
+    ident = run(["git", "rev-parse", "--path-format=absolute", "--git-common-dir"], repo) or repo
+    return os.path.join(os.environ.get("TMPDIR", "/tmp"),
+                        "worktree-panel-pr-%s.json" % hashlib.sha1(ident.encode()).hexdigest()[:12])
+
+def cache_load(path):
     try:
-        if time.time() - os.stat(CACHE).st_mtime < CACHE_TTL:
-            with open(CACHE) as f:
+        if time.time() - os.stat(path).st_mtime < CACHE_TTL:
+            with open(path) as f:
                 return json.load(f)
     except Exception:
         pass
     return None
 
-def cache_save(data):
+def cache_save(path, data):
     try:
-        with open(CACHE, "w") as f:
+        with open(path, "w") as f:
             json.dump(data, f)
     except OSError:
         pass
@@ -42,11 +52,21 @@ porcelain = run(["git", "worktree", "list", "--porcelain"], repo)
 if not porcelain:
     sys.exit(0)
 
-paths = [l.split(" ", 1)[1] for l in porcelain.splitlines() if l.startswith("worktree ")]
+# Blok blok ayristirilir: "locked" satiri porcelain'de var ve git kilitli bir
+# worktree'yi --force olmadan silmez. Panel bunu gormezse "temizlenebilir" der,
+# silme reddedilir.
+paths, locked_paths, cur = [], set(), None
+for line in porcelain.splitlines():
+    if line.startswith("worktree "):
+        cur = line.split(" ", 1)[1]
+        paths.append(cur)
+    elif line.startswith("locked") and cur:
+        locked_paths.add(cur)
 main_path = paths[0] if paths else None  # git ana worktree'yi silmeye izin vermez
 
 # PR durumlarini tek cagride al: her branch icin ayri ayri sormak yavas
-pr_state = cache_load()
+cache = cache_path(repo)
+pr_state = cache_load(cache)
 if pr_state is None:
     pr_state = {}
     raw = run(["gh", "pr", "list", "--state", "all", "--limit", "100",
@@ -67,11 +87,16 @@ def collect(p):
         branch = "detached " + (run(["git", "rev-parse", "--short", "HEAD"], p) or "?")
 
     dirty = len([l for l in run(["git", "status", "--porcelain"], p).splitlines() if l])
+    # worktree-remove.sh de bunu sayiyor ve sifir degilse silmeyi reddediyor;
+    # panel saymadigi icin "temizlenebilir" deyip sonra reddedilmesine yol aciyordu.
+    # Upstream yoksa remove.sh 0 sayiyor, ayni davranis burada da korunur.
+    unpushed = run(["git", "rev-list", "--count", "@{u}..HEAD"], p)
+    unpushed = int(unpushed) if unpushed.isdigit() else 0
     try:
         days = int((now - os.stat(p).st_mtime) // 86400)
     except OSError:
         days = 0
-    return p, branch, detached, dirty, days
+    return p, branch, detached, dirty, unpushed, days
 
 def lookup_pr(branch):
     # Son 100 PR listesinde yoksa (eski merged dallar) branch icin ayrica sor
@@ -88,11 +113,11 @@ def lookup_pr(branch):
 # Worktree basina iki git cagrisi + eksik PR sorgusu var; seri calisinca panel saniyeler suruyor
 with ThreadPoolExecutor(max_workers=8) as ex:
     rows = list(ex.map(collect, paths))
-    missing = [b for _, b, detached, _, _ in rows if not detached and b not in pr_state]
+    missing = [b for _, b, detached, _, _, _ in rows if not detached and b not in pr_state]
     if missing:
         pr_state.update(dict(ex.map(lookup_pr, missing)))
 
-for p, branch, detached, dirty, days in rows:
+for p, branch, detached, dirty, unpushed, days in rows:
     num, state = pr_state.get(branch, (None, None))
 
     if dirty:
@@ -106,15 +131,29 @@ for p, branch, detached, dirty, days in rows:
     else:
         pr = "{}PR yok{}".format(KW["grey"], KW["off"])
 
-    # Temizlenebilir: isi bitmis (merged) ve kaybedilecek bir sey yok
+    # Isi bitmis (merged) bir worktree neden silinemiyorsa onu yaz. Ikili bayrak
+    # sebebi gizliyordu: panel "temizlenebilir" diyor, worktree-remove.sh
+    # reddediyordu. Kriterler artik ayni ve engelleyen sey ekranda.
+    # Merged olmayanlara ek not yazilmaz — PR sutunu zaten sebebi soyluyor.
     flag = ""
     if p == main_path:
         flag = " {}(ana){}".format(KW["grey"], KW["off"])
-    elif state == "MERGED" and not dirty and not detached:
-        flag = " {}← temizlenebilir{}".format(KW["yellow"], KW["off"])
+    elif state == "MERGED":
+        if detached:
+            blocker = "detached"
+        elif dirty:
+            blocker = "commit edilmemis"
+        elif unpushed:
+            blocker = "{} push edilmemis".format(unpushed)
+        elif p in locked_paths:
+            blocker = "kilitli"
+        else:
+            blocker = None
+        flag = (" {}← temizlenebilir{}".format(KW["yellow"], KW["off"]) if blocker is None
+                else " {}← {}{}".format(KW["orange"], blocker, KW["off"]))
 
     age = "{}{}g{}".format(KW["grey"], days, KW["off"])
     print("{}\t{:<46} {:<22} {:<26} {:>5}{}".format(
         p, branch[:44], status, pr, age, flag))
 
-cache_save(pr_state)
+cache_save(cache, pr_state)

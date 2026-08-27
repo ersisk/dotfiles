@@ -50,8 +50,13 @@ printf '  Bu worktree silinsin mi? (e/h) '
 read -rsn1 answer; printf '\n\n'
 [[ "$answer" == "e" || "$answer" == "E" ]] || { echo "  Iptal edildi."; sleep 1; exit 0; }
 
-# Panel PR durumlarini cache'liyor; silme sonrasi liste yenilenince guncel olsun
-rm -f "${TMPDIR:-/tmp}/worktree-panel-pr.json" 2>/dev/null
+# Panel PR durumlarini cache'liyor; silme sonrasi liste yenilenince guncel olsun.
+# Cache repo basina ayri dosyada (bkz worktree-panel.py cache_path) — anahtar
+# git-common-dir'in sha1'i, cunku tek paylasilan dosya ayni adli dallari olan
+# repolarin PR durumunu karistiriyordu.
+wt_ident=$(git -C "$target" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+wt_hash=$(printf '%s' "$wt_ident" | shasum | cut -c1-12)
+rm -f "${TMPDIR:-/tmp}/worktree-panel-pr-${wt_hash}.json" 2>/dev/null
 
 if git -C "$target" worktree remove "$target" 2>/dev/null \
    || git -C "$(git -C "$target" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs dirname)" worktree remove "$target" 2>/dev/null; then

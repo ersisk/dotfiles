@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Iki sey icin: (1) .claude/settings.json.example'in canli dosyadan sapmasini
+# yakalar, (2) ornekte org-ici baglam kalmis mi diye bakar.
+#
+# Ornek elle uretiliyor (jq 'del(.autoMode.environment)'), yani sessizce bayatlar
+# ve bu repo public — filtreye degil bu kontrole guven.
+
+set -uo pipefail
+example=".claude/settings.json.example"
+live="$HOME/.claude/settings.json"
+
+git diff --cached --name-only | rg -q "^${example}$" || exit 0
+command -v jq &>/dev/null || exit 0
+
+if jq -e '.autoMode.environment' "$example" >/dev/null 2>&1; then
+  echo "pre-commit: $example icinde autoMode.environment var — org-ici baglam." >&2
+  echo "  jq 'del(.autoMode.environment)' \"$live\" > $example" >&2
+  exit 1
+fi
+
+if [[ -r "$live" ]] && ! diff -q <(jq -S 'del(.autoMode.environment)' "$live" 2>/dev/null) \
+                                 <(jq -S . "$example" 2>/dev/null) >/dev/null 2>&1; then
+  echo "pre-commit: $example canli ayarlardan farkli — bayatlamis olabilir." >&2
+  echo "  tazele: jq 'del(.autoMode.environment)' \"$live\" > $example" >&2
+  echo "  farki gor: diff <(jq -S 'del(.autoMode.environment)' \"$live\") <(jq -S . $example)" >&2
+  exit 1
+fi
