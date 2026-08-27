@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.ersanisik.ollama</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Applications/Ollama.app/Contents/Resources/ollama</string>
+    <string>serve</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <!-- 11434 degil: rubberduck-ollama konteyneri o portu yayinliyor ve kendi model
+         deposu bos oldugu icin sorgular {"models":[]} donuyor. ai-oneshot once
+         11435'i deniyor, sonra 11434'e bakiyor. -->
+    <key>OLLAMA_HOST</key>
+    <string>127.0.0.1:11435</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>/tmp/ollama-serve.err.log</string>
+</dict>
+</plist>

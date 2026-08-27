@@ -67,6 +67,19 @@ launchctl bootstrap "gui/$(id -u)" \
   "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
 ```
 
+12. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
+   ollama's default 11434, because the `rubberduck-ollama` container publishes
+   that port and answers with an empty model list — `ai-oneshot` probes 11435
+   first and falls back to 11434, then to `claude -p`.
+
+```sh
+ln -sf ~/workspace/dotfiles/.local/share/ollama/com.ersanisik.ollama.plist \
+  "$HOME/Library/LaunchAgents/com.ersanisik.ollama.plist"
+launchctl bootstrap "gui/$(id -u)" \
+  "$HOME/Library/LaunchAgents/com.ersanisik.ollama.plist"
+ollama pull qwen3
+```
+
 # Claude Code session state
 
 Four things share one directory, `~/.local/state/claude-menubar/sessions`, so the
