@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# aerospace-pip-defocus — Picture-in-Picture'in tarayicinin AXMain penceresi olmasini engeller.
+#
+# cmd+tab macOS'un kendi app switcher'i: uygulamanin AXMain penceresini one aliyor.
+# PiP'e bir kez tiklandiginda Zen o pencereyi AXMain isaretliyor ve cmd+tab videoya
+# dusuyor. AeroSpace burada ise yaramiyor, cunku PiP penceresini hic gormuyor
+# (list-windows onu asla listelemiyor) — .aerospace.toml'daki PiP kurallari da bu
+# yuzden olu. Accessibility API goruyor, osascript o yuzden burada.
+#
+# on-focus-changed'e bagli; ucuz AeroSpace sorgusu pahali AX cagrisini kapida tutuyor.
+set -uo pipefail
+
+# AeroSpace GUI'den kalkiyor ve launchd'nin ciplak PATH'ini miras aliyor, brew bin yok.
+command -v aerospace &>/dev/null || PATH="/opt/homebrew/bin:$PATH"
+command -v aerospace &>/dev/null || exit 0
+
+app=$(aerospace list-windows --focused --format '%{app-name}' 2>/dev/null)
+case "$app" in
+Zen | Firefox) ;;
+*) exit 0 ;;
+esac
+
+# Pencere listesi one-arkaya sirali, yani PiP olmayan ilk pencere en son kullanilan olan.
+# Hata sessizce kaybolmasin: ilk calismada macOS AeroSpace'ten System Events icin
+# Automation izni ister, reddedilirse tek iz burasi olur.
+osascript - "$app" >/dev/null 2>>/tmp/aerospace-pip-defocus.err <<'AS'
+on run argv
+  tell application "System Events" to tell process (item 1 of argv)
+    set pipIsMain to false
+    repeat with w in windows
+      if (name of w contains "Picture-in-Picture") and (value of attribute "AXMain" of w) then
+        set pipIsMain to true
+      end if
+    end repeat
+    if not pipIsMain then return
+    repeat with w in windows
+      if name of w does not contain "Picture-in-Picture" then
+        perform action "AXRaise" of w
+        exit repeat
+      end if
+    end repeat
+  end tell
+end run
+AS
+
+exit 0
