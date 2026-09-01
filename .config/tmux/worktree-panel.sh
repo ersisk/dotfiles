@@ -28,14 +28,18 @@ load="python3 ~/.config/tmux/worktree-panel.py '$dir'"
 # ekranda hicbir geri bildirim olmuyor ve tusa basildi mi belli olmuyor.
 # ctrl-d silme scriptini calistirir; o script guvenlik kontrollerini kendi yapar
 # ve onay ister. Sonrasinda liste yenilenir ki silinen satir kaybolsun.
+# ctrl-alt-d ayni scripti her worktree icin sirayla cagirir (bkz
+# worktree-remove-all.sh). Tab ile isaretleme yok: silinemeyen zaten
+# reddedildigi icin "hepsi" ile "temizlenebilir olanlar" ayni kume.
 selected=$(fzf-tmux -p 92%,55% \
   --ansi --reverse --with-nth=2 --delimiter='\t' \
   --border rounded --border-label ' Worktrees ' \
   --header '⧗ taraniyor…' \
   --bind "start:reload($load)" \
-  --bind "load:change-header(enter: bagla   ctrl-o: yeni pencere   ctrl-d: sil   esc: kapat)" \
+  --bind "load:change-header(enter: bagla   ctrl-o: yeni pencere   ctrl-d: sil   ctrl-alt-d: hepsini temizle   esc: kapat)" \
   --bind "ctrl-o:execute-silent(tmux new-window -c {1} -n \"\$(basename {1})\")+abort" \
   --bind "ctrl-d:execute(~/.config/tmux/worktree-remove.sh {1})+reload($load)" \
+  --bind "ctrl-alt-d:execute(~/.config/tmux/worktree-remove-all.sh {1})+reload($load)" \
   --no-preview </dev/null) || exit 0
 
 [[ -n "$selected" ]] || exit 0

@@ -125,19 +125,6 @@ open -a Scoot
    Element mode (`⌃⇧J`) reads real buttons through the accessibility API; grid
    mode (`⌃⇧K`) works without it.
 
-16. Link the espanso config. macOS espanso looks in
-   `~/Library/Application Support/espanso`, not `~/.config`, so stow does not
-   cover it — same as lazygit and lazydocker. It also needs Accessibility and
-   Input Monitoring before the service will start; without them
-   `espanso start` just times out.
-
-```sh
-ln -sfn ~/.config/espanso "$HOME/Library/Application Support/espanso"
-espanso service register
-espanso restart
-espanso match list | wc -l   # loaded typo count
-```
-
 # Kisayol paneli
 
 `prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
@@ -215,6 +202,5 @@ commands in `.config/raycast/scripts`.
 - Editor Config: [AstroNvim](https://astronvim.github.io/)
 - Git: [Lazygit](https://github.com/jesseduffield/lazygit)
 - Keyboard-driven pointer: [Scoot](https://github.com/mjrusso/scoot)
-- Text expander: [Espanso](https://espanso.org/)
 - macOS package manager: [Homebrew](https://brew.sh)
 - npm package manager: [pnpm](https://pnpm.io/)

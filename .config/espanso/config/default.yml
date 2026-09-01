@@ -1,6 +1,0 @@
-# Espanso macOS'ta configi ~/Library/Application Support/espanso'da arar; bu dizin
-# oraya symlink'lenir (bkz ana README) - lazygit/lazydocker ile ayni yontem.
-
-# Auto, ozel karakterlerde clipboard'a duser ama bazi uygulamalarda Inject'te
-# kalir. Turkce karakterler bozuk cikiyorsa: backend: Clipboard.
-backend: Auto
