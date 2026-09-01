@@ -10,6 +10,12 @@ okur; AI Command'lerin aksine bunlar gerçekten versiyonlanıyor.
 | Claude Sessions | `⌃⌥K` | Çalışan tüm oturumları, en acili başta listeler |
 | Screen OCR | `⌃⌥O` | Ekran bölgesi seç, metni panoya kopyala (macOS Vision) |
 | Sesh Session | `⌃⌥S` | kitty'yi kaldır ve eşleşen sesh oturumuna geç |
+| Kisayol Paneli | `⌃⌥/` | kitty'yi kaldır, kısayol panelini tmux popup'ında aç |
+
+**Yukarıdaki tablo aynı zamanda veri:** `keys-panel.py` Raycast satırlarını
+buradan okuyor. Raycast script hotkey'leri Raycast'in kendi şifreli state'inde
+duruyor, dosyada tutulan tek kayıt bu tablo — hotkey'i Raycast tarafında
+değiştirdiysen burayı da güncelle, yoksa panel yanlış tuşu gösterir.
 
 `⌃⌥` bloğu bilerek seçildi: aerospace `⌥`'ü, kitty `⌘`'i doldurmuş durumda,
 `⌃⌥` ise tamamen boş — Raycast script'leri için çakışmasız bir isim alanı.
@@ -34,6 +40,11 @@ adındaki Jira key'inden. Bu dizindeki hiçbir komut artık Raycast AI'ya bağl�
 `screen-ocr.sh`, `jira-to-branch`'in kullandığı Vision sarmalayıcısını çağırır;
 `huzef44/screenocr` extension'ına artık gerek yok. `sesh.sh` de atlamayı
 `claude-jump`'a devrediyor — aerospace yarışı orada çözülü, ikinci kez çözülmesin.
+
+`keys-panel.sh` yeni bir kitty penceresi açmıyor: panel zaten bir tmux popup'ı
+ve aerospace yeni pencereyi bulunduğun workspace'e döşüyor, panel de görsel
+olarak yerinden oynuyordu. Bunun yerine bağlı client'ın üstünde
+`display-popup -c` ile açılıyor, yükseltmeyi `claude-jump`'a devrediyor.
 
 `claude-jump.sh` ve `claude-sessions.sh`, `~/.local/state/claude-menubar/sessions`
 altındaki tek satırlık JSON'ları okur — kontratı ana README'de yazılı. Atlama işini

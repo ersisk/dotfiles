@@ -104,6 +104,62 @@ launchctl bootstrap "gui/$(id -u)" \
 ollama pull qwen3
 ```
 
+15. Move Scoot's hotkeys out of the `⌘` namespace. Scoot ships with `⇧⌘J/K/L`,
+   and all three are taken in `kitty.conf` — `⇧⌘J` is the `prefix + j` jump to a
+   waiting Claude session. A global hotkey wins over kitty, so the defaults would
+   silently break three tmux bindings. `⌃⇧` is the only free modifier block.
+   Carbon modifier `4608` is `control + shift`; key codes are J/K/L.
+
+```sh
+osascript -e 'quit app "Scoot"'
+defaults write com.mjrusso.Scoot KeyboardShortcuts_useElementBasedNavigation \
+  -string '{"carbonKeyCode":38,"carbonModifiers":4608}'
+defaults write com.mjrusso.Scoot KeyboardShortcuts_useGridBasedNavigation \
+  -string '{"carbonKeyCode":40,"carbonModifiers":4608}'
+defaults write com.mjrusso.Scoot KeyboardShortcuts_useFreestyleNavigation \
+  -string '{"carbonKeyCode":37,"carbonModifiers":4608}'
+open -a Scoot
+```
+
+   Scoot then needs Accessibility in System Settings → Privacy & Security.
+   Element mode (`⌃⇧J`) reads real buttons through the accessibility API; grid
+   mode (`⌃⇧K`) works without it.
+
+16. Link the espanso config. macOS espanso looks in
+   `~/Library/Application Support/espanso`, not `~/.config`, so stow does not
+   cover it — same as lazygit and lazydocker. It also needs Accessibility and
+   Input Monitoring before the service will start; without them
+   `espanso start` just times out.
+
+```sh
+ln -sfn ~/.config/espanso "$HOME/Library/Application Support/espanso"
+espanso service register
+espanso restart
+espanso match list | wc -l   # loaded typo count
+```
+
+# Kisayol paneli
+
+`prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
+a searchable list of every binding on this machine. It parses the config files
+themselves rather than a hand-written cheatsheet, so a new binding shows up
+without touching the panel:
+
+- **kitty** — the comment line above each `map`.
+- **tmux** — the `-N` note on each `bind`. Pairs that do the same job are merged
+  onto one row, keyed by the byte kitty sends (`\x01G` → `G`), not by the note.
+- **aerospace** — `[mode.*.binding]` tables and the end-of-line comment naming
+  the app. Bindings outside the main mode are prefixed with whatever key enters
+  their mode, read from the config rather than hardcoded. `[gaps]` and
+  `[[on-window-detected]]` carry `key = value` lines of the same shape, so the
+  table header is what tells bindings apart from settings.
+- **Raycast** — the hotkey table in `.config/raycast/scripts/README.md`. This is
+  the one mirror: Raycast keeps script hotkeys in its own encrypted state, so
+  that table is the only file-based record. Change a hotkey in Raycast and the
+  table goes stale, and so does the panel.
+- **fish** — aliases from `config.fish` and the function names under
+  `fish/functions`, listed dimmed after the shortcuts.
+
 # Claude Code session state
 
 Four things share one directory, `~/.local/state/claude-menubar/sessions`, so the
@@ -158,5 +214,7 @@ commands in `.config/raycast/scripts`.
 - Editor: [Neovim](https://neovim.io)
 - Editor Config: [AstroNvim](https://astronvim.github.io/)
 - Git: [Lazygit](https://github.com/jesseduffield/lazygit)
+- Keyboard-driven pointer: [Scoot](https://github.com/mjrusso/scoot)
+- Text expander: [Espanso](https://espanso.org/)
 - macOS package manager: [Homebrew](https://brew.sh)
 - npm package manager: [pnpm](https://pnpm.io/)

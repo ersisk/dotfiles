@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# keys-panel — kitty + tmux kisayollarini aranabilir bir listede gosterir.
+# keys-panel — kitty + tmux + aerospace + Raycast kisayollarini aranabilir bir
+# listede gosterir.
 #
 # Kaynak config dosyalarinin kendisi (bkz keys-panel.py), ayri bir cheatsheet
 # tutulmuyor. Enter secili satirin tuslarini panoya kopyalar.
@@ -32,7 +33,7 @@ selection="$(printf '%s\n' "$rows" | fzf \
     --layout=reverse \
     --info=inline \
     --border=rounded \
-    --border-label=' Kisayollar (kitty · tmux) ' \
+    --border-label=' Kisayollar (kitty · tmux · aerospace · raycast) ' \
     --ansi \
     --no-multi \
     --pointer='▶' \

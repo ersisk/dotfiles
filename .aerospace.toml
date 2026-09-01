@@ -250,6 +250,14 @@ if.app-id = 'com.raycast.macos'
 run = 'layout floating'
 
 [[on-window-detected]]
+if.app-id = 'com.mjrusso.Scoot'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.federicoterzi.espanso'
+run = 'layout floating'
+
+[[on-window-detected]]
 if.app-id = 'com.apple.calculator'
 run = 'layout floating'
 

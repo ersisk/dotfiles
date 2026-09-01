@@ -27,3 +27,6 @@
 .config/raycast/config.json
 .config/raycast/extensions/
 .config/raycast/ai/
+
+# macOS Finder metadata
+.DS_Store

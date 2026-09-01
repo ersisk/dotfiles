@@ -1,0 +1,93 @@
+# Turkce yazim hatalari. Espanso Hub'da Turkce typofixer paketi yok, liste elle
+# tutuluyor.
+#
+# propagate_case BILEREK kapali: espanso'nun buyuk harf cevirisi Turkce i/I
+# ayrimini bilmiyor, "istanbul" -> "ISTANBUL" uretiyor. Cumle basi duzeltmeler
+# bu yuzden macOS'un kendi autocorrect'ine birakildi.
+#
+# word: true her girdide sart, yoksa kelime ortasinda da tetikleniyor.
+matches:
+  - trigger: "herkez"
+    replace: "herkes"
+    word: true
+  - trigger: "herkezin"
+    replace: "herkesin"
+    word: true
+  - trigger: "yalnış"
+    replace: "yanlış"
+    word: true
+  - trigger: "yanlız"
+    replace: "yalnız"
+    word: true
+  - trigger: "herşey"
+    replace: "her şey"
+    word: true
+  - trigger: "birşey"
+    replace: "bir şey"
+    word: true
+  - trigger: "hiçbirşey"
+    replace: "hiçbir şey"
+    word: true
+  - trigger: "farketmez"
+    replace: "fark etmez"
+    word: true
+  - trigger: "farkettim"
+    replace: "fark ettim"
+    word: true
+  - trigger: "farkediyor"
+    replace: "fark ediyor"
+    word: true
+  - trigger: "orjinal"
+    replace: "orijinal"
+    word: true
+  - trigger: "süpriz"
+    replace: "sürpriz"
+    word: true
+  - trigger: "klavuz"
+    replace: "kılavuz"
+    word: true
+  - trigger: "şarz"
+    replace: "şarj"
+    word: true
+  - trigger: "sarj"
+    replace: "şarj"
+    word: true
+  - trigger: "eksoz"
+    replace: "egzoz"
+    word: true
+  - trigger: "penbe"
+    replace: "pembe"
+    word: true
+  - trigger: "meyva"
+    replace: "meyve"
+    word: true
+  - trigger: "traş"
+    replace: "tıraş"
+    word: true
+  - trigger: "eşortman"
+    replace: "eşofman"
+    word: true
+  - trigger: "poaça"
+    replace: "poğaça"
+    word: true
+  - trigger: "heralde"
+    replace: "herhalde"
+    word: true
+  - trigger: "yada"
+    replace: "ya da"
+    word: true
+  - trigger: "birsürü"
+    replace: "bir sürü"
+    word: true
+  - trigger: "tabiki"
+    replace: "tabii ki"
+    word: true
+  - trigger: "antreman"
+    replace: "antrenman"
+    word: true
+  - trigger: "pantalon"
+    replace: "pantolon"
+    word: true
+  - trigger: "kiprik"
+    replace: "kirpik"
+    word: true
