@@ -23,6 +23,9 @@
 # Derlenmis OCR binary - kaynak .local/share/screen-ocr/ altinda
 .local/bin/screen-ocr
 
+# Derlenmis PiP defocus binary - kaynak .local/share/zen-pip-defocus/ altinda
+.local/bin/zen-pip-defocus
+
 # Raycast'in kendi state'i - API token'i ve kurulu extension'lar, repoda tutulmaz
 .config/raycast/config.json
 .config/raycast/extensions/

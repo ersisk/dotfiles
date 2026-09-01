@@ -125,6 +125,31 @@ open -a Scoot
    Element mode (`⌃⇧J`) reads real buttons through the accessibility API; grid
    mode (`⌃⇧K`) works without it.
 
+16. Build the Picture-in-Picture defocus service and load it at login. cmd+tab is
+   macOS's own app switcher and raises whichever window the app marks AXMain; Zen
+   marks the PiP window AXMain the moment it is born, so cmd+tab lands on the
+   floating video instead of the page behind it. AeroSpace cannot drive the fix —
+   it never enumerates the PiP window, so its `on-focus-changed` callback goes
+   silent exactly when PiP holds AXMain. Hence a service that watches the browser
+   process directly. Zen turns out not to emit `AXWindowCreated` for the PiP
+   either, so a one-second in-process poll backs the observer up; an AX round trip
+   inside the process costs about a millisecond.
+
+```sh
+~/.local/share/zen-pip-defocus/build.sh
+ln -sf ~/workspace/dotfiles/.local/share/zen-pip-defocus/com.ersanisik.zen-pip-defocus.plist \
+  "$HOME/Library/LaunchAgents/com.ersanisik.zen-pip-defocus.plist"
+launchctl bootstrap "gui/$(id -u)" \
+  "$HOME/Library/LaunchAgents/com.ersanisik.zen-pip-defocus.plist"
+```
+
+   It then needs Accessibility in System Settings → Privacy & Security. The binary
+   waits for the grant instead of exiting, so `KeepAlive` cannot spin it into a
+   crash loop. Re-running `build.sh` changes the binary and macOS drops the grant
+   with it — remove the entry and add it back rather than toggling it off and on,
+   which leaves the stale one in place. `ZEN_PIP_DEBUG=1` on a manual run traces
+   what the observer sees.
+
 # Kisayol paneli
 
 `prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
