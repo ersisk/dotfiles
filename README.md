@@ -150,6 +150,44 @@ launchctl bootstrap "gui/$(id -u)" \
    which leaves the stale one in place. `ZEN_PIP_DEBUG=1` on a manual run traces
    what the observer sees.
 
+17. Install the Graylog JSON selector in Zen. Firefox will not permanently install
+   an unsigned extension, so this ships as a userscript instead: install
+   Violentmonkey, then paste
+   `.local/share/graylog-json-select/graylog-json-select.user.js` into Dashboard →
+   `+` → New script. Violentmonkey's own Import expects a zip backup, so handing it
+   the `.user.js` file silently installs nothing, and a Firefox extension cannot
+   read `file://` either — pasting is the only path. Violentmonkey then keeps its
+   own copy; this file is the source, so a logic change has to be pasted again.
+
+   The `@match`/`@include` hosts in the tracked file are deliberately placeholders
+   that match nothing. Real Graylog hosts are internal infrastructure names and this
+   repo is public, so they belong only in the Violentmonkey copy — which is also the
+   copy that actually runs, so nothing is lost. The cost is that re-pasting after a
+   logic change means re-entering the hosts. A Graylog on a non-default port needs
+   `@include` rather than `@match`: the match-pattern host cannot carry a port, while
+   the `@include` glob applies to the whole URL.
+
+```sh
+pbcopy < ~/.local/share/graylog-json-select/graylog-json-select.user.js
+```
+
+   Every detected payload gets a `{}` button in the gutter at its left edge, and
+   clicking one selects that payload alone — the way to grab a single row out of a
+   screen full of them. The buttons live in the shadow root of a fixed overlay on
+   `document.body`, both because React reclaims anything injected into its own tree
+   and because the observer below cannot see into a shadow tree, which is what
+   keeps the buttons from triggering the rescan that draws them.
+
+   `ctrl+j` selects the next JSON payload on the page whole, so `cmd+c` copies it
+   without hand-dragging over a wrapped log line; the key repeats through every
+   payload and wraps. Plain `⌃` is the only free modifier block left: `⌥` is
+   aerospace's, `⌘` is kitty's, `⌃⌥` is Raycast's, and Scoot holds `⌃⇧J/K/L`.
+   Detected payloads are tinted through the CSS Custom Highlight API rather than
+   wrapped in elements, because Graylog is React and reclaims any DOM the script
+   would inject. Payloads Graylog stores escaped inside a string field
+   (`{\"a\":1}`) are found too, but the selection copies what is on screen — still
+   escaped.
+
 # Kisayol paneli
 
 `prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
