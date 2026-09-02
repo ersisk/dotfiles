@@ -185,10 +185,12 @@ alt-shift-z = 'move-node-to-workspace Z'
 ctrl-left = 'workspace prev'
 ctrl-right = 'workspace next'
 
+# Tab yerine Q: Logi POP Keys, bir modifier basiliyken Tab basislarinin ~%25'ini
+# hic gondermiyor (HID katmaninda olay dogmuyor, taşimadan bagimsiz).
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-alt-tab = 'workspace-back-and-forth'
+alt-w = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+alt-shift-w = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 ctrl-alt-0 = 'mode service'
