@@ -220,16 +220,17 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 alt-shift-f = 'fullscreen'
 
-# 1 vertical monitor on the left for workspace A, C, P, X
-# 2 horizontal monitors on the right for workspaces I, others go to main monitor
+# Monitor sirasi (1, 2, ...) fiziksel yerlesime gore degisiyor; ekrani tasiyinca
+# atamalar kayiyor. Bu yuzden ID yerine kalici pattern kullaniliyor.
+# Harici ekran yoksa fallback olarak main'e duser.
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
 [workspace-to-monitor-force-assignment]
-A = 2
-C = 2
-I = 2
-P = 1
-X = 1
-T = 1
+A = ['secondary', 'main']
+C = ['secondary', 'main']
+I = ['secondary', 'main']
+P = 'built-in'
+X = 'built-in'
+T = 'built-in'
 
 # ==============================================================================
 # FLOATING WINDOWS
