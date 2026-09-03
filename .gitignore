@@ -36,3 +36,7 @@
 
 # macOS Finder metadata
 .DS_Store
+
+# python bytecode cache (keys-panel.py import edilirse dusuyor)
+__pycache__/
+*.pyc

@@ -120,7 +120,12 @@ defaults write com.mjrusso.Scoot KeyboardShortcuts_useGridBasedNavigation \
 defaults write com.mjrusso.Scoot KeyboardShortcuts_useFreestyleNavigation \
   -string '{"carbonKeyCode":37,"carbonModifiers":4608}'
 open -a Scoot
+osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Applications/Scoot.app", hidden:false}'
 ```
+
+   The last line is what starts Scoot at login. Scoot ships no launch-at-login
+   preference of its own — no `SMAppService` registration, no helper bundle — so
+   without a login item it only runs when opened by hand.
 
    Scoot then needs Accessibility in System Settings → Privacy & Security.
    Element mode (`⌃⇧J`) reads real buttons through the accessibility API; grid
@@ -210,6 +215,19 @@ jira init --installation cloud --auth-type basic
    on stderr. That guess is the reason for the step: the API answers with the exact
    summary in one call, which leaves OCR doing only what it is reliable at, reading
    the short `GD-1140` token. `jira-to-branch -k GD-1140` skips the screen entirely.
+
+19. Start the window border service. AeroSpace runs with every gap set to 0, so a
+   focused window carries no marker of its own — borders draws one. The colours
+   live in `.config/borders/bordersrc`, which stow puts in place and the service
+   reads on launch. `brew bundle` installs the formula but never starts a service,
+   hence the step.
+
+```sh
+brew services start borders
+```
+
+   Editing `bordersrc` and then running it applies the change to the instance that
+   is already running, so a colour tweak needs no service restart.
 
 # Kisayol paneli
 

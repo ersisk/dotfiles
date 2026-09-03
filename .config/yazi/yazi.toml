@@ -6,7 +6,9 @@
 browser = [
   # Zen varsayilan tarayici (LaunchServices'ta http/https -> app.zen-browser.zen).
   # Bundle id kullaniliyor: uygulama adi degisse de calisir.
-  { run = 'open -b app.zen-browser.zen "$@"', desc = "Tarayıcıda aç", orphan = true, for = "macos" },
+  # Dosya yolu %s ile geliyor - yazi `run`'i oldugu gibi `sh -c`'ye veriyor,
+  # positional argument koymuyor, yani "$@" burada her zaman bos kalir.
+  { run = 'open -b app.zen-browser.zen %s', desc = "Tarayıcıda aç", orphan = true, for = "macos" },
 ]
 
 [open]

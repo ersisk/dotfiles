@@ -1,3 +1,10 @@
+# Bilinmeyen anahtarda sessizce gecmek yerine hata ver.
+strict_mode = true
+
+# Worktree oturumlari repo kokunden degil kendi ust dizininden isim alsin:
+# "<repo>/_worktrees/fix-GD-536-apk-cache" -> "fix-GD-536-apk-cache".
+git_namer_use_worktree_root = true
+
 [default_session]
 preview_command = "eza -la --all --git --icons --color=always {}"
 
@@ -73,7 +80,12 @@ name = "💼 Main"
 alias = "gc"
 alias_auto_connect = true
 path = "$WORK_MAIN"
-windows = [" GH Dash"]
+# gh dash 1. pencerede olsun: `windows` listesi hep 1'den sonra aciliyor,
+# startup_command ise pencere 1'e gidiyor. Isimli pencere olusturmak
+# automatic-rename'i kapattigi icin kabuk penceresinde geri aciyoruz -
+# nerd-font/claude-state glyph'leri oradan geliyor.
+startup_command = "tmux set -w -t 2 automatic-rename on; gh dash"
+windows = ["shell"]
 
 [[session]]
 name = "💼 Notif"
@@ -100,8 +112,7 @@ path = "$WORK_BIN"
 startup_command="./reset-admin-password.sh; read -P 'devam icin enter...'; exit"
 
 [[window]]
-name = " GH Dash"
-startup_script = "gh dash"
+name = "shell"
 
 # Worktree'ye girince dogrudan dosya secicide acilsin.
 # Not: [[wildcard]] icinde yalnizca startup_command isliyor - preview_command
@@ -110,23 +121,28 @@ startup_script = "gh dash"
 pattern = "$WORK_MAIN/.worktrees/*"
 startup_command = "nvim +GoToFile"
 
-# `sesh worktree` kurulu surumde (2.28.0) YOK - upstream'de merge edildi (#435)
-# ama henuz release edilmemis. Brew ile yeni surum gelince yorumu kaldir:
+# `sesh worktree` 2.29.0 ile geldi ama acmak bu repoya org/repo adini
+# yazmak demek: `repo` alani env-expand EDILMIYOR (yalnizca `path` ediliyor) ve
+# `sesh worktree list`/`picker` repo bossa hata veriyor. `[[import]]` de cozmuyor -
+# import yalnizca session/window/wildcard bloklarini birlestiriyor, worktree'yi
+# atliyor. Repo public oldugu icin karar verilene kadar kapali.
 #   sesh worktree connect --pr 3198  ->  .worktrees/3198 altinda gh pr checkout
-# Mevcut branch-adli worktree'lerle cakismaz (onlar .worktrees/<branch-adi>).
+# Mevcut branch-adli worktree'lerle cakismaz (onlar .worktrees/<branch-adi>) ve
+# `list` yalnizca sayi-adli dizinleri sayar, yani onlari hic gormez.
 # worktree_dir + base_branch override sart: sesh defaultlari .wk ve origin/main.
+# branch_template'e gerek yok: Connect once `gh pr view` deniyor, PR ise detached
+# + `gh pr checkout` yapip template'i hic kullanmiyor; issue'larimiz Jira'da.
 #
 # [[worktree]]
-# repo = "$WORK_ORG/$WORK_MAIN_REPO"
+# repo = "<org>/<main-repo>"   # literal sart, $WORK_* burada islemiyor
 # path = "$WORK_MAIN"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
-# branch_template = "GD-{number}"
 # create_command = "nvim +GoToFile"
 # startup_command = "nvim +GoToFile"
 #
 # [[worktree]]
-# repo = "$WORK_ORG/$WORK_TELI_REPO"
+# repo = "<org>/<teli-repo>"   # literal sart, $WORK_* burada islemiyor
 # path = "$WORK_TELI"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
