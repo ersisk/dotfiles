@@ -1,17 +1,18 @@
-# claude-state — ~/.local/state/claude-menubar/sessions okuyucusu.
+# claude-state — reader for ~/.local/state/claude-menubar/sessions.
 #
-# Kontrat ana README'de yazili. Okuyucu burada duruyor cunku sozlesmeyi tanimlayan
-# uygulama (ClaudeMenubar.swift) da bu dizinde; uc ayri cagiran source ediyor:
+# The contract is written down in the main README. The reader lives here because the
+# app that defines it (ClaudeMenubar.swift) is in this directory too; three separate
+# callers source it:
 #   claude-next.sh                      (tmux, prefix + j)
 #   .config/raycast/scripts/claude-jump.sh
 #   .config/raycast/scripts/claude-sessions.sh
-# Eskiden tmux tarafi kendi kopyasini tasiyordu, "tus basiminda dosya source etme"
-# gerekcesiyle. Olculdu: fark yok (bos bash 2.2 ms, source'lu 2.0 ms).
+# The tmux side used to carry its own copy, justified as "do not source a file on a
+# keypress". Measured: no difference (empty bash 2.2 ms, with the source 2.0 ms).
 
 STATE_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
 
-# Bastaki virgul sart: bir alan degerinin icindeki alinti isareti sahte anahtar
-# eslesmesi uretmesin.
+# The leading comma is required: a quote inside a field value must not produce a
+# false key match.
 json_field() {
   local re=",\"$2\":\"([^\"]*)\""
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
@@ -22,8 +23,8 @@ json_num() {
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
 }
 
-# Dikkat sirasi, menu cubugunun ikon sirasi degil: once bakman gerekeni yaz, boylece
-# ilk satir her zaman dogru atlama hedefi olur. prio < 3 = cevap bekleyen.
+# Attention order, not the menu bar's icon order: what needs looking at comes first,
+# so the top row is always the right jump target. prio < 3 = waiting for an answer.
 state_prio() {
   case "$1" in
     waiting)    printf 0 ;;
@@ -62,7 +63,7 @@ short_age() {
 # prio \t state \t project \t age \t session \t window \t pane \t socket \t detail
 emit_rows() {
   local f line state sess now
-  now=$(date +%s)   # satir basina degil, bir kez
+  now=$(date +%s)   # once, not per row
   for f in "$STATE_DIR"/*.json; do
     [[ -r "$f" ]] || continue
     line=$(< "$f")

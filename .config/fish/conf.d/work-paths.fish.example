@@ -1,13 +1,13 @@
-# Is yerine ait gercek dizin yollari - ORNEK dosya.
+# Real work directory paths - EXAMPLE file.
 #
-# Kurulum: bu dosyayi work-paths.fish olarak kopyala ve yollari kendi
-# makinene gore doldur. Gercek dosya .gitignore'da; ic proje adlari
-# repoya girmesin diye repoda tutulmuyor.
+# Setup: copy this file to work-paths.fish and fill in the paths for your own
+# machine. The real file is in .gitignore; it is kept out of the repo so internal
+# project names never land in it.
 #
 #   cp work-paths.fish.example ~/.config/fish/conf.d/work-paths.fish
 #
-# sesh.toml ve tmux configleri bu degiskenlere bagli; dosya yoksa
-# is session'lari acilmaz (digerleri calismaya devam eder).
+# sesh.toml and the tmux configs depend on these variables; without the file the
+# work sessions do not open (everything else keeps working).
 
 set -gx WORK_ROOT ~/workspace/example
 set -gx WORK_MAIN $WORK_ROOT/main-project
@@ -20,10 +20,10 @@ set -gx WORK_MAIN_REPO main-project
 set -gx WORK_TELI_REPO other-repo
 set -gx WORK_TELI $WORK_ROOT/other-repo
 
-# log_search container yolu icin (opsiyonel; tanimsizsa container atlanir)
+# For the log_search container path (optional; unset means the container is skipped)
 set -gx GTC_CONTAINER your-app-container
 
-# jira-cli token'i; jira-to-branch issue basligini bununla API'den okuyor.
-# Bilerek WORK_ onekli degil: load-work-env.sh yalnizca WORK_* degiskenlerini
-# tmux'un global ortamina yaziyor ve token orada her session'a gorunur olurdu.
+# The jira-cli token; jira-to-branch reads the issue title from the API with it.
+# Deliberately without a WORK_ prefix: load-work-env.sh copies only WORK_* variables
+# into tmux's global environment, where the token would be visible to every session.
 # set -gx JIRA_API_TOKEN xxxxx

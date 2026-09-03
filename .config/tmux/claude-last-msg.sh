@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# claude-last-msg — bir Claude oturumunun son kullanici-gorunur mesajini tek satira indirir.
+# claude-last-msg — reduces the last user-visible message of a Claude session to one line.
 #
-# claude-tmux-notify (Stop/Notification hook'unda) cagirir; sonuc pencerenin
-# @claude_last option'ina yazilir, claude-next.sh onizlemede gosterir.
-# Transcript yoksa veya okunabilir mesaj yoksa hicbir sey yazmaz.
+# Called by claude-tmux-notify (in the Stop/Notification hook); the result is
+# written to the window's @claude_last option and shown by claude-next.sh in its
+# preview. With no transcript or no readable message it prints nothing.
 
 set -uo pipefail
 
@@ -33,7 +33,7 @@ for l in lines:
         if b.get("type") != "text":
             continue
         t = (b.get("text") or "").strip()
-        # <observation> gibi ic bloklar ve kod cite fence'leri kullaniciya yazilan metin degil
+        # internal blocks like <observation> and code fences are not text written to the user
         if not t or t.startswith("<") or t.startswith("```"):
             continue
         last = t
@@ -41,7 +41,7 @@ for l in lines:
 if not last:
     sys.exit(0)
 
-# Ilk anlamli satir: baslik isaretleri, liste imleri ve markdown vurgusu atilir
+# The first meaningful line: heading marks, list bullets and markdown emphasis are stripped
 for raw in last.split("\n"):
     line = re.sub(r"^[#>\-*\d.\s]+", "", raw).strip()
     line = re.sub(r"[*_`]", "", line)

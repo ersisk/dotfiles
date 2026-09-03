@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# worktree-add — yeni worktree olusturur ve sesh ile baglanir.
+# worktree-add — creates a new worktree and attaches to it with sesh.
 #
-# prefix+N ile cagrilir. Branch adi fzf prompt'unda yazilir; clipboard'da
-# jira-to-branch cikti formatinda bir ad varsa on-dolgu olarak gelir.
-# Var olan bir branch secilirse ona baglanir, yeni ad yazilirsa branch olusturulur.
-# Dizin ana worktree'nin kardesi olarak acilir: <parent>/<slug>
+# Called with prefix+N. The branch name is typed at the fzf prompt; a name in the
+# clipboard in jira-to-branch output format arrives pre-filled.
+# Picking an existing branch attaches to it, typing a new name creates the branch.
+# The directory is created as a sibling of the main worktree: <parent>/<slug>
 
 set -uo pipefail
 
@@ -15,28 +15,28 @@ msg() {
 
 dir=$(tmux display-message -p '#{pane_current_path}' 2>/dev/null)
 [[ -d "$dir" ]] || exit 0
-git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || { msg "git repo degil"; exit 0; }
+git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || { msg "not a git repo"; exit 0; }
 
-# Worktree'ler ana calisma agacinin kardesi olur, ic ice gecmesin
+# Worktrees become siblings of the main working tree, never nested inside it
 main_wt=$(git -C "$dir" worktree list --porcelain 2>/dev/null | rg '^worktree ' | head -1 | cut -d' ' -f2)
-[[ -n "$main_wt" ]] || { msg "ana worktree bulunamadi"; exit 0; }
+[[ -n "$main_wt" ]] || { msg "main worktree not found"; exit 0; }
 parent=$(dirname "$main_wt")
 
-# Clipboard jira-to-branch formatindaysa on-dolgu yap; degilse yok say
+# Pre-fill from the clipboard when it is in jira-to-branch format; ignore it otherwise
 clip=$(pbpaste 2>/dev/null | head -1 | tr -d '\r\n')
 [[ "$clip" =~ ^[A-Za-z0-9._/-]{3,80}$ ]] || clip=""
 
-# Var olan uzak/yerel branch'ler secenek olarak sunulur; yazilan yeni ad da kabul edilir
-# fzf --print-query cikti: 1=query, 2=expect tusu, 3=secim (secim yoksa 3. satir yok).
-# Listeden secildiyse 3. satiri, yeni ad yazildiysa query'yi al.
+# Existing remote/local branches are offered as options; a newly typed name is accepted too
+# fzf --print-query output: 1=query, 2=expect key, 3=selection (no third line without one).
+# Take line 3 when picked from the list, the query when a new name was typed.
 raw=$(
   git -C "$dir" for-each-ref --sort=-committerdate --count=200 \
     --format='%(refname:short)' refs/heads refs/remotes/origin 2>/dev/null \
     | sed 's|^origin/||' | rg -v '^(HEAD|origin)$' | awk '!seen[$0]++' \
     | fzf-tmux -p 80%,60% \
-        --reverse --border rounded --border-label ' Yeni Worktree ' \
+        --reverse --border rounded --border-label ' New Worktree ' \
         --prompt 'branch: ' --query "$clip" \
-        --header 'enter: olustur/bagla   esc: iptal   (yeni ad yazabilirsin)' \
+        --header 'enter: create/attach   esc: cancel   (you can type a new name)' \
         --print-query --expect=enter
 ) || exit 0
 
@@ -45,23 +45,23 @@ branch=$(printf '%s\n' "$raw" | sed -n '3p')
 branch=$(printf '%s' "$branch" | tr -d '\r\n' | sed 's|^[[:space:]]*||; s|[[:space:]]*$||')
 [[ -n "$branch" ]] || exit 0
 
-# Zaten bir worktree'de acik mi? Oyleyse yenisini yaratmadan ona gec
+# Already open in a worktree? Then switch to it instead of creating another
 existing=$(git -C "$dir" worktree list --porcelain 2>/dev/null \
   | awk -v b="refs/heads/$branch" '/^worktree /{p=$2} /^branch /{if ($2==b) print p}' | head -1)
 if [[ -n "$existing" && -d "$existing" ]]; then
-  msg "zaten var, baglaniyor: $branch"
+  msg "already exists, attaching: $branch"
   command -v sesh >/dev/null && sesh connect --switch "$existing" 2>/dev/null \
     || tmux new-window -c "$existing"
   exit 0
 fi
 
-# Dizin adi branch'in son parcasi: feature/GD-956-x -> GD-956-x
+# The directory name is the last part of the branch: feature/GD-956-x -> GD-956-x
 slug=$(basename "$branch")
 target="$parent/$slug"
-[[ -e "$target" ]] && { msg "dizin zaten var: $slug"; exit 0; }
+[[ -e "$target" ]] && { msg "directory already exists: $slug"; exit 0; }
 
-# Branch uzakta/yerelde varsa ona baglan, yoksa base'den yeni olustur.
-# --force asla gecilmez; git'in kendi korumasi kalir.
+# Attach to the branch if it exists remotely/locally, else create it from the base.
+# --force is never passed; git's own protection stays in place.
 if git -C "$dir" show-ref --verify --quiet "refs/heads/$branch"; then
   out=$(git -C "$dir" worktree add "$target" "$branch" 2>&1)
 elif git -C "$dir" show-ref --verify --quiet "refs/remotes/origin/$branch"; then
@@ -74,13 +74,13 @@ else
 fi
 
 if [[ ! -d "$target" ]]; then
-  msg "olusturulamadi: $(printf '%s' "$out" | tail -1)"
+  msg "could not create: $(printf '%s' "$out" | tail -1)"
   exit 1
 fi
 
-# Panel PR durumlarini cache'liyor; yeni worktree hemen gorunsun
+# The panel caches PR states; drop it so the new worktree shows up right away
 rm -f "${TMPDIR:-/tmp}/worktree-panel-pr.json" 2>/dev/null
 
-msg "olusturuldu: $slug"
+msg "created: $slug"
 command -v sesh >/dev/null && sesh connect --switch "$target" 2>/dev/null \
   || tmux new-window -c "$target"

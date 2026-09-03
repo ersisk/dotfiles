@@ -1,5 +1,5 @@
-# Kanagawa (Wave) - renkler kitty'nin ANSI paletinden gelir (current-theme.conf),
-# newsboat hex kabul etmiyor; sadece isim veya color0-255 indeksi.
+# Kanagawa (Wave) - the colors come from kitty's ANSI palette (current-theme.conf);
+# newsboat accepts no hex, only a name or a color0-255 index.
 # color4=#7e9cd8 crystalBlue, color3=#c0a36e boatYellow2, color11=#e6c384 carpYellow,
 # color8=#727169 fujiGray, color2=#76946a autumnGreen, color1=#c34043 autumnRed
 

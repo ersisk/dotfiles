@@ -1,6 +1,6 @@
 # Commit Message
 
-Girdi clipboard'dan gelir: `git diff --staged | pbcopy`
+Input comes from the clipboard: `git diff --staged | pbcopy`
 
 - Alias: `cm`
 - Model: Gemini 3.5 Flash Lite
@@ -8,16 +8,16 @@ Girdi clipboard'dan gelir: `git diff --staged | pbcopy`
 - Output: Copy to Clipboard
 
 ```prompt
-Aşağıdaki git diff için tek bir Conventional Commits mesajı üret.
+Produce a single Conventional Commits message for the git diff below.
 
-Kurallar:
-- Sadece commit mesajını döndür; açıklama, tırnak veya kod bloğu ekleme.
+Rules:
+- Return only the commit message; add no explanation, quotes or code block.
 - Format: <type>(<scope>): <subject>
 - type: feat|fix|refactor|perf|test|docs|chore|build|ci
-- subject İngilizce, küçük harfle başlar, emir kipi, nokta yok, 72 karakteri geçmez.
-- scope'u ancak diff tek bir modüle dokunuyorsa ekle.
-- Diff birden fazla ilgisiz değişiklik içeriyorsa en baskın olanı seç.
-- Gövde ekleme.
+- subject in English, starts lowercase, imperative, no trailing period, at most 72 characters.
+- Add a scope only if the diff touches a single module.
+- If the diff contains several unrelated changes, pick the dominant one.
+- Add no body.
 
 Diff:
 {clipboard}

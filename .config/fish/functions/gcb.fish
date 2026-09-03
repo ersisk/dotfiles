@@ -1,36 +1,36 @@
-function gcb --description 'jira-to-branch ile branch adı üret, seçilen base üzerinden aç'
+function gcb --description 'generate a branch name with jira-to-branch, open it off the chosen base'
     if contains -- -h $argv; or contains -- --help $argv
         set_color normal
-        echo "gcb — Jira başlığından branch üret (jira-to-branch) ve checkout et"
+        echo "gcb — build a branch from a Jira title (jira-to-branch) and check it out"
         echo
-        set_color -o; echo "KULLANIM"; set_color normal
-        echo "  gcb [base] [-k|--key <KEY>] [-n|--name <ad>] [-d|--dry-run]"
+        set_color -o; echo "USAGE"; set_color normal
+        echo "  gcb [base] [-k|--key <KEY>] [-n|--name <name>] [-d|--dry-run]"
         echo
-        set_color -o; echo "AKIŞ"; set_color normal
-        echo "  1. jira-to-branch çalışır: anahtar (-k yoksa ekrandan OCR ile) →"
-        echo "     başlık jira-cli ile API'den → branch adı"
-        echo "  2. base branch seçilir (parametre yoksa fzf ile)"
+        set_color -o; echo "FLOW"; set_color normal
+        echo "  1. jira-to-branch runs: key (via screen OCR unless -k) →"
+        echo "     title from the API via jira-cli → branch name"
+        echo "  2. base branch is picked (with fzf unless given as a parameter)"
         echo "  3. git fetch + git checkout -b <ad> origin/<base>"
         echo
-        set_color -o; echo "SEÇENEKLER"; set_color normal
-        echo "  base             base branch; kısmi ad da eşleşir (rc → release-candidate)"
-        echo "  -k, --key <KEY>  Jira anahtarı; OCR atlanır, başlık API'den gelir"
-        echo "  -n, --name <ad>  jira-to-branch'i hiç çağırma, adı doğrudan ver"
-        echo "  -d, --dry-run    sadece ne yapacağını yaz, checkout etme"
-        echo "  -h, --help       bu yardım"
+        set_color -o; echo "OPTIONS"; set_color normal
+        echo "  base             base branch; a partial name matches too (rc → release-candidate)"
+        echo "  -k, --key <KEY>  Jira key; OCR is skipped, the title comes from the API"
+        echo "  -n, --name <name>  skip jira-to-branch entirely, give the name directly"
+        echo "  -d, --dry-run    only print what it would do, do not check out"
+        echo "  -h, --help       this help"
         echo
-        set_color -o; echo "ÖRNEKLER"; set_color normal
-        echo "  gcb                              # base'i fzf ile seç"
-        echo "  gcb release-candidate            # doğrudan base ver"
-        echo "  gcb rc                           # kısaltma"
-        echo "  gcb rc -k GD-1140                # ekrana bakmadan"
-        echo "  gcb rc -n feature/GD-1-deneme    # jira-to-branch olmadan"
-        echo "  gcb -d                           # kuru çalıştır"
+        set_color -o; echo "EXAMPLES"; set_color normal
+        echo "  gcb                              # pick the base with fzf"
+        echo "  gcb release-candidate            # give the base directly"
+        echo "  gcb rc                           # abbreviation"
+        echo "  gcb rc -k GD-1140                # without looking at the screen"
+        echo "  gcb rc -n feature/GD-1-trial     # without jira-to-branch"
+        echo "  gcb -d                           # dry run"
         return 0
     end
 
     git rev-parse --git-dir >/dev/null 2>&1; or begin
-        echo "gcb: git deposu değil" >&2
+        echo "gcb: not a git repository" >&2
         return 1
     end
 
@@ -54,32 +54,32 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
         set i (math $i + 1)
     end
 
-    # -n jira-to-branch'i hic cagirmiyor, -k ona verilecek argument: ikisi birlikte
-    # verilirse -k sessizce yok sayilirdi.
+    # -n never calls jira-to-branch, while -k is an argument for it: given both,
+    # -k would be silently ignored.
     if test -n "$name"; and test -n "$key"
-        echo "gcb: -n ve -k birlikte kullanılmaz" >&2
+        echo "gcb: -n and -k cannot be combined" >&2
         return 1
     end
 
-    # Uzak base adaylarını topla; kısmi eşleşmeye izin ver (rc -> release-candidate)
+    # Collect remote base candidates; allow partial matches (rc -> release-candidate)
     git fetch --quiet 2>/dev/null
     set -l cands (git branch -r 2>/dev/null | string trim | string replace -r '^origin/' '' \
         | string match -v -r '^HEAD' | sort -u)
     test (count $cands) -eq 0; and begin
-        echo "gcb: uzak branch bulunamadı" >&2
+        echo "gcb: no remote branch found" >&2
         return 1
     end
 
     set -l base ""
     if test -n "$base_arg"
-        # tam eşleşme önce, sonra kısmi
+        # exact match first, then partial
         if contains -- $base_arg $cands
             set base $base_arg
         else
             set -l hits (printf '%s\n' $cands | fzf --filter=$base_arg 2>/dev/null)
             switch (count $hits)
                 case 0
-                    echo "gcb: '$base_arg' hiçbir branch'e uymuyor" >&2
+                    echo "gcb: '$base_arg' matches no branch" >&2
                     return 1
                 case 1
                     set base $hits[1]
@@ -90,7 +90,7 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
             end
         end
     else
-        # Sık kullanılanları başa al, kalanları arkasına
+        # Put the common ones first, the rest after
         set -l pref
         for b in release-candidate develop dev main master test
             contains -- $b $cands; and set -a pref $b
@@ -104,12 +104,12 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
     end
     test -z "$base"; and return 0
 
-    # Branch adı: -n ile verilmediyse jira-to-branch üretir, stdout'tan okunur.
-    # Boru eklersen $status boruyu izler, jira-to-branch'i değil — hatası yutulur.
+    # Branch name: unless given with -n, jira-to-branch produces it on stdout.
+    # Add a pipe and $status follows the pipe, not jira-to-branch — its error is swallowed.
     if test -z "$name"
         set -l jtb ~/.config/bin/jira-to-branch
         test -x $jtb; or begin
-            echo "gcb: $jtb bulunamadı (-n ile ad verebilirsin)" >&2
+            echo "gcb: $jtb not found (you can pass a name with -n)" >&2
             return 1
         end
         set -l jtb_args
@@ -119,21 +119,21 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
     end
 
     if test -z "$name"
-        echo "gcb: branch adı boş" >&2
+        echo "gcb: branch name is empty" >&2
         return 1
     end
-    # Tek satır, boşluksuz olmalı
+    # Must be a single line with no spaces
     set name (printf '%s' $name | head -1 | string replace -a ' ' '-')
 
     if git show-ref --verify --quiet "refs/heads/$name"
-        echo "gcb: '$name' zaten var" >&2
+        echo "gcb: '$name' already exists" >&2
         return 1
     end
 
     echo "  base:   origin/$base"
     echo "  branch: $name"
     if test $dry -eq 1
-        echo "  (dry-run, checkout yapılmadı)"
+        echo "  (dry-run, nothing checked out)"
         return 0
     end
     git checkout -b $name --no-track "origin/$base"

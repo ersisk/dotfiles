@@ -38,8 +38,8 @@ default-root-container-orientation = 'auto'
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
-# Pencere odagi degisince fare de takip eder. 'lazy': imlec zaten hedef
-# pencerenin icindeyse kimildamaz.
+# The mouse follows when window focus changes. 'lazy': the cursor stays put when
+# it is already inside the target window.
 on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
@@ -102,7 +102,7 @@ ctrl-minus = 'layout tiles horizontal vertical'
 ctrl-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-# wrap-around-the-workspace: kenardaki pencerede tus bosa gitmesin, basa donsun.
+# wrap-around-the-workspace: on an edge window the key should wrap instead of doing nothing.
 alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
 alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
 alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
@@ -134,13 +134,13 @@ alt-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
 alt-b = 'workspace B' # Browser
 alt-c = 'workspace C' # Mail (apple mail, thunderbird)
 alt-d = 'workspace D' # Database (Beekeeper studio)
-# alt-e -> focus-monitor olarak kullaniliyor (asagida)
+# alt-e -> used as focus-monitor (below)
 # alt-f = 'workspace F'
 alt-g = 'workspace G' # KeePassXC (Password manager)
 alt-i = 'workspace I' # Intellij
 alt-m = 'workspace M' # messaging /media (texting and spotify) 
 alt-n = 'workspace N' # Notes (Obsidian, notesnook)
-# alt-o -> focus-back-and-forth olarak kullaniliyor (asagida)
+# alt-o -> used as focus-back-and-forth (below)
 alt-p = 'workspace P' # Postman and Bruno
 # alt-q = 'workspace Q'
 # alt-r = 'workspace R'
@@ -149,7 +149,7 @@ alt-t = 'workspace T' # Terminal (currently wezterm)
 # alt-u = 'workspace U'
 # alt-v = 'workspace V'
 # alt-w = 'workspace W'
-alt-x = 'workspace X' # Scratch (atanmamis pencereler; monitore sabitlenmedi)
+alt-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
 # alt-y = 'workspace Y'
 alt-z = 'workspace Z' # Slack
 
@@ -168,7 +168,7 @@ alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
 alt-shift-c = 'move-node-to-workspace C'
 alt-shift-d = 'move-node-to-workspace D'
-# alt-shift-e -> move-node-to-monitor olarak kullaniliyor (asagida)
+# alt-shift-e -> used as move-node-to-monitor (below)
 # alt-shift-f = 'move-node-to-workspace F'
 alt-shift-g = 'move-node-to-workspace G'
 alt-shift-i = 'move-node-to-workspace I'
@@ -189,16 +189,16 @@ alt-shift-z = 'move-node-to-workspace Z'
 ctrl-left = 'workspace prev'
 ctrl-right = 'workspace next'
 
-# Tab yerine Q: Logi POP Keys, bir modifier basiliyken Tab basislarinin ~%25'ini
-# hic gondermiyor (HID katmaninda olay dogmuyor, taşimadan bagimsiz).
+# Q instead of Tab: with a modifier held, Logi POP Keys drops ~25% of Tab presses
+# entirely (no event is born at the HID layer, regardless of transport).
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-w = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
-# Force-assigned workspace'ler icin gecici tasima: reload'da / monitor yeniden
-# baglaninca atandigi monitore geri doner.
+# Temporary move for force-assigned workspaces: on reload / monitor reconnect it
+# returns to the monitor it is assigned to.
 alt-shift-w = 'move-workspace-to-monitor --wrap-around next'
 
-# alt-w'nin pencere duzeyindeki karsiligi: son iki pencere arasinda gider gelir.
+# The window-level counterpart of alt-w: toggles between the last two windows.
 alt-o = 'focus-back-and-forth'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
@@ -233,12 +233,12 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 alt-shift-f = 'fullscreen'
 
-# Monitor sirasi (1, 2, ...) fiziksel yerlesime gore degisiyor; ekrani tasiyinca
-# atamalar kayiyor. Bu yuzden ID yerine kalici pattern kullaniliyor.
-# Harici ekran yoksa fallback olarak main'e duser.
+# Monitor order (1, 2, ...) shifts with the physical layout; moving a screen moves
+# the assignments with it. Hence a stable pattern instead of an ID.
+# With no external display it falls back to main.
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
-# Harici ekran 1920x1080 -> mantiksal olarak built-in Retina'dan daha genis.
-# Bu yuzden genis/referans icerik disarida, yogun okuma/yazma Retina'da.
+# The external display is 1920x1080 -> logically wider than the built-in Retina.
+# So wide/reference content goes outside, heavy reading and writing on the Retina.
 [workspace-to-monitor-force-assignment]
 A = ['secondary', 'main']
 C = ['secondary', 'main']
@@ -367,8 +367,8 @@ if.app-id = 'com.neovide.neovide'
 run = 'move-node-to-workspace I'
 check-further-callbacks = true
 
-# Terminalden bundle içindeki binary ile açılınca macOS bundle-id vermiyor (NULL-APP-BUNDLE-ID),
-# bu yüzden app-id kuralı tutmuyor; isimle yakala.
+# Launched from the terminal via the binary inside the bundle, macOS reports no
+# bundle id (NULL-APP-BUNDLE-ID), so the app-id rule does not match; catch it by name.
 [[on-window-detected]]
 if.app-name-regex-substring = '[Nn]eovide'
 run = 'move-node-to-workspace I'

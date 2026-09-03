@@ -62,10 +62,10 @@ keybindings:
     prs:
         - key: C
           name: code review
-          # -d: odak kalsin, arka arkaya birden fazla review baslatilabilsin.
-          # remain-on-exit failed: -d ile acilan pencere hemen patlarsa gormezsin;
-          # basarisiz olan pencere ekranda kalir, basarili olan eskisi gibi kapanir.
-          # xargs yer tutucusu % — {} gh-dash sablonuyla karismasin.
+          # -d: keep the focus here so several reviews can be started back to back.
+          # remain-on-exit failed: a window opened with -d that dies immediately goes
+          # unseen; a failed one stays on screen, a successful one closes as before.
+          # The xargs placeholder is % — so {} does not clash with the gh-dash template.
           command: >-
             tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: D
@@ -78,7 +78,7 @@ theme:
         table:
             showSeparator: true
             compact: false
-    # Kanagawa Wave; gh-dash varsayilani sabit hex kullaniyor, terminal paletini miras almiyor.
+    # Kanagawa Wave; gh-dash's default uses fixed hex and does not inherit the terminal palette.
     colors:
         text:
             primary: "#dcd7ba"

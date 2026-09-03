@@ -1,7 +1,7 @@
 [theme]
 name = "kanagawa"
 
-# Kanagawa Wave; ton degerleri kitty/tmux/fzf ile ayni.
+# Kanagawa Wave; the tone values match kitty/tmux/fzf.
 [colors]
 AlertInfo = "#98bb6c"
 AlertWarn = "#e6c384"

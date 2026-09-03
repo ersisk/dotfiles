@@ -1,20 +1,19 @@
-"""Kitty, tmux, aerospace ve Raycast kisayollarini fzf satirlarina cevirir
-(bkz keys-panel.sh).
+"""Turns kitty, tmux, aerospace and Raycast shortcuts into fzf rows
+(see keys-panel.sh).
 
-Kaynak dogrudan config dosyalari: kitty.conf'ta her map'in ustundeki yorum
-satiri, tmux tarafinda ise bind'lerin -N notu, aerospace'te [mode.*.binding]
-tablolarindaki satir sonu yorumu. Boylece yeni bir kisayol eklendiginde burada
-guncelleme gerekmez.
+The source is the config files themselves: the comment above each map in
+kitty.conf, the -N note on each tmux bind, the end-of-line comment in the
+aerospace [mode.*.binding] tables. So a new binding needs no update here.
 
-Tek istisna Raycast: script hotkey'leri Raycast'in kendi sifreli state'inde
-duruyor, dosyada tutulan tek kayit scripts/README.md'deki tablo — panel de onu
-okuyor. Tablo yanlissa panel de yanlis soyler.
+The one exception is Raycast: script hotkeys live in Raycast's own encrypted
+state, and the only file-based record is the table in scripts/README.md — which
+is what the panel reads. A wrong table means a wrong panel.
 
-tmux -N notlari "⌘+g lazygit" formatinda oldugu icin kitty esiyle ayni satirda
-birlestirilebiliyor; eslesmeyenler kendi satirinda kalir.
+tmux -N notes are written as "⌘+g lazygit", so they can be merged onto the same
+row as their kitty twin; unmatched ones keep their own row.
 
-Kisayollardan sonra fish alias'lari ve fish/functions altindaki komutlar
-"alias" bolumunde listelenir.
+After the shortcuts come the fish aliases and the commands under fish/functions,
+listed in the "alias" section.
 """
 
 import os
@@ -33,39 +32,39 @@ FISH_FUNCTIONS = os.path.join(HOME, ".config/fish/functions")
 AEROSPACE_CONF = os.path.join(HOME, ".aerospace.toml")
 RAYCAST_README = os.path.join(HOME, ".config/raycast/scripts/README.md")
 
-# "(Cmd+Shift+E -> Ctrl+A, Shift+E)" gibi kuyruklar yorumun anlamli kismini bogar
+# tails like "(Cmd+Shift+E -> Ctrl+A, Shift+E)" drown out the meaningful part of the comment
 ARROW = re.compile(r"\s*\(?\s*(Cmd|⌘)[^)]*->[^)]*\)?\s*$", re.IGNORECASE)
 MAP = re.compile(r"^map\s+(\S+)\s+(.*)$")
-# send_text all \x01G -> prefix'ten sonra basilan tus ("G"); eslestirmenin asil anahtari
+# send_text all \x01G -> the key pressed after the prefix ("G"); the real matching key
 SENDS = re.compile(r"^send_text\s+all\s+\\x01(\\x(?P<hex>[0-9a-fA-F]{2})|(?P<lit>.))")
 SECTION = re.compile(r"^--\s*(.*?)\s*--$")
-# -N notu, ardindan opsiyonel flag'ler, sonra tus + komut
+# the -N note, then optional flags, then key + command
 NOTE = re.compile(r"""^bind(?:-key)?\s+(?:-N\s+(?P<q>["'])(?P<note>.*?)(?P=q)\s*)?(?P<rest>.*)$""")
 FLAGS = re.compile(r"^(?:-[a-zA-Z]+\s+|-T\s+\S+\s+)*")
-# notun basindaki "⌘+⇧+K" gibi kitty esi
+# the kitty twin at the head of the note, e.g. "⌘+⇧+K"
 EQUIV = re.compile(r"^((?:⌘|⇧|⌃|⌥|\+)+[^\s]*)\s+(.*)$")
 
-# alias adi ve komutu; deger tirnakli ya da tirnaksiz, "=" opsiyonel
+# alias name and command; the value may be quoted or not, "=" optional
 ALIAS = re.compile(r"""^alias\s+(?P<name>[\w.-]+)\s*=?\s*(?P<q>["']?)(?P<cmd>.*?)(?P=q)$""")
 
-# aerospace: sadece [mode.*.binding] altindaki satirlar kisayol. [gaps] ya da
-# [[on-window-detected]] altindaki "key = value" satirlari da ayni sekle uyuyor,
-# tablo basligini takip etmek onlari ayirmanin tek yolu.
+# aerospace: only lines under [mode.*.binding] are bindings. The "key = value"
+# lines under [gaps] or [[on-window-detected]] have the same shape, so tracking
+# the table header is the only way to tell them apart.
 AEROSPACE_MODE = re.compile(r"^\[mode\.(?P<mode>[\w-]+)\.binding\]")
 AEROSPACE_BIND = re.compile(r"^(?P<key>[a-z0-9]+(?:-[a-z0-9]+)*)\s*=\s*(?P<val>.+)$", re.IGNORECASE)
 QUOTED = re.compile(r"'([^']*)'|\"([^\"]*)\"")
 WORKSPACE = re.compile(r"^workspace (\S+)$")
 MOVE_NODE = re.compile(r"^move-node-to-workspace (\S+)$")
-# markdown tablo satiri: | Jump to Claude | `⌃⌥J` | ... |
+# markdown table row: | Jump to Claude | `⌃⌥J` | ... |
 MD_ROW = re.compile(r"^\|(?P<cells>.+)\|$")
-# "⌃⌥J" -> modifier dizisi + ana tus
+# "⌃⌥J" -> modifier run + base key
 GLYPH_RUN = re.compile(r"^(?P<mods>[⌘⇧⌃⌥]+)(?P<base>.+)$")
 
 PREFIX = "^a"
-# fzf --ansi ile okunur; alias satirlarini kisayollardan gorsel olarak ayirir
+# read via fzf --ansi; visually separates alias rows from shortcuts
 CYAN, DIM, RESET = "\033[36m", "\033[2m", "\033[0m"
 GLYPHS = {"cmd": "⌘", "shift": "⇧", "ctrl": "⌃", "alt": "⌥", "opt": "⌥"}
-SKIP_DESC = ("note:", "not:")
+SKIP_DESC = ("note:",)
 
 
 def clean(text):
@@ -73,7 +72,7 @@ def clean(text):
 
 
 def pretty_key(key, sep="+"):
-    """'cmd+shift+k' -> '⌘+⇧+K'; aerospace tuslari '-' ile ayrildigi icin sep var."""
+    """'cmd+shift+k' -> '⌘+⇧+K'; sep exists because aerospace separates keys with '-'."""
     out = []
     for part in key.split(sep):
         low = part.lower()
@@ -87,7 +86,7 @@ def pretty_key(key, sep="+"):
 
 
 def pretty_glyphs(key):
-    """'⌃⌥J' -> '⌃+⌥+J'; panelin geri kalani '+' ile ayrilmis tuslar bekliyor."""
+    """'⌃⌥J' -> '⌃+⌥+J'; the rest of the panel expects keys separated by '+'."""
     m = GLYPH_RUN.match(key)
     if not m:
         return key
@@ -96,7 +95,7 @@ def pretty_glyphs(key):
 
 
 def split_comment(text):
-    """TOML satirini deger ve satir sonu yorumuna ayirir; tirnak icindeki # yorum degil."""
+    """Splits a TOML line into value and trailing comment; a # inside quotes is not a comment."""
     quote = ""
     for i, ch in enumerate(text):
         if quote:
@@ -110,7 +109,7 @@ def split_comment(text):
 
 
 def norm(text):
-    """Eslestirme icin: kucuk harf, noktalama yok."""
+    """For matching: lowercase, no punctuation."""
     return re.sub(r"[^\w]+", "", text.lower())
 
 
@@ -135,7 +134,7 @@ def parse_kitty():
                 section = clean(sec.group(1)).rstrip("(").strip()
                 pending = []
             elif body and not body.startswith("="):
-                # "Note: ..." aciklama degil, uyari
+                # "Note: ..." is a warning, not a description
                 if not body.lower().startswith(SKIP_DESC):
                     pending.append(body)
             continue
@@ -155,7 +154,7 @@ def parse_kitty():
         sm = SENDS.match(action)
         if sm:
             sends = chr(int(sm.group("hex"), 16)) if sm.group("hex") else sm.group("lit")
-            # ayni tusu gonderen ikinci map, klavye layout varyanti; atla
+            # a second map sending the same key, a keyboard layout variant; skip it
             if sends in seen_sends:
                 pending = []
                 continue
@@ -174,7 +173,7 @@ def parse_kitty():
 
 
 def parse_aerospace():
-    """[mode.*.binding] tablolarindaki bindingler; ana mod disindakiler prefix'li yazilir."""
+    """Bindings from the [mode.*.binding] tables; those outside the main mode get a prefix."""
     try:
         with open(AEROSPACE_CONF, encoding="utf-8") as fh:
             lines = fh.read().splitlines()
@@ -194,7 +193,7 @@ def parse_aerospace():
                 continue
             if not mode or not stripped or stripped.startswith("#"):
                 continue
-        # cok satirli dizi: kapanan koseli paranteze kadar birlestir
+        # multi-line array: join until the closing bracket
         pending = f"{pending} {stripped}" if pending else stripped
         if pending.count("[") > pending.count("]"):
             continue
@@ -208,19 +207,19 @@ def parse_aerospace():
         if not cmds:
             continue
         key = pretty_key(m.group("key"), sep="-")
-        # service moduna hangi tusun soktugu configden okunur, sabitlenmez.
-        # Prefix '+' olmadan yazilir: tus kolonunu 6 karakter daraltiyor ve
-        # Raycast README'sinin "⌃⌥J" yazimiyla ayni.
+        # which key enters service mode is read from the config, not hardcoded.
+        # The prefix is written without '+': it narrows the key column by 6
+        # characters and matches the "⌃⌥J" spelling in the Raycast README.
         if cmds == ["mode service"]:
             service_prefix = key.replace("+", "")
         parsed.append({
-            # her service-mode binding'i 'mode main' ile bitiyor; tekrar eden gurultu
+            # every service-mode binding ends with 'mode main'; repeated noise
             "cmd": " · ".join(c for c in cmds if c != "mode main") or cmds[0],
             "key": f"{service_prefix} {key}" if mode != "main" and service_prefix else key,
             "note": note,
         })
 
-    # move-node-to-workspace satirlarinda yorum yok; workspace binding'inin notunu tasi
+    # move-node-to-workspace lines carry no comment; reuse the workspace binding note
     notes = {}
     for row in parsed:
         m = WORKSPACE.match(row["cmd"])
@@ -233,14 +232,14 @@ def parse_aerospace():
         if not note:
             m = MOVE_NODE.match(row["cmd"])
             note = notes.get(m.group(1), "") if m else ""
-        # aerospace yorumlarinin kendisi parantez tasiyor; ayirici olarak tire kullan
+        # aerospace comments carry parentheses of their own; use a dash as the separator
         desc = f"{row['cmd']} — {note}" if note else row["cmd"]
         rows.append({"kitty": row["key"], "tmux": "", "desc": desc, "section": "aerospace"})
     return rows
 
 
 def parse_raycast():
-    """scripts/README.md'deki hotkey tablosu - bkz modul docstring'i."""
+    """The hotkey table in scripts/README.md - see the module docstring."""
     try:
         with open(RAYCAST_README, encoding="utf-8") as fh:
             lines = fh.read().splitlines()
@@ -256,7 +255,7 @@ def parse_raycast():
         if len(cells) != 3:
             continue
         name, key, what = cells
-        # baslik ve --- ayirici satirlari tus kolonundan dusuyor
+        # the header and --- separator rows fall out on the key column
         if not GLYPH_RUN.match(key.strip("`")):
             continue
         rows.append({
@@ -269,7 +268,7 @@ def parse_raycast():
 
 
 def parse_alias():
-    """config.fish alias'lari + fish/functions/*.fish (ozel komutlar)."""
+    """config.fish aliases + fish/functions/*.fish (custom commands)."""
     rows = []
     try:
         with open(FISH_CONF, encoding="utf-8") as fh:
@@ -322,7 +321,7 @@ def parse_tmux():
             if not rest:
                 continue
 
-            # '"' ve '%' gibi tuslar quote'lu; shlex dogru ayirir
+            # keys like '"' and '%' are quoted; shlex splits them correctly
             try:
                 tokens = shlex.split(rest, comments=True)
             except ValueError:
@@ -352,10 +351,10 @@ def parse_tmux():
 
 
 def merge(kitty_rows, tmux_rows):
-    """Ayni isi yapan kitty+tmux ciftlerini tek satirda birlestirir.
+    """Merges kitty+tmux pairs that do the same job onto one row.
 
-    Anahtar, kitty'nin tmux'a gonderdigi tus (\x01G -> "G"); -N notundaki
-    ⌘ esi sadece dogrulama/yedek olarak kullanilir.
+    The key is the byte kitty sends to tmux (\x01G -> "G"); the ⌘ twin in the
+    -N note is only used for validation/fallback.
     """
     by_send = {}
     for row in kitty_rows:
@@ -394,15 +393,15 @@ def merge(kitty_rows, tmux_rows):
     return merged
 
 
-# ok/isimli tuslar harf ve rakamlardan sonra gelsin
+# arrow/named keys sort after letters and digits
 NAMED_KEY_ORDER = ("Left", "Right", "Up", "Down", "Equal", "Minus")
 
 
 def sort_key(row):
-    """Tus sirasina gore: once ana tus, sonra modifier sayisi.
+    """By key order: base key first, then modifier count.
 
-    Boylece ⌘+A ile ⌘+⇧+A yan yana gelir ve sade olan (az modifier) once gelir.
-    Kitty esi olmayan, yalniz tmux satirlari en sona duser.
+    So ⌘+A and ⌘+⇧+A end up side by side, the plainer one (fewer modifiers) first.
+    Rows with no kitty twin, tmux-only ones, sink to the bottom.
     """
     if row.get("section") == "alias":
         return (4, 0, "", 0, row["kitty"].lower())
@@ -423,18 +422,40 @@ def sort_key(row):
     return (2, idx, base.lower(), mods, "")
 
 
+# fzf's pointer + border allowance: the row has to fit that much narrower space.
+FZF_CHROME = 6
+
+
+def term_width(default=80):
+    """The panel output goes to a pipe, so the width is read from stderr's tty."""
+    for stream in (sys.stderr, sys.stdout):
+        try:
+            return os.get_terminal_size(stream.fileno()).columns
+        except (OSError, ValueError):
+            continue
+    try:
+        return int(os.environ["COLUMNS"])
+    except (KeyError, ValueError):
+        return default
+
+
 def main():
     rows = merge(parse_kitty(), parse_tmux()) + parse_aerospace() + parse_raycast() + parse_alias()
     if not rows:
-        sys.exit("kisayol bulunamadi")
+        sys.exit("no shortcuts found")
 
     kw = max((len(r["kitty"]) for r in rows), default=0)
     tw = max((len(r["tmux"]) for r in rows), default=0)
+    # Long alias commands ran to 185 characters and cut off the description in the
+    # popup; keep the key columns whole and trim only from the tail.
+    budget = term_width() - FZF_CHROME - kw - 2
     for r in sorted(rows, key=sort_key):
         sec = f"  · {r['section']}" if r["section"] else ""
-        # hizalama ANSI kodlarindan etkilenmesin: once padle, sonra renklendir
+        # keep alignment free of ANSI codes: pad first, then colorize
         name = f"{r['kitty']:<{kw}}"
         rest = f"{r['tmux']:<{tw}}  {r['desc']}{sec}"
+        if budget > tw + 4 and len(rest) > budget:
+            rest = rest[: budget - 1] + "…"
         if r["section"] == "alias":
             print(f"{CYAN}{name}{RESET}  {DIM}{rest}{RESET}")
         else:

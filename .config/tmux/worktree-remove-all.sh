@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# worktree-remove-all — temizlenebilir tum worktree'leri tek onayla siler.
+# worktree-remove-all — deletes every cleanable worktree after a single confirmation.
 #
-# Panelde ctrl-alt-d ile cagrilir. Kriterleri KENDI BILMEZ: her worktree icin
-# worktree-remove.sh'i WT_BATCH=1 ile cagirir. Kurallar tek yerde kalsin diye,
-# yoksa panel/tek silme/toplu silme uc ayri dogruluk kaynagi olur.
+# Called with ctrl-alt-d in the panel. It knows NONE of the criteria itself: it
+# calls worktree-remove.sh with WT_BATCH=1 for each worktree, so the rules live in
+# one place instead of panel/single-delete/bulk-delete being three sources of truth.
 #
-# Silinemeyecek olan zaten reddedilir, o yuzden "hepsi" ile "temizlenebilir
-# olanlar" ayni kume: secim isaretlemeye (Tab) gerek yok.
+# Anything undeletable is refused anyway, so "all" and "the cleanable ones" are the
+# same set: no selection marking (Tab) is needed.
 #
-# PR durumu her worktree icin yeniden sorulur (gh, seri). Panel cache'ini
-# kullanmiyoruz cunku silme aninda taze dogrulama bu tasarimin sarti.
+# PR state is queried again for every worktree (gh, serially). The panel cache is
+# not used, because fresh verification at delete time is the point of this design.
 
 set -uo pipefail
 
 dir="${1:-}"
-[[ -n "$dir" && -d "$dir" ]] || { echo "Gecersiz yol."; sleep 2; exit 1; }
+[[ -n "$dir" && -d "$dir" ]] || { echo "Invalid path."; sleep 2; exit 1; }
 
 REMOVE="$HOME/.config/tmux/worktree-remove.sh"
-[[ -x "$REMOVE" ]] || { echo "worktree-remove.sh bulunamadi: $REMOVE"; sleep 2; exit 1; }
+[[ -x "$REMOVE" ]] || { echo "worktree-remove.sh not found: $REMOVE"; sleep 2; exit 1; }
 
 main_wt=$(git -C "$dir" worktree list --porcelain 2>/dev/null | rg '^worktree ' | head -1 | cut -d' ' -f2)
 
-# Ana worktree listeden dusuruluyor: silinemez ve onay sayisini sisiriyor.
+# The main worktree is dropped from the list: it cannot be deleted and only inflates the count.
 paths=()
 while IFS= read -r line; do
   p="${line#worktree }"
@@ -30,14 +30,14 @@ while IFS= read -r line; do
 done < <(git -C "$dir" worktree list --porcelain 2>/dev/null | rg '^worktree ')
 
 count=${#paths[@]}
-(( count )) || { echo "  Ana worktree disinda worktree yok."; sleep 2; exit 0; }
+(( count )) || { echo "  No worktrees besides the main one."; sleep 2; exit 0; }
 
-printf '\n  %s worktree taranacak.\n' "$count"
-printf '  Sadece PR'"'"'i merged, agaci temiz ve her seyi push edilmis olanlar silinir;\n'
-printf '  digerleri sebebiyle birlikte atlanir.\n\n'
-printf '  Devam edilsin mi? (e/h) '
+printf '\n  %s worktrees will be scanned.\n' "$count"
+printf '  Only ones with a merged PR, a clean tree and everything pushed are deleted;\n'
+printf '  the rest are skipped, with the reason.\n\n'
+printf '  Continue? (y/n) '
 read -rsn1 answer; printf '\n\n'
-[[ "$answer" == "e" || "$answer" == "E" ]] || { echo "  Iptal edildi."; sleep 1; exit 0; }
+[[ "$answer" == "y" || "$answer" == "Y" ]] || { echo "  Cancelled."; sleep 1; exit 0; }
 
 removed=0
 skipped=0
@@ -50,6 +50,6 @@ for p in "${paths[@]}"; do
   fi
 done
 
-printf '\n  %s silindi, %s atlandi.\n\n' "$removed" "$skipped"
-printf '  Kapatmak icin bir tusa bas.'
+printf '\n  %s deleted, %s skipped.\n\n' "$removed" "$skipped"
+printf '  Press any key to close.'
 read -rsn1 _

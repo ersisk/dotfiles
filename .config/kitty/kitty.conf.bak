@@ -4,24 +4,24 @@
 # =============================================================================
 
 # ----- Font -----
-# Font: bold weight'i zorla kullan, regular yerine
+# Font: force the bold weight instead of regular
 # font_family      JetBrainsMono NFM SemiBold
 # bold_font        JetBrainsMono NFM Bold
 # italic_font      JetBrainsMono NFM Italic
 # bold_italic_font JetBrainsMono NFM Bold Italic
-# Font: bold weight'i zorla kullan, regular yerine
+# Font: force the bold weight instead of regular
 font_family      Maple Mono NF SemiBold
 bold_font        Maple Mono NF Bold
 italic_font      Maple Mono NF Italic
 bold_italic_font Maple Mono NF Bold Italic
 font_size        19
 
-# Kitty'nin macOS'ta zayıf render etmesini düzelt
-# (WezTerm CoreText kullanır, Kitty kendi renderer'ını kullanır)
+# Fix Kitty's weak rendering on macOS
+# (WezTerm uses CoreText, Kitty uses its own renderer)
 text_composition_strategy 1.7 30
 macos_thicken_font        0.4
 
-# Eğer hâlâ ince görünüyorsa thicken'ı arttır:
+# If it still looks thin, raise thicken:
 # macos_thicken_font 0.6
 
 # ----- Cursor -----
@@ -70,7 +70,7 @@ shell_integration       enabled
 # Ported from Kanagawa (Gogh) - matching wezterm color_scheme
 # =============================================================================
 
-# Kanagawa theme — opacity 0.92 için hafif boost'lu
+# Kanagawa theme — slightly boosted for opacity 0.92
 foreground              #dcd7ba
 background              #1f1f28
 selection_foreground    #c8c093
@@ -102,7 +102,7 @@ color5  #957fb8
 color6  #6a9589
 color7  #c8c093
 
-# Bright colors — opacity telafisi için hafif boost'lu
+# Bright colors — slightly boosted to compensate for opacity
 color8  #727169
 color9  #e46876
 color10 #98bb6c

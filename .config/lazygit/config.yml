@@ -27,19 +27,19 @@ gui:
       - "#dcd7ba"
 git:
   diffRenderers:
-    # Kanagawa temasi, side-by-side ve dekorasyonlar ~/.gitconfig'teki delta ayarlarindan miras alinir.
-    # hyperlinks-file-link-format: diff'te dosya adina tiklayinca lazygit'in editorunu acar.
+    # Kanagawa theme, side-by-side and decorations are inherited from the delta settings in ~/.gitconfig.
+    # hyperlinks-file-link-format: clicking a file name in the diff opens lazygit's editor.
     - type: stdinFilter
       colorArg: always
       command: delta --dark --paging=never --hyperlinks --hyperlinks-file-link-format="lazygit-edit://{path}:{line}"
-    # AST tabanli diff: formatlama mi mantik mi degismis sorusunu ayirir. delta'nin yanina gelir, yerine gecmez.
+    # AST-based diff: separates formatting changes from logic changes. It sits next to delta, not in its place.
     - name: difftastic
       type: extDiff
       colorArg: always
       command: difft --color=always --display=inline
 
 customCommands:
-  # Secili commit'i parent'iyla CodeDiff'te acar. lazygit acik kalir, nvim ayri tmux penceresinde.
+  # Opens the selected commit against its parent in CodeDiff. lazygit stays open, nvim in its own tmux window.
   - key: "X"
     context: "commits, subCommits, reflogCommits"
     description: "CodeDiff in new tmux window"

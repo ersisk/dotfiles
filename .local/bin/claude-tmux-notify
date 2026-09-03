@@ -45,14 +45,14 @@ PAYLOAD=$(cat)
 
 # --- Parse JSON payload ------------------------------------------------------
 if command -v jq &>/dev/null; then
-  # Tek jq cagrisi: alan basina bir jq calistirmak hook suresinin ucte birini
-  # yiyordu (8 process, ~21ms), ve bu hook her Bash/Task cagrisinda tetikleniyor.
+  # One jq call: running a jq per field ate a third of the hook's runtime
+  # (8 processes, ~21ms), and this hook fires on every Bash/Task call.
   #
-  # Ayirici 0x1F, tab degil: tab IFS icin "whitespace" sayilir, yani ardisik tab'lar
-  # tek ayiriciya coker ve bos alanlar yok olur - tool_input tasimayan bir payload'da
-  # (Notification gibi) butun alanlar kayardi. Alan icindeki newline/tab ve ayiricinin
-  # kendisi bosluga cevrilir: bir komut ya da mesaj 0x1F tasiyorsa alanlar kayardi.
-  # Hepsi tek satirlik gosterim icin kullaniliyor.
+  # The separator is 0x1F, not a tab: IFS treats a tab as "whitespace", so runs of
+  # tabs collapse into one and empty fields vanish - on a payload without tool_input
+  # (a Notification, say) every field would shift. Newlines/tabs inside a field and
+  # the separator itself are turned into spaces: a command or message carrying 0x1F
+  # would shift the fields. All of it is only used for a single-line display.
   IFS=$'\x1f' read -r EVENT TOOL TOOL_CMD TOOL_DESC RUN_BG SESSION_ID CWD TRANSCRIPT MESSAGE < <(
     jq -r '[
       .hook_event_name // "Unknown",
@@ -66,8 +66,8 @@ if command -v jq &>/dev/null; then
       .message // ""
     ] | map(tostring | gsub("[\n\r\t\u001f]"; " ")) | join("\u001f")' <<< "$PAYLOAD" 2>/dev/null
   ) || true
-  # Parse tamamen basarisiz olduysa yazacak bir sey yok: "unknown" projeli sahte bir
-  # kayit uretmek yerine sessizce cikilir.
+  # If the parse failed outright there is nothing to write: rather than producing a
+  # fake record with an "unknown" project, exit quietly.
   [[ -n "$EVENT" ]] || exit 0
 else
   EVENT=$(echo "$PAYLOAD" | grep -o '"hook_event_name":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
@@ -261,17 +261,17 @@ tmux_styled() {
 #     runs, so prepend the glyph directly onto #W, stripping any known prefix first
 #     (idempotent — re-applying never stacks). Also keep @claude_state in sync so
 #     the glyph reappears if auto-rename is later turned back on.
-# Nerd Font durum glyph'leri (Kanagawa ile renklendirilebilsin diye emoji degil).
-# Bu liste degisirse ClaudeMenubar.swift (phaseByGlyph) da guncellenmeli;
-# claude-sesh.sh glyph'i oldugu gibi gosterir.
-# @claude_state ayni zamanda "onaylanmamis is var" isareti: claude-menubar,
-# biten bir oturumun pane'ine bakildigini gorunce bu option'i siler.
+# Nerd Font state glyphs (not emoji, so they can be coloured with Kanagawa).
+# If this list changes, ClaudeMenubar.swift (phaseByGlyph) has to change with it;
+# claude-sesh.sh shows the glyph as is.
+# @claude_state doubles as an "unacknowledged work" mark: claude-menubar clears the
+# option once it sees you have looked at a finished session's pane.
 STATE_GLYPHS='󰓦󰛐󱎫'
-# Onceki emoji durum seti: pencere adinda kalmis olabilir, yeniden
-# adlandirirken soyulmalari icin tanimli tutuluyor.
+# The previous emoji state set: it may still be stuck in a window name, so it is
+# kept defined here to be stripped on rename.
 LEGACY_GLYPHS='🔨⚙👀⏳🏁✅'
-# Not: 󰘦 / 󰚩 kullanicinin utility.conf'ta verdigi kalici pencere ikonlari;
-# durum glyph'i degiller, asla soyulmamalilar.
+# Note: 󰘦 / 󰚩 are permanent window icons the user set in utility.conf; they are
+# not state glyphs and must never be stripped.
 
 set_window_state() {
   [[ "$WINDOW_STATE" == "1" ]] || return 0
@@ -301,10 +301,10 @@ set_window_state() {
 
   local name stripped
   name=$(tmux display-message -p -t "$TARGET" '#W' 2>/dev/null) || return 0
-  # Birikmis prefixleri tek tek soy: eski emoji setinden gecis yapan pencerelerde
-  # ad "<yeni> <eski> <daha eski> Claude" gibi katmanlanabiliyor.
-  # Nerd-font eklentisi adin basina kendi bosluklarini koyabiliyor, bu yuzden
-  # glyph ile ad arasindaki bosluk sayisi degisken.
+  # Strip accumulated prefixes one by one: on windows carried over from the old
+  # emoji set the name can layer up as "<new> <old> <older> Claude".
+  # The nerd-font plugin may put its own spaces in front of the name, so the number
+  # of spaces between glyph and name varies.
   stripped="$name"
   while [[ "$stripped" == [$STATE_GLYPHS$LEGACY_GLYPHS]* ]]; do
     stripped="${stripped#[$STATE_GLYPHS$LEGACY_GLYPHS]}"
@@ -317,9 +317,10 @@ set_window_state() {
   fi
 }
 
-# Son kullanici-gorunur mesaji LAST_MSG'e ve tmux varsa pencere option'ina yazar;
-# claude-next.sh onizlemede, menubar da satir aciklamasinda gosterir.
-# Transcript yoksa sessizce atlanir - rozet ve glyph akisi bundan bagimsiz calisir.
+# Writes the last user-visible message to LAST_MSG, and to the window option when
+# tmux is around; claude-next.sh shows it in the preview and the menu bar in the
+# row's description. With no transcript it is skipped quietly - the badge and glyph
+# flow works independently of it.
 LAST_MSG=""
 set_last_message() {
   [[ -n "${TRANSCRIPT:-}" && -r "$TRANSCRIPT" ]] || return 0
@@ -435,9 +436,9 @@ case "$EVENT" in
   Notification)
     set_window_state waiting
     set_last_message
-    # Izin/onay bildirimi neyin beklendigini soyler ("... permission to use Bash"),
-    # o yuzden son asistan mesajini yener. Generic "waiting for your input" ise tam
-    # tersi: asil soru LAST_MSG icinde.
+    # A permission/approval notification says what is being waited on ("... permission
+    # to use Bash"), so it beats the last assistant message. A generic "waiting for
+    # your input" is the opposite: the real question is inside LAST_MSG.
     case "$MESSAGE" in
       *permission*|*approval*) detail="$MESSAGE" ;;
       *) detail="${LAST_MSG:-${MESSAGE:-needs input}}" ;;

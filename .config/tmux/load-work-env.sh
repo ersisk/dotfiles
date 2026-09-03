@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# load-work-env — is yollarini tmux'un global ortamina aktarir.
+# load-work-env — carries the work paths into tmux's global environment.
 #
-# work-paths.fish repoda tutulmaz (.gitignore); tmux server fish'in ortamini
-# miras almadigi icin degiskenler burada okunup tmux setenv ile aktarilir.
-# Dosya yoksa sessizce cikar - repoyu klonlayan baskasinda kirilma olmaz.
+# work-paths.fish is not kept in the repo (.gitignore); the tmux server does not
+# inherit fish's environment, so the variables are read here and passed on with
+# tmux setenv. With no file it exits quietly - nothing breaks for someone else
+# cloning the repo.
 
 set -uo pipefail
 
 src=~/.config/fish/conf.d/work-paths.fish
 [[ -r "$src" ]] || exit 0
 
-# fish'i kaynak gostererek degerleri cozdur: $WORK_ROOT gibi ic referanslar da genisler
+# resolve the values by sourcing fish: inner references like $WORK_ROOT expand too
 command -v fish >/dev/null || exit 0
 while IFS='=' read -r key val; do
   [[ -n "$key" && -n "$val" ]] || continue

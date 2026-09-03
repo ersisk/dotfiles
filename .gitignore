@@ -4,32 +4,32 @@
 .config/tmux/plugins
 .config/yazi/flavors/
 
-# ~/.claude runtime state. settings.json BILEREK takip edilmiyor: Claude Code
-# oraya autoMode.environment yaziyor — organizasyon adi, private repo adlari,
-# CI secret isimleri, deploy hedefleri. Bu repo public. Sadece ornek versiyonlanir.
+# ~/.claude runtime state. settings.json is DELIBERATELY untracked: Claude Code
+# writes autoMode.environment into it — organisation name, private repo names,
+# CI secret names, deploy targets. This repo is public. Only the example is versioned.
 .claude/*
 !.claude/settings.json.example
 
-# Is yerine ait gercek yollar - repoda tutulmaz
+# Real work paths - not kept in the repo
 .config/fish/conf.d/work-paths.fish
 
-# Derlenmis binary'ler - repoda tutulmaz (biri x86_64, Rosetta ile calisiyor)
+# Compiled binaries - not kept in the repo (one is x86_64, running under Rosetta)
 .config/bin/aws-ssh
 .config/bin/merged-branches
 
-# Derlenmis menubar binary - kaynak .local/share/claude-menubar/ altinda
+# Compiled menubar binary - the source is under .local/share/claude-menubar/
 .local/bin/claude-menubar
 
-# Derlenmis OCR binary - kaynak .local/share/screen-ocr/ altinda
+# Compiled OCR binary - the source is under .local/share/screen-ocr/
 .local/bin/screen-ocr
 
-# Derlenmis PiP defocus binary - kaynak .local/share/zen-pip-defocus/ altinda
+# Compiled PiP defocus binary - the source is under .local/share/zen-pip-defocus/
 .local/bin/zen-pip-defocus
 
-# jira-cli config'i - Jira sunucu adresi ve login e-postasi, repo public
+# jira-cli config - Jira server address and login e-mail, and this repo is public
 .config/.jira/
 
-# Raycast'in kendi state'i - API token'i ve kurulu extension'lar, repoda tutulmaz
+# Raycast's own state - API token and installed extensions, not kept in the repo
 .config/raycast/config.json
 .config/raycast/extensions/
 .config/raycast/ai/
@@ -37,6 +37,6 @@
 # macOS Finder metadata
 .DS_Store
 
-# python bytecode cache (keys-panel.py import edilirse dusuyor)
+# python bytecode cache (appears if keys-panel.py is imported)
 __pycache__/
 *.pyc

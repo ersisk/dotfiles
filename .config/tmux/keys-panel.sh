@@ -1,39 +1,39 @@
 #!/usr/bin/env bash
-# keys-panel — kitty + tmux + aerospace + Raycast kisayollarini aranabilir bir
-# listede gosterir.
+# keys-panel — shows the kitty + tmux + aerospace + Raycast shortcuts in a
+# searchable list.
 #
-# Kaynak config dosyalarinin kendisi (bkz keys-panel.py), ayri bir cheatsheet
-# tutulmuyor. Enter secili satirin tuslarini panoya kopyalar.
+# The source is the config files themselves (see keys-panel.py), no separate
+# cheatsheet is kept. Enter copies the keys of the selected row to the clipboard.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARSER="$SCRIPT_DIR/keys-panel.py"
 
 if [[ ! -f "$PARSER" ]]; then
-    echo "keys-panel.py bulunamadi: $PARSER" >&2
+    echo "keys-panel.py not found: $PARSER" >&2
     exit 1
 fi
 
 rows="$(python3 "$PARSER")"
 if [[ -z "$rows" ]]; then
-    echo "kisayol bulunamadi" >&2
+    echo "no shortcuts found" >&2
     exit 1
 fi
 
-# tmux icindeysek popup, degilsek dogrudan calis
+# inside tmux use a popup, otherwise run directly
 if [[ -n "${TMUX:-}" && "${KEYS_PANEL_POPUP:-}" != "1" ]]; then
     exec tmux display-popup -w 88% -h 80% -E \
         "KEYS_PANEL_POPUP=1 '${BASH_SOURCE[0]}'"
 fi
 
 selection="$(printf '%s\n' "$rows" | fzf \
-    --prompt='kisayol > ' \
-    --header='Enter: tuslari kopyala · Esc: kapat' \
+    --prompt='shortcut > ' \
+    --header='Enter: copy keys · Esc: close' \
     --header-first \
     --layout=reverse \
     --info=inline \
     --border=rounded \
-    --border-label=' Kisayollar (kitty · tmux · aerospace · raycast) ' \
+    --border-label=' Shortcuts (kitty · tmux · aerospace · raycast) ' \
     --ansi \
     --no-multi \
     --pointer='▶' \
@@ -43,8 +43,8 @@ selection="$(printf '%s\n' "$rows" | fzf \
 
 [[ -z "$selection" ]] && exit 0
 
-# ilk iki kolon tuslar; aciklamayi atip panoya sadece onlari koy
-# fzf --ansi secimi ham dondurur; renk kodlari panoya sizmasin
+# the first two columns are the keys; drop the description and copy only those
+# fzf --ansi returns the selection raw; keep color codes out of the clipboard
 selection="$(printf '%s' "$selection" | sed $'s/\033\[[0-9;]*m//g')"
 keys="$(printf '%s' "$selection" | awk -F'  +' '{
     out = $1
@@ -54,5 +54,5 @@ keys="$(printf '%s' "$selection" | awk -F'  +' '{
 
 if command -v pbcopy >/dev/null 2>&1; then
     printf '%s' "$keys" | pbcopy
-    [[ -n "${TMUX:-}" ]] && tmux display-message -d 1500 "kopyalandi: $keys"
+    [[ -n "${TMUX:-}" ]] && tmux display-message -d 1500 "copied: $keys"
 fi

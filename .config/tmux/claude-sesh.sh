@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 
-# @claude_state: claude-tmux-notify'ın window'a yazdığı durum glyph'i.
-# Boşsa (henüz hook tetiklenmemiş / idle) nötr bir işaret gösterilir.
+# @claude_state: the state glyph claude-tmux-notify writes onto the window.
+# When empty (no hook fired yet / idle) a neutral marker is shown.
 state_label() {
   case "$1" in
-    󰓦) printf '󰓦 çalışıyor      ' ;;
-    󰛐) printf '󰛐 input bekliyor ' ;;
-    󱎫) printf '󱎫 arka plan      ' ;;
-    ) printf ' bg bitti       ' ;;
-    ) printf ' bitti          ' ;;
-    *)  printf '󰤄 boşta          ' ;;
+    󰓦) printf '󰓦 working        ' ;;
+    󰛐) printf '󰛐 needs input    ' ;;
+    󱎫) printf '󱎫 background     ' ;;
+    ) printf ' bg done        ' ;;
+    ) printf ' done           ' ;;
+    *)  printf '󰤄 idle           ' ;;
   esac
 }
 
 list_claude_panes() {
   tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}|#{pane_tty}|#{pane_current_path}|#{@claude_state}' |
   while IFS='|' read -r target tty path state; do
-    # o pane'in tty'sinde claude çalışıyor mu?
+    # is claude running on that pane's tty?
     if ps -o args= -t "${tty#/dev/}" 2>/dev/null | grep -q '[c]laude'; then
       printf '%s\t %s\t %s\n' "$target" "$(state_label "$state")" "$(printf '%s' "$path" | sed "s|^$HOME|~|")"
     fi

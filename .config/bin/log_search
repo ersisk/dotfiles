@@ -1,34 +1,34 @@
 #!/bin/bash
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  printf '\033[0mlog_search — proje log dosyalarını fzf ile seç ve incele\n\n'
-  printf '\033[1mKULLANIM\033[0m\n'
-  printf '  log_search [işlem] [dosya-öneki]\n\n'
-  printf '\033[1mARGÜMANLAR\033[0m\n'
-  printf '  işlem         menüyü atla, doğrudan işlemi seç (1-5)\n'
-  printf '  dosya-öneki   fzf yerine <log-dizini>/<önek>-<bugünün-tarihi>.log kullan\n'
-  printf '  -h, --help    bu yardım\n\n'
-  printf '\033[1mLOG KAYNAĞI\033[0m\n'
-  printf '  Sırayla denenir: var/log, log, storage/logs (host).\n'
-  printf '  Hiçbiri yoksa ve container ayakta ise container içindeki log dizini\n'
-  printf '  kullanılır; dosya geçici olarak host'"'"'a çekilip incelenir.\n'
-  printf '  Container adı $GTC_CONTAINER ile verilir; tanımsızsa container atlanır.\n\n'
-  printf '\033[1mİŞLEMLER\033[0m\n'
-  printf '  1 tail -f, 2 son 100000 satır, 3 nvim, 4 jlv, 5 sieve\n\n'
-  printf '\033[1mÖRNEKLER\033[0m\n'
-  printf '  log_search              # dosyayı fzf ile seç, işlemi menüden seç\n'
-  printf '  log_search 1            # fzf ile seç, doğrudan tail -f\n'
-  printf '  log_search 1 app        # <log-dizini>/app-<bugün>.log dosyasını takip et\n'
+  printf '\033[0mlog_search — pick and inspect project log files with fzf\n\n'
+  printf '\033[1mUSAGE\033[0m\n'
+  printf '  log_search [action] [file-prefix]\n\n'
+  printf '\033[1mARGUMENTS\033[0m\n'
+  printf '  action        skip the menu, pick the action directly (1-5)\n'
+  printf '  file-prefix   use <log-dir>/<prefix>-<today>.log instead of fzf\n'
+  printf '  -h, --help    this help\n\n'
+  printf '\033[1mLOG SOURCE\033[0m\n'
+  printf '  Tried in order: var/log, log, storage/logs (host).\n'
+  printf '  If none exist and the container is up, the log directory inside the\n'
+  printf '  container is used; the file is pulled to the host temporarily.\n'
+  printf '  Container name comes from $GTC_CONTAINER; unset means the container is skipped.\n\n'
+  printf '\033[1mACTIONS\033[0m\n'
+  printf '  1 tail -f, 2 last 100000 lines, 3 nvim, 4 jlv, 5 sieve\n\n'
+  printf '\033[1mEXAMPLES\033[0m\n'
+  printf '  log_search              # pick the file with fzf, pick the action from the menu\n'
+  printf '  log_search 1            # pick with fzf, tail -f directly\n'
+  printf '  log_search 1 app        # follow <log-dir>/app-<today>.log\n'
   exit 0
 fi
 
-# Kontrol edelim, fzf kurulmuş mu?
+# Is fzf installed?
 if ! command -v fzf &>/dev/null; then
-  echo "fzf bulunamadı. Lütfen fzf'yi yükleyin."
+  echo "fzf not found. Please install fzf."
   exit 1
 fi
 
-# Log dizinini bul: host'ta yaygın yollar, yoksa container'a düş.
+# Find the log directory: common paths on the host, fall back to the container.
 CONTAINER="${GTC_CONTAINER:-}"
 LOG_DIR=""
 IN_CONTAINER=0
@@ -40,7 +40,7 @@ for d in var/log log storage/logs; do
 done
 
 if [ -z "$LOG_DIR" ]; then
-  # Container içinde ara (loglar host'a mount edilmemiş olabilir)
+  # Look inside the container (logs may not be mounted on the host)
   if [ -n "$CONTAINER" ] && command -v docker &>/dev/null && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx "$CONTAINER"; then
     for d in /data/project/log /data/project/var/log /var/log/nginx; do
       if docker exec "$CONTAINER" test -d "$d" 2>/dev/null; then
@@ -53,25 +53,25 @@ if [ -z "$LOG_DIR" ]; then
 fi
 
 if [ -z "$LOG_DIR" ]; then
-  echo "log_search: log dizini bulunamadı (var/log, log, storage/logs${CONTAINER:+ ya da $CONTAINER içinde})" >&2
+  echo "log_search: no log directory found (var/log, log, storage/logs${CONTAINER:+ or inside $CONTAINER})" >&2
   exit 1
 fi
 
-# Eğer ikinci parametre varsa, onu dosya adı olarak kullan (dosya-tarih.log)
+# If a second parameter is given, use it as the file name (file-date.log)
 if [ -n "${2:-}" ]; then
   current_date=$(date +%Y-%m-%d)
   selected_file="$LOG_DIR/$2-$current_date.log"
   if [ "$IN_CONTAINER" -eq 1 ]; then
     docker exec "$CONTAINER" test -f "$selected_file" 2>/dev/null || {
-      echo "Hata: Dosya bulunamadı: $CONTAINER:$selected_file" >&2
+      echo "Error: file not found: $CONTAINER:$selected_file" >&2
       exit 1
     }
   elif [ ! -f "$selected_file" ]; then
-    echo "Hata: Dosya bulunamadı: $selected_file" >&2
+    echo "Error: file not found: $selected_file" >&2
     exit 1
   fi
 else
-  # fzf ile dosya seçimini yap (en yeni üstte)
+  # Pick the file with fzf (newest first)
   if [ "$IN_CONTAINER" -eq 1 ]; then
     selected_file=$(docker exec "$CONTAINER" sh -c "ls -t '$LOG_DIR'/*.log 2>/dev/null" \
       | fzf --reverse --header "$CONTAINER:$LOG_DIR")
@@ -80,29 +80,29 @@ else
   fi
 fi
 
-# Container'daki dosyayı host'a çek: nvim/jlv/sieve/hl container'da yok.
-# tail -f canlı takip olduğu için kopyalanmaz, doğrudan container'dan akıtılır.
+# Pull the container file to the host: nvim/jlv/sieve/hl are not in the container.
+# tail -f is a live follow, so it is streamed straight from the container instead.
 local_file="$selected_file"
 if [ "$IN_CONTAINER" -eq 1 ] && [ -n "$selected_file" ] && [ "${1:-}" != "1" ]; then
   local_file="$(mktemp -t logsearch)"
   trap 'rm -f "$local_file"' EXIT
   docker exec "$CONTAINER" cat "$selected_file" > "$local_file" 2>/dev/null || {
-    echo "Hata: dosya çekilemedi: $selected_file" >&2
+    echo "Error: could not pull file: $selected_file" >&2
     exit 1
   }
 fi
 
-# Eğer bir dosya seçildi ise işlem menüsü göster
+# If a file was selected, show the action menu
 if [ -n "$selected_file" ]; then
-  echo "Seçilen dosya: $selected_file"
-  # Eğer parametre (örn: ./script.sh 1) verildiyse onu kullan, yoksa menüyü göster
+  echo "Selected file: $selected_file"
+  # Use the parameter if given (e.g. ./script.sh 1), otherwise show the menu
   if [ -n "$1" ]; then
     choice="$1"
   else
-    echo "Bir işlem seçin:"
-    echo "1) Dosyayı takip etmek (tail -f)"
-    echo "2) Dosyanın son 100000 satırını görüntülemek (tail -n 100000)"
-    echo "3) Dosyayı düzenlemek (nvim)"
+    echo "Pick an action:"
+    echo "1) Follow the file (tail -f)"
+    echo "2) Show the last 100000 lines (tail -n 100000)"
+    echo "3) Edit the file (nvim)"
     echo "4) jlv"
     echo "5) sieve"
     read -r choice
@@ -110,7 +110,7 @@ if [ -n "$selected_file" ]; then
 
   case $choice in
   1)
-    echo "Dosya takip ediliyor: $selected_file"
+    echo "Following file: $selected_file"
     if [ "$IN_CONTAINER" -eq 1 ]; then
       docker exec "$CONTAINER" tail -f "$selected_file" | hl -P
     else
@@ -118,26 +118,26 @@ if [ -n "$selected_file" ]; then
     fi
     ;;
   2)
-    echo "Dosyanın son 100000 satırı:"
+    echo "Last 100000 lines of the file:"
     tail -n 100000 "$local_file" | hl -P
     ;;
   3)
-    echo "Dosya düzenleniyor: $selected_file"
+    echo "Editing file: $selected_file"
     nvim "$local_file"
     ;;
   4)
-    echo "jlv ile görüntüleniyor: $selected_file"
+    echo "Viewing with jlv: $selected_file"
     jlv "$local_file"
     ;;
   5)
-    echo "sieve ile görüntüleniyor: $selected_file"
+    echo "Viewing with sieve: $selected_file"
     sieve "$local_file"
     ;;
   *)
-    echo "Geçersiz seçim, çıkış yapılıyor."
+    echo "Invalid choice, exiting."
     ;;
   esac
 
 else
-  echo "Herhangi bir dosya seçilmedi."
+  echo "No file selected."
 fi

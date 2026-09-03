@@ -1,80 +1,80 @@
 #!/usr/bin/env bash
-# worktree-remove — worktree-panel'den secilen worktree'yi onay alarak siler.
+# worktree-remove — deletes the worktree picked in worktree-panel, after confirmation.
 #
-# Panelde ctrl-d ile cagrilir. Panelin "temizlenebilir" isaretine guvenmez,
-# guvenlik kontrollerini silme aninda yeniden yapar (panel verisi cache'li olabilir).
-# git worktree remove kullanilir; --force ASLA gecilmez, git'in kendi korumasi kalir.
+# Called with ctrl-d in the panel. It does not trust the panel's "cleanable" mark
+# and re-runs the safety checks at delete time (panel data may be cached).
+# It uses git worktree remove; --force is NEVER passed, git's own protection stays.
 #
-# WT_BATCH=1 ile cagrilirsa (bkz worktree-remove-all.sh) tek tek onay sormaz ve
-# okuma molalarini atlar; engelleme kurallari degismez, cikis kodu cagirana
-# hangi worktree'nin atlandigini soyler.
+# Called with WT_BATCH=1 (see worktree-remove-all.sh) it asks for no per-item
+# confirmation and skips the reading pauses; the blocking rules are unchanged, and
+# the exit code tells the caller which worktree was skipped.
 
 set -uo pipefail
 
 batch="${WT_BATCH:-0}"
-# Tek worktree modunda mesajlar fzf popup'inda anlik gorunur, okunacak kadar
-# beklemek gerekiyor; batch'te bekleme cagirana ait.
+# In single-worktree mode messages flash by in the fzf popup, so it has to wait
+# long enough to read them; in batch mode the waiting belongs to the caller.
 pause() { (( batch )) || sleep "$1"; }
 
 target="${1:-}"
-[[ -n "$target" && -d "$target" ]] && exit_ok=1 || { echo "Gecersiz worktree yolu."; pause 2; exit 1; }
+[[ -n "$target" && -d "$target" ]] && exit_ok=1 || { echo "Invalid worktree path."; pause 2; exit 1; }
 
 branch=$(git -C "$target" rev-parse --abbrev-ref HEAD 2>/dev/null)
 name=$(basename "$target")
 
-# Ana worktree silinemez (git "is a main working tree" der); en basta ele
+# The main worktree cannot be deleted (git says "is a main working tree"); filter it first
 main_wt=$(git -C "$target" worktree list --porcelain 2>/dev/null | rg '^worktree ' | head -1 | cut -d' ' -f2)
 if [[ "$target" == "$main_wt" ]]; then
-  printf 'RED: bu repo'"'"'nun ana calisma agaci, silinemez.\n'
+  printf 'RED: this is the main working tree of the repo, it cannot be deleted.\n'
   pause 3; exit 1
 fi
 
-# --- Guvenlik kontrolleri: her biri silmeyi engeller ---
+# --- Safety checks: each one blocks the delete ---
 if [[ "$branch" == "HEAD" ]]; then
-  printf 'RED: detached HEAD (%s)\nHangi dalda oldugu belirsiz, elle kontrol et.\n' "$name"
+  printf 'RED: detached HEAD (%s)\nWhich branch it is on is unclear, check by hand.\n' "$name"
   pause 3; exit 1
 fi
 
 dirty=$(git -C "$target" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
 if (( dirty > 0 )); then
-  printf 'RED: %s icinde %s dosya commit edilmemis.\nOnce commit'"'"'le veya stash'"'"'le.\n' "$branch" "$dirty"
+  printf 'RED: %s has %s uncommitted files.\nCommit or stash them first.\n' "$branch" "$dirty"
   pause 3; exit 1
 fi
 
 unpushed=$(git -C "$target" rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)
 if [[ "$unpushed" =~ ^[0-9]+$ ]] && (( unpushed > 0 )); then
-  printf 'RED: %s icinde %s commit push edilmemis.\n' "$branch" "$unpushed"
+  printf 'RED: %s has %s unpushed commits.\n' "$branch" "$unpushed"
   pause 3; exit 1
 fi
 
 pr_state=$(gh pr list --head "$branch" --state all --limit 1 --json state --jq '.[0].state' 2>/dev/null)
 if [[ "$pr_state" != "MERGED" ]]; then
-  printf 'RED: %s icin merged PR yok (durum: %s).\nIsi bitmemis olabilir.\n' "$branch" "${pr_state:-PR yok}"
+  printf 'RED: no merged PR for %s (state: %s).\nThe work may not be finished.\n' "$branch" "${pr_state:-no PR}"
   pause 3; exit 1
 fi
 
-# --- Onay ---
-# Batch'te onay bir kez, en basta alinir; burada tekrar sorulmaz.
+# --- Confirmation ---
+# In batch mode confirmation is taken once up front; it is not asked again here.
 if (( ! batch )); then
-  printf '\n  %s\n  PR merged, calisma agaci temiz, her sey push edilmis.\n\n' "$branch"
-  printf '  Bu worktree silinsin mi? (e/h) '
+  printf '\n  %s\n  PR merged, working tree clean, everything pushed.\n\n' "$branch"
+  printf '  Delete this worktree? (y/n) '
   read -rsn1 answer; printf '\n\n'
-  [[ "$answer" == "e" || "$answer" == "E" ]] || { echo "  Iptal edildi."; sleep 1; exit 0; }
+  [[ "$answer" == "y" || "$answer" == "Y" ]] || { echo "  Cancelled."; sleep 1; exit 0; }
 fi
 
-# Panel PR durumlarini cache'liyor; silme sonrasi liste yenilenince guncel olsun.
-# Cache repo basina ayri dosyada (bkz worktree-panel.py cache_path) — anahtar
-# git-common-dir'in sha1'i, cunku tek paylasilan dosya ayni adli dallari olan
-# repolarin PR durumunu karistiriyordu.
+# The panel caches PR states; drop it so the reloaded list after a delete is fresh.
+# The cache is a separate file per repo (see cache_path in worktree-panel.py) — the
+# key is the sha1 of git-common-dir, because one shared file mixed up the PR state
+# of repos that had branches with the same name.
 wt_ident=$(git -C "$target" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
 wt_hash=$(printf '%s' "$wt_ident" | shasum | cut -c1-12)
 rm -f "${TMPDIR:-/tmp}/worktree-panel-pr-${wt_hash}.json" 2>/dev/null
 
 if git -C "$target" worktree remove "$target" 2>/dev/null \
    || git -C "$(git -C "$target" rev-parse --path-format=absolute --git-common-dir 2>/dev/null | xargs dirname)" worktree remove "$target" 2>/dev/null; then
-  echo "  Silindi: $name"
+  echo "  Deleted: $name"
 else
-  echo "  Silinemedi - git reddetti. Elle kontrol et:"
+  echo "  Not deleted - git refused. Check by hand:"
   echo "    git worktree remove '$target'"
   pause 2
   exit 1

@@ -6,16 +6,16 @@
 - Output: Replace Selection
 
 ```prompt
-Aşağıdaki metni çevir.
+Translate the text below.
 
-Kurallar:
-- Metin Türkçe ise İngilizceye, değilse Türkçeye çevir.
-- Sadece çeviriyi döndür; açıklama, tırnak veya "Çeviri:" öneki ekleme.
-- Teknik terimleri, kod parçalarını, ürün ve kişi adlarını olduğu gibi bırak.
-- Kaynak metnin tonunu koru; gündelik ise gündelik, resmi ise resmi.
-- Yön belirsizse (tek kelime, iki dilde de geçerli) Türkçe kabul et ve İngilizceye çevir.
-- Çeviri kaynakla birebir aynı çıkıyorsa, diğer yöne çevir.
+Rules:
+- If the text is Turkish, translate it to English; otherwise translate it to Turkish.
+- Return only the translation; add no explanation, quotes or "Translation:" prefix.
+- Leave technical terms, code fragments, product names and people's names as they are.
+- Keep the tone of the source; casual stays casual, formal stays formal.
+- If the direction is ambiguous (a single word valid in both languages), assume Turkish and translate to English.
+- If the translation comes out identical to the source, translate the other way.
 
-Metin:
+Text:
 {selection}
 ```

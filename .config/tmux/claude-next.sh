@@ -20,11 +20,11 @@
 
 set -uo pipefail
 
-# Okuyucu paylasilan: ayni JSON sozlesmesini Raycast script'leri de ayristiriyor,
-# ucuncu bir kopya tutmanin bedeli yok (olculdu: bos bash 2.2 ms, source'lu 2.0 ms).
+# The reader is shared: the Raycast scripts parse the same JSON contract, and a
+# third copy buys nothing (measured: empty bash 2.2 ms, with the source 2.0 ms).
 . "${CLAUDE_STATE_LIB:-$HOME/.local/share/claude-menubar/claude-state.sh}"
 
-# prio < 3: waiting / done-bg / done. Calisan oturumda cevaplanacak bir sey yok.
+# prio < 3: waiting / done-bg / done. A running session has nothing to answer.
 mapfile -t rows < <(emit_rows | awk -F'\t' '$1 < 3')
 
 if (( ${#rows[@]} == 0 )); then
@@ -54,7 +54,7 @@ target="${targets[idx]}"
 
 tmux switch-client -t "${target%%:*}" 2>/dev/null
 tmux select-window -t "$target" 2>/dev/null
-# Pane id kayittan gelir: pencerede birden fazla pane olsa da dogru olana gidilir.
+# The pane id comes from the record: with several panes in a window, the right one is picked.
 [[ -n "$pane" ]] && tmux select-pane -t "$pane" 2>/dev/null
 
 exit 0

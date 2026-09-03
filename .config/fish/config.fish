@@ -18,9 +18,9 @@ fzf --fish | source
 fnm --log-level quiet env --use-on-cd | source # "Schniz/fnm"
 direnv hook fish | source # https://direnv.net/
 fx --comp fish | source # https://fx.wtf/
-# --disable-up-arrow: yukari ok fish'in kendi history'sinde kalsin, sadece ctrl-r atuin'e gitsin.
+# --disable-up-arrow: keep the up arrow on fish's own history, send only ctrl-r to atuin.
 atuin init fish --disable-up-arrow | source # https://atuin.sh/
-# atuin 18.19 bos satir basinda '?' ile dogal dil (AI) moduna giriyor; sync kapali kurulumda istemiyoruz.
+# atuin 18.19 enters natural-language (AI) mode on '?' at the start of an empty line; not wanted on a sync-off setup.
 bind -e '?' 2>/dev/null
 set -g direnv_fish_mode eval_on_arrow # trigger direnv at prompt, and on every arrow-based directory change (default)
 
@@ -35,7 +35,7 @@ set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
 set -Ux EDITOR nvim # 'neovim/neovim' text editor
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
 set -Ux EZA_CONFIG_DIR "~/.config/eza/"
-# Kanagawa Wave; ton degerleri claude-tmux-notify ve tmux status bar ile ayni.
+# Kanagawa Wave; the tone values match claude-tmux-notify and the tmux status bar.
 set -gx FZF_DEFAULT_OPTS (printf '%s ' \
     '--layout=reverse' \
     '--info=hidden' \

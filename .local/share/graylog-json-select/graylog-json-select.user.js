@@ -2,18 +2,18 @@
 // @name        Graylog JSON select
 // @namespace   ersanisik.dotfiles
 // @version     1.0.0
-// @description Graylog mesajlarindaki JSON bloklarini bulur; ctrl+j sirayla birini bastan sona secer, cmd+c tamamini alir.
+// @description Finds the JSON blocks in Graylog messages; ctrl+j selects one whole in turn, cmd+c copies all of it.
 // @match       https://graylog.example.com/*
 // @include     http://graylog.example.com:9000/*
 // @run-at      document-idle
 // @grant       none
 // ==/UserScript==
 
-// Bu repo public: gercek Graylog hostlari buraya yazilmaz, sadece Violentmonkey
-// kopyasinda yasar. Yukaridaki iki host bilerek hicbir seyle eslesmiyor.
+// This repo is public: the real Graylog hosts are never written here, they live only
+// in the Violentmonkey copy. The two hosts above deliberately match nothing.
 //
-// Port @match sozdiziminde ifade edilemiyor (host kismi port kabul etmiyor), o yuzden
-// portlu host @include ile giriyor -- @include glob'u tam URL'e uyguluyor.
+// A port cannot be expressed in @match syntax (the host part accepts no port), so a
+// host with a port goes in via @include -- the @include glob applies to the whole URL.
 
 (() => {
   'use strict';
@@ -21,10 +21,10 @@
   const isHotkey = e => e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey && e.code === 'KeyJ';
 
   const DEBOUNCE_MS = 300;
-  // Graylog canli tail'de saniyede birkac kez render ediyor; salt debounce hic calismaz.
+  // Graylog re-renders several times a second on a live tail; a plain debounce would never fire.
   const MAX_WAIT_MS = 1500;
   const MAX_CANDIDATE_LEN = 512 * 1024;
-  // Suslu parantez dolu duz metinde her acilis icin kapanis aramak O(n^2)'ye cikar.
+  // In plain text full of braces, hunting a closer for every opener goes O(n^2).
   const MAX_OPENERS_PER_UNIT = 200;
   const MIN_CANDIDATE_LEN = 6;
 
@@ -42,9 +42,10 @@
     document.head.append(style);
   }
 
-  // Butonlar shadow root'ta: Graylog React ile render ediyor ve agacina enjekte edilen
-  // elementi bir sonraki render'da geri aliyor. Ayrica MutationObserver shadow tree'yi
-  // gormuyor, yoksa kendi butonlarim rescan'i tetikleyip donguye sokardi.
+  // The buttons live in a shadow root: Graylog renders with React and reclaims any
+  // element injected into its tree on the next render. A MutationObserver also cannot
+  // see into a shadow tree, which is what keeps my own buttons from triggering the
+  // rescan that draws them.
   const layer = document.createElement('div');
   layer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:2147483000';
   const shadow = layer.attachShadow({ mode: 'closed' });
@@ -68,8 +69,8 @@
     button = document.createElement('button');
     button.type = 'button';
     button.textContent = '{}';
-    button.title = 'JSON sec';
-    // Secimi mousedown'da collapse etmesin, focus da kacmasin.
+    button.title = 'select JSON';
+    // Do not let mousedown collapse the selection or steal the focus.
     button.addEventListener('mousedown', e => e.preventDefault());
     button.addEventListener('click', e => {
       e.preventDefault();
@@ -87,7 +88,7 @@
   function reposition() {
     frame = 0;
     const height = innerHeight;
-    // Once butun rect'ler okunuyor, sonra yazilar: araya yazi girerse her okuma reflow tetikler.
+    // All rects are read first, then written: a write in between makes every read trigger a reflow.
     const rects = ranges.map(range => range.getBoundingClientRect());
     for (let i = 0; i < ranges.length; i++) {
       const rect = rects[i];
@@ -131,7 +132,7 @@
     return -1;
   }
 
-  // Escape'li payload (`{\"a\":1}`) tirnaklarini gizler, string takibi orada kilitlenir.
+  // An escaped payload (`{\"a\":1}`) hides its quotes, and string tracking locks up there.
   function matchLoose(text, from) {
     let depth = 0;
     const limit = Math.min(text.length, from + MAX_CANDIDATE_LEN);
@@ -186,8 +187,8 @@
     return hits;
   }
 
-  // Graylog arama terimlerini <mark> ile sariyor, yani bir JSON birden fazla text
-  // node'a bolunebiliyor. Blok sinirina kadar birlestirip offset haritasi tutuyoruz.
+  // Graylog wraps search terms in <mark>, so one JSON can be split across several text
+  // nodes. We join up to the block boundary and keep an offset map.
   function collectUnits(root) {
     const units = [];
     let text = '';
@@ -253,7 +254,7 @@
       }
     }
     ranges = found;
-    // Tikirdayan relative timestamp'ler yuzunden rescan sik; sayi degismediyse sirada kal.
+    // Ticking relative timestamps make rescans frequent; keep the position when the count is unchanged.
     cursor = found.length === previous ? Math.min(cursor, found.length - 1) : -1;
 
     if (highlight) {
@@ -298,7 +299,7 @@
   }, true);
 
   document.addEventListener('visibilitychange', schedule);
-  // capture: Graylog tabloyu kendi ic scroll container'inda kaydiriyor, window scroll'u yetmez.
+  // capture: Graylog scrolls the table in its own inner scroll container, a window scroll is not enough.
   addEventListener('scroll', schedulePosition, { passive: true, capture: true });
   addEventListener('resize', schedulePosition, { passive: true });
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, characterData: true });

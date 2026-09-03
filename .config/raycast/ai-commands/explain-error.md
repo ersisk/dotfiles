@@ -6,15 +6,15 @@
 - Output: Show in Raycast
 
 ```prompt
-Aşağıdaki hata çıktısını analiz et.
+Analyse the error output below.
 
-Kurallar:
-- Türkçe cevap ver, teknik terimleri İngilizce bırak.
-- Önce tek cümlelik kök neden.
-- Sonra en fazla 3 maddelik "ne yapmalı" listesi, en olası olan başta.
-- Stack trace'i tekrar yazdırma, özetleme.
-- Emin değilsen "emin değilim" de, uydurma.
+Rules:
+- Answer in English.
+- Start with a one-sentence root cause.
+- Then a "what to do" list of at most 3 items, most likely first.
+- Do not reprint the stack trace, summarise it.
+- If you are not sure, say "not sure" instead of inventing something.
 
-Hata:
+Error:
 {selection}
 ```

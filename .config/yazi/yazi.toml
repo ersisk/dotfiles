@@ -1,20 +1,20 @@
-# Yazi varsayilanlariyla birlesir: [opener] altina yeni bir isim eklemek mevcut
-# opener'lari silmez, prepend_rules da varsayilan kural listesini ezmez (yalnizca
-# onune eklenir). Bu yuzden burada sadece eklenenler var.
+# Merges with Yazi's defaults: adding a new name under [opener] does not remove the
+# existing openers, and prepend_rules does not override the default rule list (it
+# only goes in front of it). So only the additions live here.
 
 [opener]
 browser = [
-  # Zen varsayilan tarayici (LaunchServices'ta http/https -> app.zen-browser.zen).
-  # Bundle id kullaniliyor: uygulama adi degisse de calisir.
-  # Dosya yolu %s ile geliyor - yazi `run`'i oldugu gibi `sh -c`'ye veriyor,
-  # positional argument koymuyor, yani "$@" burada her zaman bos kalir.
-  { run = 'open -b app.zen-browser.zen %s', desc = "Tarayıcıda aç", orphan = true, for = "macos" },
+  # Zen is the default browser (http/https -> app.zen-browser.zen in LaunchServices).
+  # The bundle id is used: it keeps working even if the app name changes.
+  # The file path arrives via %s - yazi hands `run` to `sh -c` as is and passes no
+  # positional argument, so "$@" is always empty here.
+  { run = 'open -b app.zen-browser.zen %s', desc = "Open in browser", orphan = true, for = "macos" },
 ]
 
 [open]
-# Sadece tarayicida anlamli olan turler. Kurallar sirayla degerlendirilip ilki
-# kazandigi icin "*" yazmak varsayilan davranisi komple ele gecirirdi; o yuzden
-# tur tur ekleniyor ve her birinde varsayilan opener da listede birakiliyor.
+# Only the types that make sense in a browser. Rules are evaluated in order and the
+# first wins, so a "*" would take over the default behaviour entirely; hence they
+# are added type by type, each keeping the default opener in the list too.
 prepend_rules = [
   { mime = "text/html",       use = [ "browser", "edit", "reveal" ] },
   { mime = "application/pdf", use = [ "browser", "open", "reveal" ] },

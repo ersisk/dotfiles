@@ -1,6 +1,6 @@
 # tmux-nerd-font-window-name kullanici override'i.
-# Anahtar = #{pane_current_command}; ikonlar utility.conf'taki kisayollarla ayni
-# tutulmali ki pencere nasil acilirsa acilsin ayni gorunsun.
+# Key = #{pane_current_command}; the icons must be kept in sync with the shortcuts
+# in utility.conf so a window looks the same however it was opened.
 icons:
   claude: "󰘦"
   ccr: "󰘦"

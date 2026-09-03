@@ -11,16 +11,16 @@
   </array>
   <key>EnvironmentVariables</key>
   <dict>
-    <!-- 11434 degil: rubberduck-ollama konteyneri o portu yayinliyor ve kendi model
-         deposu bos oldugu icin sorgular {"models":[]} donuyor. ai-oneshot once
-         11435'i deniyor, sonra 11434'e bakiyor. -->
+    <!-- Not 11434: the rubberduck-ollama container publishes that port and, with an
+         empty model store of its own, answers queries with {"models":[]}. ai-oneshot
+         tries 11435 first, then falls back to 11434. -->
     <key>OLLAMA_HOST</key>
     <string>127.0.0.1:11435</string>
-    <!-- Beekeeper Studio eklenti gorunumlerini kendi semasinda calistiriyor ve
-         ollama'nin varsayilan origin listesinde plugin:// yok — AI Shell'in
-         preflight'i (OPTIONS /v1/models) 403 yiyordu. Sadece bu sema aciliyor:
-         hicbir web sayfasi plugin:// origin'i uretemez, "*" veya "null" acmanin
-         aksine disaridan erisim yuzeyi olusmuyor. -->
+    <!-- Beekeeper Studio runs its plugin views on a scheme of its own, and plugin://
+         is not in ollama's default origin list — AI Shell's preflight
+         (OPTIONS /v1/models) was getting a 403. Only that scheme is opened: no web
+         page can produce a plugin:// origin, so unlike opening "*" or "null" this
+         creates no external access surface. -->
     <key>OLLAMA_ORIGINS</key>
     <string>plugin://*</string>
   </dict>

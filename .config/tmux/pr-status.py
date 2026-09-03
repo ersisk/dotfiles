@@ -1,11 +1,11 @@
-"""PR JSON'unu popup icin kisa bir ozete cevirir (bkz pr-status.sh)."""
+"""Turns the PR JSON into a short summary for the popup (see pr-status.sh)."""
 import sys, json
 
 STATE = {"OPEN": ("", "Open"), "MERGED": ("", "Merged"), "CLOSED": ("", "Closed")}
 REVIEW = {
     "APPROVED": " approved",
     "CHANGES_REQUESTED": " changes requested",
-    "REVIEW_REQUIRED": " review bekliyor",
+    "REVIEW_REQUIRED": " review required",
 }
 
 try:

@@ -229,7 +229,7 @@ brew services start borders
    Editing `bordersrc` and then running it applies the change to the instance that
    is already running, so a colour tweak needs no service restart.
 
-# Kisayol paneli
+# Shortcut panel
 
 `prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
 a searchable list of every binding on this machine. It parses the config files

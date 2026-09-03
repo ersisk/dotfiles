@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# worktree-panel — aktif repo'nun worktree'lerini durumlariyla listeler.
+# worktree-panel — lists the worktrees of the active repo with their state.
 #
-# prefix+W ile cagrilir. Her satirda: branch, calisma agaci durumu, PR durumu,
-# son dokunma yasi. PR'i merged + agaci temiz olanlar "temizlenebilir" isaretlenir.
-# Enter secilen worktree'ye sesh ile baglanir. Hicbir sey silinmez.
+# Called with prefix+W. Each row: branch, working tree state, PR state, age since
+# last touch. Ones with a merged PR and a clean tree are marked "cleanable".
+# Enter attaches to the selected worktree with sesh. Nothing is ever deleted.
 
 set -uo pipefail
 
@@ -14,29 +14,29 @@ msg() {
 
 dir=$(tmux display-message -p '#{pane_current_path}' 2>/dev/null)
 [[ -d "$dir" ]] || exit 0
-git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || { msg "git repo degil"; exit 0; }
+git -C "$dir" rev-parse --git-dir >/dev/null 2>&1 || { msg "not a git repo"; exit 0; }
 
-# Tek worktree varsa panel acmaya gerek yok
+# No point opening the panel for a single worktree
 if [[ $(git -C "$dir" worktree list --porcelain | grep -c '^worktree ') -le 1 ]]; then
-  msg "tek worktree"
+  msg "single worktree"
   exit 0
 fi
 
 load="python3 ~/.config/tmux/worktree-panel.py '$dir'"
 
-# Liste fzf icinde doldurulur: aksi halde panel acilana kadar (soguk cachede ~2 sn)
-# ekranda hicbir geri bildirim olmuyor ve tusa basildi mi belli olmuyor.
-# ctrl-d silme scriptini calistirir; o script guvenlik kontrollerini kendi yapar
-# ve onay ister. Sonrasinda liste yenilenir ki silinen satir kaybolsun.
-# ctrl-alt-d ayni scripti her worktree icin sirayla cagirir (bkz
-# worktree-remove-all.sh). Tab ile isaretleme yok: silinemeyen zaten
-# reddedildigi icin "hepsi" ile "temizlenebilir olanlar" ayni kume.
+# The list is filled inside fzf: otherwise nothing appears on screen until the
+# panel opens (~2s on a cold cache) and there is no sign the key registered.
+# ctrl-d runs the delete script; that script does its own safety checks and asks
+# for confirmation. The list reloads afterwards so the deleted row disappears.
+# ctrl-alt-d calls the same script for every worktree in turn (see
+# worktree-remove-all.sh). No Tab marking: anything undeletable is refused anyway,
+# so "all" and "the cleanable ones" are the same set.
 selected=$(fzf-tmux -p 92%,55% \
   --ansi --reverse --with-nth=2 --delimiter='\t' \
   --border rounded --border-label ' Worktrees ' \
-  --header '⧗ taraniyor…' \
+  --header '⧗ scanning…' \
   --bind "start:reload($load)" \
-  --bind "load:change-header(enter: bagla   ctrl-o: yeni pencere   ctrl-d: sil   ctrl-alt-d: hepsini temizle   esc: kapat)" \
+  --bind "load:change-header(enter: attach   ctrl-o: new window   ctrl-d: delete   ctrl-alt-d: clean all   esc: close)" \
   --bind "ctrl-o:execute-silent(tmux new-window -c {1} -n \"\$(basename {1})\")+abort" \
   --bind "ctrl-d:execute(~/.config/tmux/worktree-remove.sh {1})+reload($load)" \
   --bind "ctrl-alt-d:execute(~/.config/tmux/worktree-remove-all.sh {1})+reload($load)" \

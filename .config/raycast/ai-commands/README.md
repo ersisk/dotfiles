@@ -1,40 +1,42 @@
 # Raycast AI Commands
 
-Raycast AI Command'leri `raycast-enc.sqlite` içinde şifreli tutuyor; dışa aktarma
-yok. Bu dizin o yüzden **kaynak metin arşivi**: buradaki prompt'lar elle
-Raycast'e yapıştırılır, tersi otomatik değildir. Prompt'u Raycast tarafında
-değiştirdiysen buradaki dosyayı da güncelle, yoksa arşiv yalan söyler.
+Raycast keeps AI Commands encrypted inside `raycast-enc.sqlite`; there is no
+export. This directory is therefore a **source-text archive**: the prompts here
+are pasted into Raycast by hand, and nothing syncs back. Change a prompt on the
+Raycast side and update the file here too, or the archive lies.
 
-Kurulum: Raycast → `Create AI Command` → başlığı dosya adından, prompt'u
-```prompt``` bloğundan al, Model/Creativity/Output alanlarını dosyadaki gibi ayarla.
+Setup: Raycast → `Create AI Command` → take the title from the file name, the
+prompt from the ```prompt``` block, and set Model/Creativity/Output as the file says.
 
-| Komut | Alias | Girdi | Prompt burada mı? |
+| Command | Alias | Input | Prompt here? |
 | --- | --- | --- | --- |
 | Explain Error | `ee` | `{selection}` | ✔ |
-| Commit Message | `cm` | `{clipboard}` (`git diff --staged \| pbcopy`) | ✔ — ama `aimsg` daha iyisini yapıyor |
+| Commit Message | `cm` | `{clipboard}` (`git diff --staged \| pbcopy`) | ✔ — but `aimsg` does it better |
 | Translate TR ↔ EN | `te` | `{selection}` | ✔ |
 
-`jira-to-branch` eskiden buradan iki AI komutu (`parse-jira-title`,
-`generate-branch`) ve `screenocr` extension'ını deeplink ile zincirliyordu.
-Artık etmiyor: OCR'ı macOS Vision, çeviriyi `claude -p` yapıyor ve hiçbir şey
-clipboard'dan geçmiyor. O üç Raycast komutunu silebilirsin, başka kullananı yok.
+`jira-to-branch` used to chain two AI commands from here (`parse-jira-title`,
+`generate-branch`) and the `screenocr` extension through deeplinks. It no longer
+does: macOS Vision handles the OCR, `claude -p` the translation, and nothing goes
+through the clipboard. Those three Raycast commands can be deleted, nothing else
+uses them.
 
-## Model seçimi
+## Model choice
 
-Katalog `defaults read com.raycast.macos raycastAI_modelInfo` içinde duruyor;
-her modelin `intelligence` ve `speed` skoru ve `requires_better_ai` bayrağı var.
-Seçimler oradan yapıldı, isme bakarak değil — "Pro" etiketi taşıyan bir model
-Flash'tan daha akıllı olmak zorunda değil.
+The catalogue lives in `defaults read com.raycast.macos raycastAI_modelInfo`;
+every model carries an `intelligence` and `speed` score and a `requires_better_ai`
+flag. The choices below come from there, not from the names — a model badged
+"Pro" is not necessarily smarter than a Flash.
 
-**Gemini 3.7 Flash** eklenti gerektirmeyen modeller arasında tek Pareto galibi:
-intelligence 4, speed 5, vision + web search + reasoning effort. Raycast'in kendi
-varsayılanı (GPT-5.6 Luna, intelligence 3 / speed 4) her iki eksende de altında.
-`Gemini 3 Flash` ismine aldanma, o intelligence 2.
+**Gemini 3.7 Flash** is the only Pareto winner among the models that need no
+add-on: intelligence 4, speed 5, vision + web search + reasoning effort. Raycast's
+own default (GPT-5.6 Luna, intelligence 3 / speed 4) is below it on both axes.
+Do not be fooled by the name `Gemini 3 Flash`, that one is intelligence 2.
 
-Mekanik işler (çeviri, commit mesajı, jira parse) **Gemini 3.5 Flash Lite**'a
-gidiyor: intelligence 3, speed 5. Bu işlerde model zekası değil gecikme belirleyici,
-özellikle `jira-to-branch` gibi clipboard polling'e bağlı zincirlerde.
+Mechanical work (translation, commit message, jira parsing) goes to
+**Gemini 3.5 Flash Lite**: intelligence 3, speed 5. Latency, not model
+intelligence, is what decides those, especially in clipboard-polling chains like
+`jira-to-branch`.
 
-`requires_better_ai` işaretli modeller (Claude Opus 5, GPT-5.6 Sol, Gemini 3.1 Pro)
-Advanced AI eklentisi ister. Almaya değmez: Raycast burada kısa ve hızlı yüzey,
-ağır düşünme zaten terminalde Claude Code'da yapılıyor.
+Models flagged `requires_better_ai` (Claude Opus 5, GPT-5.6 Sol, Gemini 3.1 Pro)
+need the Advanced AI add-on. Not worth buying: Raycast is the short, fast surface
+here, and the heavy thinking already happens in Claude Code in the terminal.

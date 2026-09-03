@@ -1,7 +1,7 @@
-# Bilinmeyen anahtarda sessizce gecmek yerine hata ver.
+# Fail on an unknown key instead of passing over it silently.
 strict_mode = true
 
-# Worktree oturumlari repo kokunden degil kendi ust dizininden isim alsin:
+# Name worktree sessions after their own parent directory, not the repo root:
 # "<repo>/_worktrees/fix-GD-536-apk-cache" -> "fix-GD-536-apk-cache".
 git_namer_use_worktree_root = true
 
@@ -80,10 +80,10 @@ name = "💼 Main"
 alias = "gc"
 alias_auto_connect = true
 path = "$WORK_MAIN"
-# gh dash 1. pencerede olsun: `windows` listesi hep 1'den sonra aciliyor,
-# startup_command ise pencere 1'e gidiyor. Isimli pencere olusturmak
-# automatic-rename'i kapattigi icin kabuk penceresinde geri aciyoruz -
-# nerd-font/claude-state glyph'leri oradan geliyor.
+# Keep gh dash in window 1: the `windows` list always opens after 1, while
+# startup_command lands in window 1. Creating a named window turns
+# automatic-rename off, so it is turned back on in the shell window -
+# the nerd-font/claude-state glyphs come from there.
 startup_command = "tmux set -w -t 2 automatic-rename on; gh dash"
 windows = ["shell"]
 
@@ -109,32 +109,33 @@ path = "$WORK_TRANSLATE"
 name= "🔑 Reset Admin Pass"
 alias = "rstpw"
 path = "$WORK_BIN"
-startup_command="./reset-admin-password.sh; read -P 'devam icin enter...'; exit"
+startup_command="./reset-admin-password.sh; read -P 'enter to continue...'; exit"
 
 [[window]]
 name = "shell"
 
-# Worktree'ye girince dogrudan dosya secicide acilsin.
-# Not: [[wildcard]] icinde yalnizca startup_command isliyor - preview_command
-# wildcard yolunda hic okunmuyor (previewer sadece isimli [[session]]'a bakiyor).
+# Entering a worktree should land straight in the file picker.
+# Note: only startup_command works inside [[wildcard]] - preview_command is never
+# read on the wildcard path (the previewer only looks at named [[session]] blocks).
 [[wildcard]]
 pattern = "$WORK_MAIN/.worktrees/*"
 startup_command = "nvim +GoToFile"
 
-# `sesh worktree` 2.29.0 ile geldi ama acmak bu repoya org/repo adini
-# yazmak demek: `repo` alani env-expand EDILMIYOR (yalnizca `path` ediliyor) ve
-# `sesh worktree list`/`picker` repo bossa hata veriyor. `[[import]]` de cozmuyor -
-# import yalnizca session/window/wildcard bloklarini birlestiriyor, worktree'yi
-# atliyor. Repo public oldugu icin karar verilene kadar kapali.
+# `sesh worktree` arrived in 2.29.0, but turning it on means writing the org/repo
+# name into this repo: the `repo` field is NOT env-expanded (only `path` is) and
+# `sesh worktree list`/`picker` errors out when repo is empty. `[[import]]` does not
+# solve it either - import only merges session/window/wildcard blocks and skips
+# worktree. This repo is public, so it stays off until that is decided.
 #   sesh worktree connect --pr 3198  ->  .worktrees/3198 altinda gh pr checkout
-# Mevcut branch-adli worktree'lerle cakismaz (onlar .worktrees/<branch-adi>) ve
-# `list` yalnizca sayi-adli dizinleri sayar, yani onlari hic gormez.
-# worktree_dir + base_branch override sart: sesh defaultlari .wk ve origin/main.
-# branch_template'e gerek yok: Connect once `gh pr view` deniyor, PR ise detached
-# + `gh pr checkout` yapip template'i hic kullanmiyor; issue'larimiz Jira'da.
+# It does not clash with the existing branch-named worktrees (those are
+# .worktrees/<branch-name>) and `list` only counts number-named directories, so it
+# never sees them. Overriding worktree_dir + base_branch is required: sesh defaults
+# to .wk and origin/main. branch_template is not needed: Connect tries `gh pr view`
+# first and, for a PR, goes detached + `gh pr checkout` without ever using the
+# template; our issues live in Jira.
 #
 # [[worktree]]
-# repo = "<org>/<main-repo>"   # literal sart, $WORK_* burada islemiyor
+# repo = "<org>/<main-repo>"   # must be literal, $WORK_* does not work here
 # path = "$WORK_MAIN"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
@@ -142,15 +143,15 @@ startup_command = "nvim +GoToFile"
 # startup_command = "nvim +GoToFile"
 #
 # [[worktree]]
-# repo = "<org>/<teli-repo>"   # literal sart, $WORK_* burada islemiyor
+# repo = "<org>/<teli-repo>"   # must be literal, $WORK_* does not work here
 # path = "$WORK_TELI"
 # worktree_dir = ".worktrees"
 # base_branch = "origin/master"
 # create_command = "nvim +GoToFile"
 # startup_command = "nvim +GoToFile"
 #
-# Zen (Firefox tabanli) AppleScript ile aktif sekme URL'si vermiyor - sdef yok,
-# hem `active tab` hem `front document` -1728 donuyor. --browser calismaz,
-# PR numarasini elle vermek gerekir.
+# Zen (Firefox-based) will not give the active tab URL over AppleScript - it has no
+# sdef, and both `active tab` and `front document` return -1728. --browser does not
+# work, the PR number has to be passed by hand.
 # [browser]
 # application = "Zen"

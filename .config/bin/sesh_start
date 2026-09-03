@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Tek kaynak: hem fish `shs` hem tmux prefix+T buraya gelir.
-# tmux icindeyken fzf-tmux popup, disinda duz fzf kullanilir.
+# One source: both fish `shs` and tmux prefix+T land here.
+# Inside tmux it uses an fzf-tmux popup, outside it plain fzf.
 if [ -n "$TMUX" ]; then
   picker=(fzf-tmux -p 100%,100% --reverse --border-label ' sesh ')
 else
@@ -8,7 +8,7 @@ else
     --color 'list-border:6,input-border:3,preview-border:4,header-bg:-1,header-border:6')
 fi
 
-# ctrl-w icin repo koku: tmux'ta aktif pane, disinda cwd; ikisi de git degilse WORK_MAIN.
+# Repo root for ctrl-w: the active pane in tmux, cwd outside; WORK_MAIN if neither is a git repo.
 if [ -n "$TMUX" ]; then
   repo_dir=$(tmux display-message -p '#{pane_current_path}' 2>/dev/null)
 else
@@ -33,6 +33,6 @@ selected=$(
     --preview 'sesh preview {}'
 )
 
-# Esc/ctrl-c ile cikista bos string ile sesh connect cagirmayi engelle.
+# Prevent calling sesh connect with an empty string when leaving via Esc/ctrl-c.
 [ -z "$selected" ] && exit 0
 sesh connect "$selected"

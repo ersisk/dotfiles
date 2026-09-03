@@ -1,40 +1,40 @@
-function fzfke --description 'fzf ile pod seç: shell aç, komut çalıştır (--) veya log oku (-l)'
+function fzfke --description 'pick a pod with fzf: open a shell, run a command (--) or read logs (-l)'
     if contains -- -h $argv; or contains -- --help $argv
         set_color normal
-        echo "fzfke — fzf ile pod seç, sonra shell aç / komut çalıştır / log oku"
+        echo "fzfke — pick a pod with fzf, then open a shell / run a command / read logs"
         echo
-        set_color -o; echo "KULLANIM"; set_color normal
+        set_color -o; echo "USAGE"; set_color normal
         echo "  fzfke [-l] [-] [ns] [container] [query] [-- ...]"
         echo
-        set_color -o; echo "MODLAR"; set_color normal
-        echo "  (varsayılan)     interaktif shell aç (bash, yoksa sh)"
-        echo "  -- <komut>       pod içinde tek komut çalıştır"
-        echo "  -l, --logs       kubectl logs; -- <süre> ile süre (varsayılan 30m)"
+        set_color -o; echo "MODES"; set_color normal
+        echo "  (default)        open an interactive shell (bash, else sh)"
+        echo "  -- <command>     run a single command in the pod"
+        echo "  -l, --logs       kubectl logs; -- <duration> sets the window (default 30m)"
         echo
-        set_color -o; echo "SEÇENEKLER"; set_color normal
-        echo "  -                son kullanılan pod'u tekrar kullan, fzf'i atla"
-        echo "  ns               namespace; boşsa fzf ile seçilir"
-        echo "  container        -c olarak geçer; boş bırakılabilir"
-        echo "  query            pod listesinde fzf ön-sorgusu"
-        echo "  -h, --help       bu yardım"
+        set_color -o; echo "OPTIONS"; set_color normal
+        echo "  -                reuse the last pod, skip fzf"
+        echo "  ns               namespace; picked with fzf when empty"
+        echo "  container        passed as -c; can be left empty"
+        echo "  query            fzf pre-query on the pod list"
+        echo "  -h, --help       this help"
         echo
-        set_color -o; echo "ÖRNEKLER"; set_color normal
+        set_color -o; echo "EXAMPLES"; set_color normal
         echo "  fzfke my-ns                                    # shell"
         echo "  fzfke my-ns my-container                       # container + shell"
-        echo "  fzfke my-ns -- pwd                             # komut"
+        echo "  fzfke my-ns -- pwd                             # command"
         echo "  fzfke my-ns my-container -- ls -la log/"
         echo "  fzfke my-ns -- bash -c 'env | grep -i DB'"
-        echo "  fzfke -l my-ns my-container                    # son 30m log"
-        echo "  fzfke -l my-ns my-container -- 15m             # son 15m log"
-        echo "  fzfke - my-ns -- whoami                        # son pod'a komut"
+        echo "  fzfke -l my-ns my-container                    # last 30m of logs"
+        echo "  fzfke -l my-ns my-container -- 15m             # last 15m of logs"
+        echo "  fzfke - my-ns -- whoami                        # command on the last pod"
         echo
         if set -q fzfke_last_pod
-            set_color -o; echo -n "Son pod: "; set_color normal; echo $fzfke_last_pod
+            set_color -o; echo -n "Last pod: "; set_color normal; echo $fzfke_last_pod
         end
         return 0
     end
 
-    # '--' sonrası komut olarak çalışır; öncesi eski pozisyonel sıra: [ns] [container] [query]
+    # Everything after '--' runs as the command; before it the old positional order: [ns] [container] [query]
     set -l cmd
     set -l pre
     set -l seen_sep 0
@@ -48,7 +48,7 @@ function fzfke --description 'fzf ile pod seç: shell aç, komut çalıştır (-
         end
     end
 
-    # -l / --logs: komut yerine logs modu. Kalan '--' argümanları --since'a gider.
+    # -l / --logs: logs mode instead of a command. Remaining '--' arguments go to --since.
     set -l logs 0
     set -l reuse 0
     set -l rest
@@ -68,22 +68,22 @@ function fzfke --description 'fzf ile pod seç: shell aç, komut çalıştır (-
         set ns (kubectl get namespaces --no-headers | fzf --height 20% --reverse --header="Select Namespace:" | awk '{print $1}')
     end
     if test -z "$ns"
-        echo "fzfke: namespace seçilmedi" >&2
+        echo "fzfke: no namespace selected" >&2
         return 1
     end
 
-    # Son pod'u hatırla: aynı pod'a arka arkaya komut göndermek en sık durum.
-    # '-' verilirse fzf atlanır, doğrudan o pod kullanılır.
+    # Remember the last pod: firing commands at the same pod back to back is the common case.
+    # With '-' fzf is skipped and that pod is used directly.
     set -l pod
     if test $reuse -eq 1
         set pod $fzfke_last_pod
         test -z "$pod"; and begin
-            echo "fzfke: hatırlanan pod yok" >&2
+            echo "fzfke: no remembered pod" >&2
             return 1
         end
-        # Pod hâlâ ayakta mı? Yeniden başladıysa hash değişir.
+        # Is the pod still up? A restart changes the hash.
         if not kubectl get pod $pod -n $ns >/dev/null 2>&1
-            echo "fzfke: $pod artık yok, seçim listesine düşülüyor" >&2
+            echo "fzfke: $pod is gone, falling back to the picker" >&2
             set pod ""
         end
     end
@@ -95,7 +95,7 @@ function fzfke --description 'fzf ile pod seç: shell aç, komut çalıştır (-
     end
 
     if test -z "$pod"
-        echo "fzfke: pod seçilmedi" >&2
+        echo "fzfke: no pod selected" >&2
         return 1
     end
     set -g fzfke_last_pod $pod
@@ -104,7 +104,7 @@ function fzfke --description 'fzf ile pod seç: shell aç, komut çalıştır (-
     test -n "$container"; and set -a target -c $container
 
     if test $logs -eq 1
-        # Süre: '--' sonrası ilk argüman, yoksa 30m
+        # Duration: the first argument after '--', else 30m
         set -l since 30m
         test (count $cmd) -gt 0; and set since $cmd[1]
         set -l label "logs: $ns / $pod"

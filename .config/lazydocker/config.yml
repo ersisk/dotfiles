@@ -1,5 +1,5 @@
 gui:
-  # Kanagawa; lazygit'teki ton degerleriyle ayni.
+  # Kanagawa; the same tone values as in lazygit.
   theme:
     activeBorderColor:
       - "#FFA066"

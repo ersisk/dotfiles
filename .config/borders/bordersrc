@@ -1,7 +1,7 @@
 #!/bin/bash
-# Kanagawa: aktif crystalBlue, pasif sumiInk4.
-# aerospace'te tum gap'ler 0 - odakli pencere yalnizca bu cerceveden okunuyor.
-# hidpi: Retina'da cerceve keskin cikmasi icin.
+# Kanagawa: crystalBlue when active, sumiInk4 when inactive.
+# Every gap in aerospace is 0 - this border is the only marker of the focused window.
+# hidpi: so the border comes out sharp on a Retina display.
 
 options=(
 	style=round
