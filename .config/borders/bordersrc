@@ -1,0 +1,14 @@
+#!/bin/bash
+# Kanagawa: aktif crystalBlue, pasif sumiInk4.
+# aerospace'te tum gap'ler 0 - odakli pencere yalnizca bu cerceveden okunuyor.
+# hidpi: Retina'da cerceve keskin cikmasi icin.
+
+options=(
+	style=round
+	width=5.0
+	hidpi=on
+	active_color=0xff7e9cd8
+	inactive_color=0xff363646
+)
+
+borders "${options[@]}"

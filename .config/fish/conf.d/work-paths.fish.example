@@ -22,3 +22,8 @@ set -gx WORK_TELI $WORK_ROOT/other-repo
 
 # log_search container yolu icin (opsiyonel; tanimsizsa container atlanir)
 set -gx GTC_CONTAINER your-app-container
+
+# jira-cli token'i; jira-to-branch issue basligini bununla API'den okuyor.
+# Bilerek WORK_ onekli degil: load-work-env.sh yalnizca WORK_* degiskenlerini
+# tmux'un global ortamina yaziyor ve token orada her session'a gorunur olurdu.
+# set -gx JIRA_API_TOKEN xxxxx

@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 #
-# jira-to-branch — ekrandan Jira başlığını okuyup git branch adı üretir.
+# jira-to-branch — Jira issue'sundan git branch adı üretir.
 #
 # Branch adı stdout'a, ilerleme stderr'e yazılır; gcb çıktıyı doğrudan yakalar.
 # Yerini aldığı Raycast zinciri (screenocr → parse-jira-title → generate-branch)
 # her adımı clipboard'dan geçirip 0.5 saniyede bir yokluyordu; stty -echo, bc ve
 # 60 saniyelik timeout hep o yoklamanın bedeliydi.
+#
+# Başlık jira-cli ile Jira API'sinden okunur. OCR'a kalan tek iş anahtarı bulmak:
+# kısa bir alfanumerik token okumak güvenilir, "en uzun satır başlıktır" tahmini
+# değil. O tahmin yalnızca jira-cli yok/yapılandırılmamışsa fallback olarak
+# devreye giriyor. Anahtar -k ile verilirse ekrana hiç bakılmaz.
 #
 # Jira anahtarı regex'le çıkarılır, modele sorulmaz: OCR gürültüsünden anahtar
 # uydurmasın diye. Model sadece Türkçe başlığı İngilizce slug'a çevirir, o da
@@ -16,37 +21,46 @@ set -euo pipefail
 TYPE="${JIRA_BRANCH_TYPE:-feat}"
 AI="${AI_ONESHOT:-$HOME/.config/bin/ai-oneshot}"
 OCR="${SCREEN_OCR:-$HOME/.local/bin/screen-ocr}"
+JIRA="${JIRA_CLI:-jira}"
 
 log() { printf '\033[1;34m▸\033[0m %s\n' "$*" >&2; }
 err() { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; }
 
 usage() {
   cat >&2 <<'USAGE'
-jira-to-branch — ekrandan Jira başlığını oku, branch adı yaz
+jira-to-branch — Jira issue'sundan branch adı yaz
 
 KULLANIM
-  jira-to-branch [-t <type>]
+  jira-to-branch [-k <KEY>] [-t <type>]
 
 SEÇENEKLER
+  -k, --key <KEY>    Jira anahtarı (ör. GD-1140); verilirse OCR atlanır
   -t, --type <type>  branch öneki (varsayılan: feat)
   -h, --help         bu yardım
 
 ORTAM
   JIRA_BRANCH_TYPE   -t ile aynı
+  JIRA_CLI           jira binary'si (varsayılan: PATH'teki jira)
   AI_ONESHOT         ai-oneshot yolu (model seçimi orada)
   SCREEN_OCR         screen-ocr binary yolu
 USAGE
 }
 
+key=""
 while (( $# )); do
   case "$1" in
+    -k|--key) [[ $# -ge 2 ]] || { err "-k bir değer ister"; exit 2; }; key="$2"; shift 2 ;;
     -t|--type) [[ $# -ge 2 ]] || { err "-t bir değer ister"; exit 2; }; TYPE="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) err "bilinmeyen argüman: $1"; usage; exit 2 ;;
   esac
 done
 
-[[ -x "$OCR" ]] || { err "$OCR yok — ~/.local/share/screen-ocr/build.sh çalıştır"; exit 1; }
+key=$(printf '%s' "$key" | tr '[:lower:]' '[:upper:]')
+if [[ -n "$key" && ! "$key" =~ ^[A-Z]{2,10}-[0-9]+$ ]]; then
+  err "anahtar biçimi GD-1140 gibi olmalı: $key"
+  exit 2
+fi
 
 # Türkçe harfleri düşürüp kalanı kebab-case'e indirger, 5 kelimeyle sınırlar.
 slugify() {
@@ -59,29 +73,43 @@ slugify() {
              -e 'tt'
 }
 
-tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
-shot="$tmp/shot.png"
+# -k verildiyse ekrana hiç bakılmaz: text boş kalır, OCR fallback'i de kapanır.
+text=""
+if [[ -z "$key" ]]; then
+  [[ -x "$OCR" ]] || { err "$OCR yok — ~/.local/share/screen-ocr/build.sh çalıştır"; exit 1; }
 
-log "Jira başlığının olduğu bölgeyi seç…"
-screencapture -i -x "$shot"
-# Esc ile iptal edilince screencapture 0 döner ama dosya yazmaz.
-[[ -s "$shot" ]] || { err "iptal edildi"; exit 1; }
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  shot="$tmp/shot.png"
 
-text=$("$OCR" "$shot")
-[[ -n "$text" ]] || { err "OCR hiçbir şey okuyamadı"; exit 1; }
+  log "Jira anahtarının olduğu bölgeyi seç…"
+  screencapture -i -x "$shot"
+  # Esc ile iptal edilince screencapture 0 döner ama dosya yazmaz.
+  [[ -s "$shot" ]] || { err "iptal edildi"; exit 1; }
 
-key=$(printf '%s\n' "$text" | grep -oE '[A-Za-z]{2,10}-[0-9]+' | head -1 \
-  | tr '[:lower:]' '[:upper:]') || key=""
-[[ -n "$key" ]] || { err "Jira anahtarı bulunamadı (ör. COM-1234). OCR çıktısı:"; \
-  printf '%s\n' "$text" >&2; exit 1; }
+  text=$("$OCR" "$shot")
+  [[ -n "$text" ]] || { err "OCR hiçbir şey okuyamadı"; exit 1; }
 
-# Başlık, anahtar atıldıktan sonra kalan en uzun satır: Jira başlığı OCR çıktısındaki
-# en uzun metin oluyor, etrafındaki her şey arayüz süsü.
-title=$(printf '%s\n' "$text" | sed -e "s/$key//g" \
-  | awk '{ if (length($0) > length(best)) best = $0 } END { print best }' \
-  | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-[[ -n "$title" ]] || { err "başlık ayıklanamadı"; exit 1; }
+  key=$(printf '%s\n' "$text" | grep -oE '[A-Za-z]{2,10}-[0-9]+' | head -1 \
+    | tr '[:lower:]' '[:upper:]') || key=""
+  [[ -n "$key" ]] || { err "Jira anahtarı bulunamadı (ör. COM-1234). OCR çıktısı:"; \
+    printf '%s\n' "$text" >&2; exit 1; }
+fi
+
+title=""
+if command -v "$JIRA" >/dev/null && command -v jq >/dev/null; then
+  title=$("$JIRA" issue view "$key" --raw 2>/dev/null | jq -r '.fields.summary // empty') || title=""
+fi
+
+if [[ -z "$title" && -n "$text" ]]; then
+  err "jira-cli başlığı veremedi, OCR metnine düşülüyor"
+  # Başlık, anahtar atıldıktan sonra kalan en uzun satır: Jira başlığı OCR çıktısındaki
+  # en uzun metin oluyor, etrafındaki her şey arayüz süsü.
+  title=$(printf '%s\n' "$text" | sed -e "s/$key//g" \
+    | awk '{ if (length($0) > length(best)) best = $0 } END { print best }' \
+    | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+fi
+[[ -n "$title" ]] || { err "başlık alınamadı — jira-cli yapılandırıldı mı? (jira init)"; exit 1; }
 
 if LC_ALL=C grep -q '[^ -~]' <<< "$title"; then
   log "$key — $title"

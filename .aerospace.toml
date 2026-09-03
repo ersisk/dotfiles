@@ -38,6 +38,10 @@ default-root-container-orientation = 'auto'
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
+# Pencere odagi degisince fare de takip eder. 'lazy': imlec zaten hedef
+# pencerenin icindeyse kimildamaz.
+on-focus-changed = ['move-mouse window-lazy-center']
+
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodness#disable-hide-app
@@ -98,10 +102,11 @@ ctrl-minus = 'layout tiles horizontal vertical'
 ctrl-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-alt-h = 'focus left'
-alt-j = 'focus down'
-alt-k = 'focus up'
-alt-l = 'focus right'
+# wrap-around-the-workspace: kenardaki pencerede tus bosa gitmesin, basa donsun.
+alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
+alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
+alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
+alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
 
 alt-f = 'fullscreen'
 
@@ -125,17 +130,17 @@ alt-shift-0 = 'resize smart +50'
 # ctrl-7 = 'workspace 7'
 # ctrl-8 = 'workspace 8'
 # ctrl-9 = 'workspace 9'
-alt-a = 'workspace A' # Obsidian
+alt-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
 alt-b = 'workspace B' # Browser
-alt-c = 'workspace C' # keymapp
+alt-c = 'workspace C' # Mail (apple mail, thunderbird)
 alt-d = 'workspace D' # Database (Beekeeper studio)
-# alt-e = 'workspace E'
+# alt-e -> focus-monitor olarak kullaniliyor (asagida)
 # alt-f = 'workspace F'
 alt-g = 'workspace G' # KeePassXC (Password manager)
 alt-i = 'workspace I' # Intellij
 alt-m = 'workspace M' # messaging /media (texting and spotify) 
 alt-n = 'workspace N' # Notes (Obsidian, notesnook)
-# alt-o = 'workspace O'
+# alt-o -> focus-back-and-forth olarak kullaniliyor (asagida)
 alt-p = 'workspace P' # Postman and Bruno
 # alt-q = 'workspace Q'
 # alt-r = 'workspace R'
@@ -144,7 +149,7 @@ alt-t = 'workspace T' # Terminal (currently wezterm)
 # alt-u = 'workspace U'
 # alt-v = 'workspace V'
 # alt-w = 'workspace W'
-alt-x = 'workspace X' # email (thunderbird)
+alt-x = 'workspace X' # Scratch (atanmamis pencereler; monitore sabitlenmedi)
 # alt-y = 'workspace Y'
 alt-z = 'workspace Z' # Slack
 
@@ -163,13 +168,12 @@ alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
 alt-shift-c = 'move-node-to-workspace C'
 alt-shift-d = 'move-node-to-workspace D'
-# alt-shift-e = 'move-node-to-workspace E'
+# alt-shift-e -> move-node-to-monitor olarak kullaniliyor (asagida)
 # alt-shift-f = 'move-node-to-workspace F'
 alt-shift-g = 'move-node-to-workspace G'
 alt-shift-i = 'move-node-to-workspace I'
 alt-shift-m = 'move-node-to-workspace M'
 alt-shift-n = 'move-node-to-workspace N'
-# alt-shift-o = 'move-node-to-workspace O'
 alt-shift-p = 'move-node-to-workspace P'
 # alt-shift-q = 'move-node-to-workspace Q'
 # alt-shift-r = 'move-node-to-workspace R'
@@ -190,7 +194,16 @@ ctrl-right = 'workspace next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-w = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+# Force-assigned workspace'ler icin gecici tasima: reload'da / monitor yeniden
+# baglaninca atandigi monitore geri doner.
 alt-shift-w = 'move-workspace-to-monitor --wrap-around next'
+
+# alt-w'nin pencere duzeyindeki karsiligi: son iki pencere arasinda gider gelir.
+alt-o = 'focus-back-and-forth'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
+alt-e = 'focus-monitor --wrap-around next'
+alt-shift-e = 'move-node-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 ctrl-alt-0 = 'mode service'
@@ -224,12 +237,20 @@ alt-shift-f = 'fullscreen'
 # atamalar kayiyor. Bu yuzden ID yerine kalici pattern kullaniliyor.
 # Harici ekran yoksa fallback olarak main'e duser.
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-work
+# Harici ekran 1920x1080 -> mantiksal olarak built-in Retina'dan daha genis.
+# Bu yuzden genis/referans icerik disarida, yogun okuma/yazma Retina'da.
 [workspace-to-monitor-force-assignment]
 A = ['secondary', 'main']
 C = ['secondary', 'main']
+D = ['secondary', 'main']
 I = ['secondary', 'main']
+M = ['secondary', 'main']
+Z = ['secondary', 'main']
+
+B = 'built-in'
+G = 'built-in'
+N = 'built-in'
 P = 'built-in'
-X = 'built-in'
 T = 'built-in'
 
 # ==============================================================================
@@ -263,16 +284,6 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.alienator88.Pearcleaner'
 run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.Music'
-run = 'layout floating'
-check-further-callbacks = true
-
-[[on-window-detected]]
-if.app-id = 'com.spotify.client'
-run = 'layout floating'
-check-further-callbacks = true
 
 [[on-window-detected]]
 if.app-id = 'com.anthropic.claudefordesktop'
@@ -320,7 +331,7 @@ run = "move-node-to-workspace T"
 if.app-id = 'net.kovidgoyal.kitty'
 run = "move-node-to-workspace T"
 
-# --- COMMUNICATION & EMAIL (WORKSPACES: Z, X) ---
+# --- COMMUNICATION & EMAIL (WORKSPACES: Z, C) ---
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -334,6 +345,21 @@ run = ["move-node-to-workspace C", "layout floating"]
 [[on-window-detected]]
 if.app-id = 'org.mozilla.thunderbird'
 run = ["move-node-to-workspace C", "layout floating"]
+
+# --- MESSAGING & MEDIA (WORKSPACE: M) ---
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = "move-node-to-workspace M"
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.client'
+run = ["move-node-to-workspace M", "layout floating"]
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Music'
+run = ["move-node-to-workspace M", "layout floating"]
+
 # --- DEVELOPMENT TOOLS & IDEs (WORKSPACE: I) ---
 
 [[on-window-detected]]
@@ -361,6 +387,10 @@ run = "move-node-to-workspace I"
 
 [[on-window-detected]]
 if.app-id = 'dev.zed.Zed'
+run = "move-node-to-workspace I"
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
 run = "move-node-to-workspace I"
 
 # --- DATABASE MANAGEMENT (WORKSPACE: D) ---

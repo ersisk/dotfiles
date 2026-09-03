@@ -70,8 +70,9 @@ ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
   "$HOME/Library/Application Support/lazydocker/config.yml"
 ```
 
-12. Build the screen OCR helper `jira-to-branch` reads Jira titles with. It wraps
-   the Vision framework, so nothing is installed beyond what macOS ships.
+12. Build the screen OCR helper `jira-to-branch` reads the Jira key with — the
+   title itself comes from the API through jira-cli (step 18). It wraps the Vision
+   framework, so nothing is installed beyond what macOS ships.
 
 ```sh
 ~/.local/share/screen-ocr/build.sh
@@ -187,6 +188,28 @@ pbcopy < ~/.local/share/graylog-json-select/graylog-json-select.user.js
    would inject. Payloads Graylog stores escaped inside a string field
    (`{\"a\":1}`) are found too, but the selection copies what is on screen — still
    escaped.
+
+18. Configure jira-cli, which `jira-to-branch` reads the issue title from. Create
+   an API token at <https://id.atlassian.com/manage-profile/security/api-tokens>,
+   put it in the shell as `JIRA_API_TOKEN` — `work-paths.fish` is the place, it is
+   already untracked — then run `init`, which asks for the server URL, the login
+   e-mail and a default project.
+
+```sh
+jira init --installation cloud --auth-type basic
+```
+
+   The config lands in `~/.config/.jira/.config.yml` and is deliberately not
+   tracked: it carries the company Jira URL and the login e-mail, and this repo is
+   public. The token deliberately has no `WORK_` prefix either — `load-work-env.sh`
+   copies every `WORK_*` variable into tmux's global environment, where a token has
+   no business being.
+
+   Skipping this step breaks nothing. `jira-to-branch` falls back to its old
+   behaviour, guessing the title as the longest line of the OCR output, and says so
+   on stderr. That guess is the reason for the step: the API answers with the exact
+   summary in one call, which leaves OCR doing only what it is reliable at, reading
+   the short `GD-1140` token. `jira-to-branch -k GD-1140` skips the screen entirely.
 
 # Kisayol paneli
 

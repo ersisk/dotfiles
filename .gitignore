@@ -26,6 +26,9 @@
 # Derlenmis PiP defocus binary - kaynak .local/share/zen-pip-defocus/ altinda
 .local/bin/zen-pip-defocus
 
+# jira-cli config'i - Jira sunucu adresi ve login e-postasi, repo public
+.config/.jira/
+
 # Raycast'in kendi state'i - API token'i ve kurulu extension'lar, repoda tutulmaz
 .config/raycast/config.json
 .config/raycast/extensions/

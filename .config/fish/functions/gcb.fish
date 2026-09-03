@@ -4,16 +4,18 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
         echo "gcb — Jira başlığından branch üret (jira-to-branch) ve checkout et"
         echo
         set_color -o; echo "KULLANIM"; set_color normal
-        echo "  gcb [base] [-n|--name <ad>] [-d|--dry-run]"
+        echo "  gcb [base] [-k|--key <KEY>] [-n|--name <ad>] [-d|--dry-run]"
         echo
         set_color -o; echo "AKIŞ"; set_color normal
-        echo "  1. jira-to-branch çalışır: ekrandan OCR → Jira başlığı → branch adı"
+        echo "  1. jira-to-branch çalışır: anahtar (-k yoksa ekrandan OCR ile) →"
+        echo "     başlık jira-cli ile API'den → branch adı"
         echo "  2. base branch seçilir (parametre yoksa fzf ile)"
         echo "  3. git fetch + git checkout -b <ad> origin/<base>"
         echo
         set_color -o; echo "SEÇENEKLER"; set_color normal
         echo "  base             base branch; kısmi ad da eşleşir (rc → release-candidate)"
-        echo "  -n, --name <ad>  OCR'ı atla, branch adını doğrudan ver"
+        echo "  -k, --key <KEY>  Jira anahtarı; OCR atlanır, başlık API'den gelir"
+        echo "  -n, --name <ad>  jira-to-branch'i hiç çağırma, adı doğrudan ver"
         echo "  -d, --dry-run    sadece ne yapacağını yaz, checkout etme"
         echo "  -h, --help       bu yardım"
         echo
@@ -21,7 +23,8 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
         echo "  gcb                              # base'i fzf ile seç"
         echo "  gcb release-candidate            # doğrudan base ver"
         echo "  gcb rc                           # kısaltma"
-        echo "  gcb rc -n feature/GD-1-deneme    # OCR olmadan"
+        echo "  gcb rc -k GD-1140                # ekrana bakmadan"
+        echo "  gcb rc -n feature/GD-1-deneme    # jira-to-branch olmadan"
         echo "  gcb -d                           # kuru çalıştır"
         return 0
     end
@@ -33,11 +36,15 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
 
     set -l dry 0
     set -l name ""
+    set -l key ""
     set -l base_arg ""
     set -l i 1
     while test $i -le (count $argv)
         switch $argv[$i]
             case -d --dry-run; set dry 1
+            case -k --key
+                set i (math $i + 1)
+                set key $argv[$i]
             case -n --name
                 set i (math $i + 1)
                 set name $argv[$i]
@@ -45,6 +52,13 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
                 test -z "$base_arg"; and set base_arg $argv[$i]
         end
         set i (math $i + 1)
+    end
+
+    # -n jira-to-branch'i hic cagirmiyor, -k ona verilecek argument: ikisi birlikte
+    # verilirse -k sessizce yok sayilirdi.
+    if test -n "$name"; and test -n "$key"
+        echo "gcb: -n ve -k birlikte kullanılmaz" >&2
+        return 1
     end
 
     # Uzak base adaylarını topla; kısmi eşleşmeye izin ver (rc -> release-candidate)
@@ -98,7 +112,9 @@ function gcb --description 'jira-to-branch ile branch adı üret, seçilen base 
             echo "gcb: $jtb bulunamadı (-n ile ad verebilirsin)" >&2
             return 1
         end
-        set name ($jtb)
+        set -l jtb_args
+        test -n "$key"; and set jtb_args -k $key
+        set name ($jtb $jtb_args)
         or return 1
     end
 
