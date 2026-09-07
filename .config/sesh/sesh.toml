@@ -84,7 +84,7 @@ path = "$WORK_MAIN"
 # startup_command lands in window 1. Creating a named window turns
 # automatic-rename off, so it is turned back on in the shell window -
 # the nerd-font/claude-state glyphs come from there.
-startup_command = "tmux set -w -t 2 automatic-rename on; gh dash"
+startup_command = "tmux set -w -t 2 automatic-rename on; clear; gh dash"
 windows = ["shell"]
 
 [[session]]

@@ -78,18 +78,18 @@ ln -sf ~/workspace/dotfiles/.config/lazydocker/config.yml \
 ~/.local/share/screen-ocr/build.sh
 ```
 
-13. Build the Claude Code menu bar indicator and load it at login. It shows the
-   state of every running Claude Code session (needs input / working / background
-   task / finished) and jumps to the session's tmux pane when clicked, which is
-   what the `claude-tmux-notify` hook feeds through
-   `~/.local/state/claude-menubar/sessions`.
+13. Build the coding-agent menu bar indicator and load it at login. It shows the
+   state of every running Claude Code and opencode session (needs input / working /
+   background task / finished) and jumps to the session's tmux pane when clicked,
+   which is what `agent-tmux-notify` feeds through
+   `~/.local/state/agent-menubar/sessions`.
 
 ```sh
-~/.local/share/claude-menubar/build.sh
-ln -sf ~/workspace/dotfiles/.local/share/claude-menubar/com.ersanisik.claude-menubar.plist \
-  "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
+~/.local/share/agent-menubar/build.sh
+ln -sf ~/workspace/dotfiles/.local/share/agent-menubar/com.ersanisik.agent-menubar.plist \
+  "$HOME/Library/LaunchAgents/com.ersanisik.agent-menubar.plist"
 launchctl bootstrap "gui/$(id -u)" \
-  "$HOME/Library/LaunchAgents/com.ersanisik.claude-menubar.plist"
+  "$HOME/Library/LaunchAgents/com.ersanisik.agent-menubar.plist"
 ```
 
 14. Run the local model server `ai-oneshot` prefers. It listens on 11435, not
@@ -229,6 +229,20 @@ brew services start borders
    Editing `bordersrc` and then running it applies the change to the instance that
    is already running, so a colour tweak needs no service restart.
 
+20. Write opencode's LLM gateway key. `.config/opencode/opencode.json` is
+   versioned but the key is not: the config pulls it in with `{file:...}`, which
+   opencode resolves at load — a plain env var would not survive a pane started
+   by `new-window` rather than a login shell.
+
+```sh
+printf '%s' 'sk-...' > ~/.config/opencode/llmroute.key
+chmod 600 ~/.config/opencode/llmroute.key
+```
+
+   Skills need no step: opencode scans `~/.claude/skills` and `~/.agents/skills`
+   on its own, and reads `~/.claude/CLAUDE.md` as global instructions, so both
+   agents share one set. `opencode debug skill` lists what it found.
+
 # Shortcut panel
 
 `prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
@@ -251,43 +265,51 @@ without touching the panel:
 - **fish** — aliases from `config.fish` and the function names under
   `fish/functions`, listed dimmed after the shortcuts.
 
-# Claude Code session state
+# Coding-agent session state
 
-Four things share one directory, `~/.local/state/claude-menubar/sessions`, so the
-contract between them is worth writing down: the `claude-tmux-notify` hook, the
-`claude-menubar` app, `claude-next.sh` (prefix + j), and the Raycast script
+Four things share one directory, `~/.local/state/agent-menubar/sessions`, so the
+contract between them is worth writing down: the `agent-tmux-notify` hook, the
+`agent-menubar` app, `agent-next.sh` (prefix + j), and the Raycast script
 commands in `.config/raycast/scripts`.
 
-- **One file per Claude session**, single-line JSON, always replaced by writing a
+- **One file per agent session**, single-line JSON, always replaced by writing a
   temp file and renaming it. The rename is what wakes the menu bar app's directory
   watcher — an in-place rewrite leaves the icon stale. Single line so the reader can
   parse it with bash alone, without spawning `jq` on a keypress.
-- **One reader, `claude-state.sh`**, next to the app that defines the contract.
-  `claude-next.sh` and both Raycast scripts source it. The tmux side used to carry
+- **One reader, `agent-state.sh`**, next to the app that defines the contract.
+  `agent-next.sh` and both Raycast scripts source it. The tmux side used to carry
   its own copy to avoid sourcing a file on a keypress; measured, that costs nothing
   (2.2 ms for an empty bash, 2.0 ms with the source), so the copy is gone.
-- **`claude-tmux-notify` is the primary writer**, one write per hook event. The
-  menu bar app only fills gaps: a pane running `claude` with no file at all gets one
-  written from what tmux still knows, marked `"recovered": true`. Without that, a
-  session already waiting for input when its file went missing could never announce
-  itself again — the next hook event is exactly what is not coming.
-- **`@claude_state` (per tmux window) means "unacknowledged work"**, and it is the
+- **`agent-tmux-notify` is the primary writer**, one write per hook event. Claude
+  Code calls it directly as a hook; opencode has no hook mechanism, so
+  `.config/opencode/plugins/agent-tmux-notify.js` subscribes to its event bus and
+  synthesises the same payloads. The payload's `agent` field is how the two are told
+  apart — absent means Claude Code. The menu bar app only fills gaps: a pane running
+  an agent with no file at all gets one written from what tmux still knows, marked
+  `"recovered": true`. Without that, a session already waiting for input when its
+  file went missing could never announce itself again — the next hook event is
+  exactly what is not coming.
+- **`@agent_state` (per tmux window) means "unacknowledged work"**, and it is the
   second half of the contract: the hook sets the state glyph, and the app *unsets* it
   when it clears an entry you have looked at — also stripping the glyph from the window
   *name*, since a window with `automatic-rename off` never re-renders it from the
   option. Without that durable acknowledgement, recovery would resurrect every
   finished session from the glyph on the next tick.
-  The glyph list therefore lives in two places — `claude-tmux-notify`
-  (`set_window_state`) and `ClaudeMenubar.swift` (`phaseByGlyph`).
-- **An entry is dropped** when its pane is gone, when no `claude` is left on its
-  recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
+  The glyph list therefore lives in two places — `agent-tmux-notify`
+  (`set_window_state`) and `AgentMenubar.swift` (`phaseByGlyph`). The set of
+  process names that count as an agent is a third such place:
+  `AgentMenubar.swift` (`agentComms`), which is what keeps an opencode pane from
+  being pruned as dead. `ps` calls it `opencode` even though tmux calls the pane
+  command `opencode.exe`.
+- **An entry is dropped** when its pane is gone, when no agent process is left on
+  its recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
   its pane is on screen. Every drop is logged with its reason to
-  `/tmp/claude-menubar.err.log`.
+  `/tmp/agent-menubar.err.log`.
 - **The three surfaces have separate jobs.** The menu bar is the ambient one: it is
   on screen even when kitty is not focused, and it tracks every session including the
   finished and idle ones. `prefix + j` is the keyboard one, but it only exists once you
   are already in tmux. Raycast (`⌃⌥J`) is the one that works from Slack or a browser;
-  it reuses `claude-jump` rather than reimplementing the switch. The tmux status bar
+  it reuses `agent-jump` rather than reimplementing the switch. The tmux status bar
   used to carry a fourth copy of the same signal; it was removed rather than kept in
   sync.
 - **launchd gives the app no UTF-8 locale**, and tmux then mangles its own output:

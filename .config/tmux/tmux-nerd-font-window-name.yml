@@ -1,7 +1,11 @@
-# tmux-nerd-font-window-name kullanici override'i.
+# tmux-nerd-font-window-name user override.
 # Key = #{pane_current_command}; the icons must be kept in sync with the shortcuts
 # in utility.conf so a window looks the same however it was opened.
+# `opencode` is the name tmux.conf's automatic-rename-format normalises the real
+# command (opencode.exe) to; the raw key is kept so a bare plugin call still matches.
 icons:
   claude: "󰘦"
   ccr: "󰘦"
   cldy: "󰚩"
+  opencode: "󱚝"
+  opencode.exe: "󱚝"

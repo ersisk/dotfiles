@@ -10,8 +10,8 @@
 export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -uo pipefail
 
-. "${CLAUDE_STATE_LIB:-$HOME/.local/share/claude-menubar/claude-state.sh}"
-JUMP="${CLAUDE_JUMP:-$HOME/.local/bin/claude-jump}"
+. "${AGENT_STATE_LIB:-$HOME/.local/share/agent-menubar/agent-state.sh}"
+JUMP="${AGENT_JUMP:-$HOME/.local/bin/agent-jump}"
 
 # Only the states prefix+j stops at: a working session has nothing to answer yet.
 rows=$(emit_rows | awk -F'\t' '$1 < 3')

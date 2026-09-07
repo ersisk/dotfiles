@@ -1,13 +1,13 @@
-// ClaudeMenubar — menu bar indicator for running Claude Code sessions.
+// AgentMenubar — menu bar indicator for running coding-agent sessions.
 //
-// State lives in ~/.local/state/claude-menubar/sessions/<session-id>.json, written
-// atomically (write + rename) by the claude-tmux-notify hook. The rename is what
+// State lives in ~/.local/state/agent-menubar/sessions/<session-id>.json, written
+// atomically (write + rename) by the agent-tmux-notify hook. The rename is what
 // makes the directory vnode fire, so the icon reflects a hook write within
 // milliseconds without polling. The timer drops entries that have gone stale and,
-// the other way round, writes one back for any pane running claude that has no state
+// the other way round, writes one back for any pane running an agent that has no state
 // file at all — see prune and recover.
 //
-// Build: .local/share/claude-menubar/build.sh
+// Build: .local/share/agent-menubar/build.sh
 
 import AppKit
 
@@ -160,8 +160,8 @@ final class Controller: NSObject, NSMenuDelegate {
     // Fallback only, for entries whose tmux server cannot be reached at all.
     private let maxAge: TimeInterval = 24 * 3600
     // A state file written milliseconds ago must not be judged before its own
-    // `claude` shows up in the process list.
-    private let claudeGrace: TimeInterval = 15
+    // agent process shows up in the process list.
+    private let agentGrace: TimeInterval = 15
     // Waiting longer than this is no longer news: the icon turns red so a forgotten
     // prompt reads differently from one that just arrived.
     private let urgentAfter: TimeInterval = 300
@@ -169,7 +169,7 @@ final class Controller: NSObject, NSMenuDelegate {
 
     init(stateDir: URL) {
         self.stateDir = stateDir
-        jumpTool = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".local/bin/claude-jump")
+        jumpTool = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".local/bin/agent-jump")
         tmuxBin = ["/opt/homebrew/bin/tmux", "/usr/local/bin/tmux", "/usr/bin/tmux"]
             .first { FileManager.default.isExecutableFile(atPath: $0) }
         super.init()
@@ -235,7 +235,7 @@ final class Controller: NSObject, NSMenuDelegate {
         updateIcon()
     }
 
-    // What tmux still knows about one pane. @claude_state / @claude_last are the
+    // What tmux still knows about one pane. @agent_state / @agent_last are the
     // hook's other output and they outlive a missing state file, which is what makes
     // recovery possible.
     private struct PaneInfo {
@@ -253,7 +253,7 @@ final class Controller: NSObject, NSMenuDelegate {
     }
 
     // The hook's state glyph, read back the other way. Keep in sync with
-    // set_window_state in claude-tmux-notify.
+    // set_window_state in agent-tmux-notify.
     private static let phaseByGlyph: [String: Phase] = [
         "󰓦": .working,
         "󰛐": .waiting,
@@ -275,7 +275,7 @@ final class Controller: NSObject, NSMenuDelegate {
             "#{socket_path}", "#{pane_id}", "#{pane_tty}",
             "#{pane_active}#{window_active}#{?#{session_attached},1,0}",
             "#{session_name}", "#{window_index}", "#{pane_current_path}",
-            "#{@claude_state}", "#{@claude_last}",
+            "#{@agent_state}", "#{@agent_last}",
         ].joined(separator: "|")]
 
         guard let out = capture(tmux, args) else {
@@ -310,23 +310,31 @@ final class Controller: NSObject, NSMenuDelegate {
         return (socketPath, panes)
     }
 
-    // ttys running a live `claude`. tmux reports the pane's foreground command as the
-    // shell even while Claude is running, so the tty is the only cheap link between a
-    // state file and the process that wrote it. nil when ps fails.
-    private func claudeTtys() -> Set<String>? {
+    // Process names that count as a coding agent. `ps` reports opencode as
+    // `opencode` even though tmux calls the pane command `opencode.exe` (a Bun
+    // single-file build); the ps name is what has to match here.
+    private static let agentComms = ["claude", "opencode"]
+
+    // ttys running a live agent. tmux reports the pane's foreground command as the
+    // shell even while the agent is running, so the tty is the only cheap link
+    // between a state file and the process that wrote it. nil when ps fails.
+    private func agentTtys() -> Set<String>? {
         guard let out = capture("/bin/ps", ["-ax", "-o", "tty=,comm="]) else { return nil }
         var ttys: Set<String> = []
         for line in out.split(separator: "\n") {
             let fields = line.split(separator: " ", omittingEmptySubsequences: true)
             guard fields.count >= 2, fields[0] != "??" else { continue }
-            if fields[1].hasSuffix("claude") { ttys.insert(String(fields[0])) }
+            let comm = fields[1]
+            if Self.agentComms.contains(where: { comm.hasSuffix($0) }) {
+                ttys.insert(String(fields[0]))
+            }
         }
         return ttys
     }
 
     // Ways an entry stops being worth showing:
     //   the pane is gone                          → the session went with it
-    //   claude is gone but the pane lives         → a crash or ctrl-C fires no SessionEnd
+    //   the agent is gone but the pane lives      → a crash or ctrl-C fires no SessionEnd
     //   finished and the pane is on screen        → you have seen it; a green icon that
     //                                               never clears is the pile-up this app exists to avoid
     //   a placeholder the real session has replaced
@@ -342,7 +350,7 @@ final class Controller: NSObject, NSMenuDelegate {
             return fresh
         }
 
-        let ttys = claudeTtys()
+        let ttys = agentTtys()
         let realPanes = Set(sessions.filter { !$0.isRecovered }.map(\.tmuxPane))
         var removed = false
         let now = Date()
@@ -372,9 +380,9 @@ final class Controller: NSObject, NSMenuDelegate {
             }
 
             if reason == nil, let ttys, !session.tmuxTty.isEmpty,
-               now.timeIntervalSince(session.updatedAt) > claudeGrace,
+               now.timeIntervalSince(session.updatedAt) > agentGrace,
                !ttys.contains(session.ttyName) {
-                reason = "no claude on \(session.ttyName)"
+                reason = "no agent on \(session.ttyName)"
             }
 
             if let reason {
@@ -390,24 +398,24 @@ final class Controller: NSObject, NSMenuDelegate {
 
     // Clearing a finished entry is an acknowledgement, and it has to outlive this
     // process: without a durable record, recovery below would resurrect the entry on
-    // the next tick straight from the window glyph. Unsetting @claude_state is that
+    // the next tick straight from the window glyph. Unsetting @agent_state is that
     // record — it also drops the glyph from the window name wherever tmux renders the
-    // name itself. @claude_last is left alone: recovery still wants the message.
+    // name itself. @agent_last is left alone: recovery still wants the message.
     private func acknowledge(_ session: Session) {
         guard let tmux = tmuxBin, !session.tmuxSocket.isEmpty, !session.tmuxPane.isEmpty
         else { return }
         let server = ["-S", session.tmuxSocket]
 
         // Read the name before clearing. With automatic-rename off — which is how a
-        // window whose title Claude Code owns arrives — the format that renders
-        // @claude_state never runs, so the glyph is baked into the name and unsetting
+        // window whose title the agent owns arrives — the format that renders
+        // @agent_state never runs, so the glyph is baked into the name and unsetting
         // the option alone would leave it sitting there until the next hook event.
         let info = capture(tmux, server + [
             "display-message", "-p", "-t", session.tmuxPane, "#{automatic-rename}|#{window_name}",
         ])
 
         _ = capture(tmux, server + [
-            "set-option", "-uw", "-t", session.tmuxPane, "@claude_state",
+            "set-option", "-uw", "-t", session.tmuxPane, "@agent_state",
         ])
 
         guard let info else { return }
@@ -429,9 +437,9 @@ final class Controller: NSObject, NSMenuDelegate {
         log("cleared state glyph from \(session.tmuxSession):\(session.tmuxWindow)")
     }
 
-    // A Claude that was already waiting when its state file went missing would never
+    // An agent that was already waiting when its state file went missing would never
     // announce itself again: the next hook event is exactly the thing that is not
-    // coming. So a pane running claude with no state file gets one written from what
+    // coming. So a pane running an agent with no state file gets one written from what
     // tmux still knows. The hook stays the primary writer; this only fills gaps.
     //
     private func recover(from probe: (socket: String, panes: [PaneInfo]), ttys: Set<String>) {
@@ -474,7 +482,7 @@ final class Controller: NSObject, NSMenuDelegate {
     // launchd captures stderr to the path in the plist; a background app that drops
     // and re-adds entries on its own needs to be able to say why.
     private func log(_ message: String) {
-        FileHandle.standardError.write(Data("claude-menubar: \(message)\n".utf8))
+        FileHandle.standardError.write(Data("agent-menubar: \(message)\n".utf8))
     }
 
     private func capture(_ path: String, _ args: [String]) -> String? {
@@ -499,7 +507,7 @@ final class Controller: NSObject, NSMenuDelegate {
 
     // A placeholder is hidden the moment the real session writes its own file. It stays
     // in `sessions` so prune still sees it and deletes the leftover file — dropping it
-    // here instead would leave the file behind forever, and claude-next.sh reads the
+    // here instead would leave the file behind forever, and agent-next.sh reads the
     // files directly, so prefix + j would keep landing on a session that is no longer
     // waiting.
     private var displayed: [Session] {
@@ -542,7 +550,7 @@ final class Controller: NSObject, NSMenuDelegate {
         item.button?.title = peers > 1 ? " \(peers)" : ""
         let rows = displayed
         item.button?.toolTip = rows.isEmpty
-            ? "Claude Code — no sessions"
+            ? "Coding agents — no sessions"
             : rows
                 .map { "\($0.project) — \($0.phase.label), \(shortAge($0.updatedAt))" }
                 .joined(separator: "\n")
@@ -556,7 +564,7 @@ final class Controller: NSObject, NSMenuDelegate {
 
         let rows = displayed
         if rows.isEmpty {
-            let empty = NSMenuItem(title: "No Claude sessions", action: nil, keyEquivalent: "")
+            let empty = NSMenuItem(title: "No agent sessions", action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         } else {
@@ -660,12 +668,12 @@ final class Controller: NSObject, NSMenuDelegate {
 // MARK: - Entry point
 
 let home = URL(fileURLWithPath: NSHomeDirectory())
-let root = home.appendingPathComponent(".local/state/claude-menubar")
+let root = home.appendingPathComponent(".local/state/agent-menubar")
 try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
 
 // Same override the hook honours. A test instance points at its own directory, so it
 // also skips the single-instance lock — a second menu bar item is the point there.
-let override = ProcessInfo.processInfo.environment["CLAUDE_MENUBAR_STATE_DIR"]
+let override = ProcessInfo.processInfo.environment["AGENT_MENUBAR_STATE_DIR"]
 if override == nil {
     // One menu bar item per user, even if launchd and a manual run race.
     let lock = open(root.appendingPathComponent("lock").path, O_CREAT | O_RDWR, 0o644)

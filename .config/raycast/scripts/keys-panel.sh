@@ -11,7 +11,7 @@ export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -uo pipefail
 
 SOCKET="${TMUX_SOCKET:-/tmp/tmux-$(id -u)/default}"
-JUMP="${CLAUDE_JUMP:-$HOME/.local/bin/claude-jump}"
+JUMP="${AGENT_JUMP:-$HOME/.local/bin/agent-jump}"
 PANEL="$HOME/.config/tmux/keys-panel.sh"
 
 # The panel is a tmux popup, so a client is required. Opening a new kitty window
@@ -20,7 +20,7 @@ PANEL="$HOME/.config/tmux/keys-panel.sh"
 client=$(tmux -S "$SOCKET" list-clients -F '#{client_name}' 2>/dev/null | head -1)
 [[ -n "$client" ]] || { echo "no tmux client"; exit 0; }
 
-# Empty session: claude-jump just raises kitty and exits. Raising is solved there
+# Empty session: agent-jump just raises kitty and exits. Raising is solved there
 # (aerospace race included), so it is not solved a second time here.
 "$JUMP" "$SOCKET" "" "" ""
 

@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -84,7 +84,7 @@
           },
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -96,7 +96,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]
@@ -108,7 +108,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/claude-tmux-notify",
+            "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
           }
         ]

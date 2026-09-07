@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.ersanisik.claude-menubar</string>
+  <string>com.ersanisik.agent-menubar</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/ersanisik/.local/bin/claude-menubar</string>
+    <string>/Users/ersanisik/.local/bin/agent-menubar</string>
   </array>
   <key>EnvironmentVariables</key>
   <dict>
-    <!-- launchd hands down a bare PATH; claude-jump needs brew's tmux. -->
+    <!-- launchd hands down a bare PATH; agent-jump needs brew's tmux. -->
     <key>PATH</key>
     <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
     <!-- Without a UTF-8 locale tmux mangles its own output: emoji session names come
@@ -23,6 +23,6 @@
   <key>KeepAlive</key>
   <true/>
   <key>StandardErrorPath</key>
-  <string>/tmp/claude-menubar.err.log</string>
+  <string>/tmp/agent-menubar.err.log</string>
 </dict>
 </plist>

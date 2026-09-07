@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# claude-jump — raise kitty and focus the tmux pane a Claude session runs in.
+# agent-jump — raise kitty and focus the tmux pane a Claude session runs in.
 #
-# Called by the claude-menubar app with the tmux coordinates the
-# claude-tmux-notify hook recorded:
-#   claude-jump <socket> <session> <window> <pane-id>
+# Called by the agent-menubar app with the tmux coordinates the
+# agent-tmux-notify hook recorded:
+#   agent-jump <socket> <session> <window> <pane-id>
 #
 # Runs outside tmux, so the server is addressed through -S <socket> and
 # switch-client needs an explicit client: without $TMUX there is no current one.

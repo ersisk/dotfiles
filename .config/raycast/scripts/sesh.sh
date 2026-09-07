@@ -12,7 +12,7 @@ export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 set -uo pipefail
 
 SOCKET="${TMUX_SOCKET:-/tmp/tmux-$(id -u)/default}"
-JUMP="${CLAUDE_JUMP:-$HOME/.local/bin/claude-jump}"
+JUMP="${AGENT_JUMP:-$HOME/.local/bin/agent-jump}"
 query="${1:-}"
 
 # A call with no argument goes to the last used session: the sesh list is already
@@ -35,6 +35,6 @@ if ! tmux -S "$SOCKET" has-session -t "$target" 2>/dev/null; then
 fi
 
 # No window/pane is passed: only the session is switched to, the rest is the last
-# position tmux remembers. Raising lives in claude-jump, aerospace race and all.
+# position tmux remembers. Raising lives in agent-jump, aerospace race and all.
 "$JUMP" "$SOCKET" "$target" "" ""
 echo "→ $target"

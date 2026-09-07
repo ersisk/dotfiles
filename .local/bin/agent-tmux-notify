@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
-# claude-tmux-notify
-# Claude Code hook script: records per-session state for the claude-menubar app
-# (and shows a tmux status-line message when inside tmux) when Claude stops,
-# needs input, or finishes a long-running bash command / background task.
+# agent-tmux-notify
+# Records per-session state for the agent-menubar app (and shows a tmux
+# status-line message when inside tmux) when a coding agent stops, needs input,
+# or finishes a long-running bash command / background task.
+#
+# The payload contract is Claude Code's hook payload, and Claude Code calls this
+# directly as a hook. opencode has no hook mechanism, so its side is a plugin
+# (.config/opencode/plugins/agent-tmux-notify.js) that subscribes to the event
+# bus and synthesises the same payloads. Which agent is talking comes in as
+# `agent`; anything without it is Claude Code.
 #
 # Install:
 #   mkdir -p ~/.local/bin
-#   cp claude-tmux-notify ~/.local/bin/claude-tmux-notify
-#   chmod +x ~/.local/bin/claude-tmux-notify
+#   cp agent-tmux-notify ~/.local/bin/agent-tmux-notify
+#   chmod +x ~/.local/bin/agent-tmux-notify
 #
 # How it works:
 #   SessionStart / SessionEnd  → register / drop the session (silent)
@@ -28,16 +34,16 @@ set -euo pipefail
 
 # --- Configuration -----------------------------------------------------------
 # Minimum seconds a bash command must run before triggering a notification.
-NOTIFY_THRESHOLD="${CLAUDE_NOTIFY_THRESHOLD:-10}"
+NOTIFY_THRESHOLD="${AGENT_NOTIFY_THRESHOLD:-10}"
 # Scratch directory for timestamps and flags between Pre/Post hooks.
-STATE_DIR="${TMPDIR:-/tmp}/claude-tmux-notify"
+STATE_DIR="${TMPDIR:-/tmp}/agent-tmux-notify"
 # tmux display duration in milliseconds.
 DISPLAY_MS=5000
 # Set to 0 to disable the semantic window-name state prefix (icon glyph).
-WINDOW_STATE="${CLAUDE_WINDOW_STATE:-1}"
-# Session state files consumed by the claude-menubar app. Persistent, not $TMPDIR:
+WINDOW_STATE="${AGENT_WINDOW_STATE:-1}"
+# Session state files consumed by the agent-menubar app. Persistent, not $TMPDIR:
 # launchd hands the app a different TMPDIR than an interactive shell.
-MENUBAR_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
+MENUBAR_DIR="${AGENT_MENUBAR_STATE_DIR:-$HOME/.local/state/agent-menubar/sessions}"
 # -----------------------------------------------------------------------------
 
 # Read the hook payload from stdin
@@ -53,7 +59,7 @@ if command -v jq &>/dev/null; then
   # (a Notification, say) every field would shift. Newlines/tabs inside a field and
   # the separator itself are turned into spaces: a command or message carrying 0x1F
   # would shift the fields. All of it is only used for a single-line display.
-  IFS=$'\x1f' read -r EVENT TOOL TOOL_CMD TOOL_DESC RUN_BG SESSION_ID CWD TRANSCRIPT MESSAGE < <(
+  IFS=$'\x1f' read -r EVENT TOOL TOOL_CMD TOOL_DESC RUN_BG SESSION_ID CWD TRANSCRIPT MESSAGE AGENT LAST_MSG_IN < <(
     jq -r '[
       .hook_event_name // "Unknown",
       .tool_name // "",
@@ -63,7 +69,9 @@ if command -v jq &>/dev/null; then
       .session_id // "",
       .cwd // "",
       .transcript_path // "",
-      .message // ""
+      .message // "",
+      .agent // "",
+      .last_message // ""
     ] | map(tostring | gsub("[\n\r\t\u001f]"; " ")) | join("\u001f")' <<< "$PAYLOAD" 2>/dev/null
   ) || true
   # If the parse failed outright there is nothing to write: rather than producing a
@@ -78,8 +86,19 @@ else
   RUN_BG="false"
   SESSION_ID=""
   MESSAGE=""
+  AGENT=""
+  LAST_MSG_IN=""
   CWD=$(echo "$PAYLOAD" | grep -o '"cwd":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
 fi
+
+# Which agent produced the payload. Claude Code never sends the field; opencode's
+# plugin bridge does, and that is the only way this script can tell them apart -
+# both run as the same hook, in the same pane, against the same state directory.
+AGENT="${AGENT:-claude}"
+case "$AGENT" in
+  claude) AGENT_LABEL="Claude" ;;
+  *)      AGENT_LABEL="$AGENT" ;;
+esac
 
 PROJECT=$(basename "${CWD:-unknown}")
 TARGET="${TMUX_PANE:-%0}"
@@ -171,7 +190,7 @@ tmux_context() {
   printf '%s:%s' "$TMUX_SESS" "$TMUX_WIN"
 }
 
-# State file the claude-menubar app reads for this session. Keyed by session id so
+# State file the agent-menubar app reads for this session. Keyed by session id so
 # a resumed session updates its own entry instead of leaving a stale twin behind;
 # falls back to the pane key when the payload carries no id.
 state_file() {
@@ -181,9 +200,9 @@ state_file() {
 
 # Replaces the state file atomically. The rename is what wakes the app's directory
 # watcher, so writing into the final path directly would leave the icon stale.
-# The recorded tmux coordinates are what claude-jump uses to focus this pane; the
+# The recorded tmux coordinates are what agent-jump uses to focus this pane; the
 # tty is how the app notices Claude died without a SessionEnd. One line per file,
-# so claude-next.sh can parse it with bash alone, without spawning jq.
+# so agent-next.sh can parse it with bash alone, without spawning jq.
 write_state() {
   local state="$1" detail="${2:-}" file tmp socket=""
   file=$(state_file)
@@ -199,6 +218,7 @@ write_state() {
       --arg project "$PROJECT" \
       --arg cwd "$CWD" \
       --arg detail "$detail" \
+      --arg agent "$AGENT" \
       --arg tmux_socket "$socket" \
       --arg tmux_session "$TMUX_SESS" \
       --arg tmux_window "$TMUX_WIN" \
@@ -207,9 +227,9 @@ write_state() {
       --argjson updated_at "$(date +%s)" \
       '$ARGS.named' > "$tmp" 2>/dev/null || { rm -f "$tmp"; return 0; }
   else
-    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","updated_at":%s}\n' \
+    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","agent":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","updated_at":%s}\n' \
       "$(json_escape "$SESSION_ID")" "$state" "$(json_escape "$PROJECT")" \
-      "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$socket")" \
+      "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$AGENT")" "$(json_escape "$socket")" \
       "$(json_escape "$TMUX_SESS")" "$(json_escape "$TMUX_WIN")" \
       "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$(date +%s)" > "$tmp" 2>/dev/null \
       || { rm -f "$tmp"; return 0; }
@@ -255,16 +275,16 @@ tmux_styled() {
 # Semantic per-window state, shown as an icon glyph prefixed onto the window name.
 # Hybrid to coexist with tmux-nerd-font-window-name:
 #   - automatic-rename ON  (plugin drives the name): store the glyph in the
-#     per-window @claude_state option; tmux.conf's automatic-rename-format
+#     per-window @agent_state option; tmux.conf's automatic-rename-format
 #     prepends it, so the plugin's re-renames re-compose the glyph, not clobber it.
 #   - automatic-rename OFF (Claude Code / manual owns the name): the format never
 #     runs, so prepend the glyph directly onto #W, stripping any known prefix first
-#     (idempotent — re-applying never stacks). Also keep @claude_state in sync so
+#     (idempotent — re-applying never stacks). Also keep @agent_state in sync so
 #     the glyph reappears if auto-rename is later turned back on.
 # Nerd Font state glyphs (not emoji, so they can be coloured with Kanagawa).
-# If this list changes, ClaudeMenubar.swift (phaseByGlyph) has to change with it;
+# If this list changes, AgentMenubar.swift (phaseByGlyph) has to change with it;
 # claude-sesh.sh shows the glyph as is.
-# @claude_state doubles as an "unacknowledged work" mark: claude-menubar clears the
+# @agent_state doubles as an "unacknowledged work" mark: agent-menubar clears the
 # option once it sees you have looked at a finished session's pane.
 STATE_GLYPHS='󰓦󰛐󱎫'
 # The previous emoji state set: it may still be stuck in a window name, so it is
@@ -289,10 +309,10 @@ set_window_state() {
   esac
 
   if [[ -n "$glyph" ]]; then
-    tmux set-option -w -t "$TARGET" @claude_state "$glyph" 2>/dev/null || true
+    tmux set-option -w -t "$TARGET" @agent_state "$glyph" 2>/dev/null || true
   else
-    tmux set-option -uw -t "$TARGET" @claude_state 2>/dev/null || true
-    tmux set-option -uw -t "$TARGET" @claude_last 2>/dev/null || true
+    tmux set-option -uw -t "$TARGET" @agent_state 2>/dev/null || true
+    tmux set-option -uw -t "$TARGET" @agent_last 2>/dev/null || true
   fi
 
   local autoren
@@ -318,18 +338,22 @@ set_window_state() {
 }
 
 # Writes the last user-visible message to LAST_MSG, and to the window option when
-# tmux is around; claude-next.sh shows it in the preview and the menu bar in the
+# tmux is around; agent-next.sh shows it in the preview and the menu bar in the
 # row's description. With no transcript it is skipped quietly - the badge and glyph
 # flow works independently of it.
 LAST_MSG=""
 set_last_message() {
-  [[ -n "${TRANSCRIPT:-}" && -r "$TRANSCRIPT" ]] || return 0
-  local msg
-  msg=$(~/.config/tmux/claude-last-msg.sh "$TRANSCRIPT" 2>/dev/null) || return 0
+  local msg="${LAST_MSG_IN:-}"
+  # No transcript file outside Claude Code, so the caller may hand the text over
+  # in the payload instead.
+  if [[ -z "$msg" ]]; then
+    [[ -n "${TRANSCRIPT:-}" && -r "$TRANSCRIPT" ]] || return 0
+    msg=$(~/.config/tmux/claude-last-msg.sh "$TRANSCRIPT" 2>/dev/null) || return 0
+  fi
   [[ -n "$msg" ]] || return 0
   LAST_MSG="$msg"
   [[ -n "${TMUX:-}" ]] && command -v tmux &>/dev/null || return 0
-  tmux set-option -w -t "$TARGET" @claude_last "$msg" 2>/dev/null || true
+  tmux set-option -w -t "$TARGET" @agent_last "$msg" 2>/dev/null || true
 }
 
 # Shows the pre-rendered tmux_styled line, but only in the one case where it helps:
@@ -430,7 +454,7 @@ case "$EVENT" in
   Stop)
     set_window_state done
     set_last_message
-    write_state done "${LAST_MSG:-Claude finished}"
+    write_state done "${LAST_MSG:-$AGENT_LABEL finished}"
     notify "$(tmux_styled "$KW_GREEN" '' 'DONE' "finished in ${PROJECT}")"
     ;;
   Notification)

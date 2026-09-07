@@ -35,7 +35,7 @@ set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
 set -Ux EDITOR nvim # 'neovim/neovim' text editor
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
 set -Ux EZA_CONFIG_DIR "~/.config/eza/"
-# Kanagawa Wave; the tone values match claude-tmux-notify and the tmux status bar.
+# Kanagawa Wave; the tone values match agent-tmux-notify and the tmux status bar.
 set -gx FZF_DEFAULT_OPTS (printf '%s ' \
     '--layout=reverse' \
     '--info=hidden' \

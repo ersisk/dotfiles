@@ -28,8 +28,8 @@ while `⌃⌥` is entirely free — a collision-free namespace for Raycast scrip
 - **Set PATH by hand.** For the same reason `tmux`, `git` and `jq` are invisible;
   every script starts with `PATH="/opt/homebrew/bin:/usr/bin:/bin:..."`.
 - **The shared reader is not here.** The code that parses Claude session state is
-  in `~/.local/share/claude-menubar/claude-state.sh` — next to the app that
-  defines the contract, and `claude-next.sh` sources the same file.
+  in `~/.local/share/agent-menubar/agent-state.sh` — next to the app that
+  defines the contract, and `agent-next.sh` sources the same file.
 
 ## Claude session state
 
@@ -40,26 +40,26 @@ this directory depends on Raycast AI any more.
 
 `screen-ocr.sh` calls the Vision wrapper that `jira-to-branch` uses; the
 `huzef44/screenocr` extension is no longer needed. `sesh.sh` also delegates the
-jump to `claude-jump` — the aerospace race is solved there, it should not be
+jump to `agent-jump` — the aerospace race is solved there, it should not be
 solved twice.
 
 `keys-panel.sh` opens no new kitty window: the panel is already a tmux popup, and
 aerospace tiled the new window into whatever workspace you were on, which moved
 the panel visually. Instead it opens over the attached client with
-`display-popup -c` and delegates raising to `claude-jump`.
+`display-popup -c` and delegates raising to `agent-jump`.
 
-`claude-jump.sh` and `claude-sessions.sh` read the single-line JSON files under
-`~/.local/state/claude-menubar/sessions` — the contract is written down in the
+`agent-jump.sh` and `agent-sessions.sh` read the single-line JSON files under
+`~/.local/state/agent-menubar/sessions` — the contract is written down in the
 main README. They do not jump themselves, they delegate to
-`~/.local/bin/claude-jump`: from outside tmux, `switch-client` needs an attached
+`~/.local/bin/agent-jump`: from outside tmux, `switch-client` needs an attached
 client, and that script exists exactly for this.
 
-There is one reader: `~/.local/share/claude-menubar/claude-state.sh`. The tmux
+There is one reader: `~/.local/share/agent-menubar/agent-state.sh`. The tmux
 side used to carry its own copy, justified as "do not source a file on a
 keypress"; measured, there is no difference (2.2 ms for an empty bash, 2.0 ms
 with the source), and the copy is gone.
 
-Like prefix + j, `claude-jump.sh` only visits `waiting`, `done-bg` and `done`
+Like prefix + j, `agent-jump.sh` only visits `waiting`, `done-bg` and `done`
 sessions, and cycles them in the same order: pressing repeatedly advances instead
 of locking onto one pane. It does not visit `working` sessions — there is nothing
 to answer there.

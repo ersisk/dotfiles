@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # claude-last-msg — reduces the last user-visible message of a Claude session to one line.
 #
-# Called by claude-tmux-notify (in the Stop/Notification hook); the result is
-# written to the window's @claude_last option and shown by claude-next.sh in its
+# Called by agent-tmux-notify (in the Stop/Notification hook); the result is
+# written to the window's @agent_last option and shown by agent-next.sh in its
 # preview. With no transcript or no readable message it prints nothing.
 
 set -uo pipefail

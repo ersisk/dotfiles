@@ -17,8 +17,8 @@
 .config/bin/aws-ssh
 .config/bin/merged-branches
 
-# Compiled menubar binary - the source is under .local/share/claude-menubar/
-.local/bin/claude-menubar
+# Compiled menubar binary - the source is under .local/share/agent-menubar/
+.local/bin/agent-menubar
 
 # Compiled OCR binary - the source is under .local/share/screen-ocr/
 .local/bin/screen-ocr
@@ -28,6 +28,16 @@
 
 # jira-cli config - Jira server address and login e-mail, and this repo is public
 .config/.jira/
+
+# opencode: the LLM gateway key is read by opencode.json via {file:...} so the
+# config itself can be versioned; the key never can. The rest is runtime state
+# opencode writes into its own config dir, and the herdr plugin is herdr-managed.
+.config/opencode/llmroute.key
+.config/opencode/node_modules/
+.config/opencode/package.json
+.config/opencode/package-lock.json
+.config/opencode/opencode.jsonc
+.config/opencode/plugins/herdr-agent-state.js
 
 # Raycast's own state - API token and installed extensions, not kept in the repo
 .config/raycast/config.json

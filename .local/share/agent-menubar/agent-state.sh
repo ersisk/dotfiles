@@ -1,15 +1,15 @@
-# claude-state — reader for ~/.local/state/claude-menubar/sessions.
+# agent-state — reader for ~/.local/state/agent-menubar/sessions.
 #
 # The contract is written down in the main README. The reader lives here because the
-# app that defines it (ClaudeMenubar.swift) is in this directory too; three separate
+# app that defines it (AgentMenubar.swift) is in this directory too; three separate
 # callers source it:
-#   claude-next.sh                      (tmux, prefix + j)
-#   .config/raycast/scripts/claude-jump.sh
-#   .config/raycast/scripts/claude-sessions.sh
+#   agent-next.sh                      (tmux, prefix + j)
+#   .config/raycast/scripts/agent-jump.sh
+#   .config/raycast/scripts/agent-sessions.sh
 # The tmux side used to carry its own copy, justified as "do not source a file on a
 # keypress". Measured: no difference (empty bash 2.2 ms, with the source 2.0 ms).
 
-STATE_DIR="${CLAUDE_MENUBAR_STATE_DIR:-$HOME/.local/state/claude-menubar/sessions}"
+STATE_DIR="${AGENT_MENUBAR_STATE_DIR:-$HOME/.local/state/agent-menubar/sessions}"
 
 # The leading comma is required: a quote inside a field value must not produce a
 # false key match.

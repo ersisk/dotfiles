@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# claude-next — jump to the next Claude pane that wants attention.
+# agent-next — jump to the next Claude pane that wants attention.
 #
-# Bound to prefix + j. Cycles through the sessions claude-tmux-notify flagged as
+# Bound to prefix + j. Cycles through the sessions agent-tmux-notify flagged as
 # needing attention, in a stable global order, always landing on the one after the
 # current window so repeated presses advance.
 #
 # Working states (working, bg-running) are deliberately excluded — Claude is still
 # going, there is nothing to answer yet.
 #
-# Reads the claude-menubar state files rather than @claude_state window options: one
+# Reads the agent-menubar state files rather than @agent_state window options: one
 # file per session instead of one glyph per window, and each file already carries the
 # pane id, so neither the per-pane ps scan nor the show-option round trips are needed
 # any more.
@@ -22,7 +22,7 @@ set -uo pipefail
 
 # The reader is shared: the Raycast scripts parse the same JSON contract, and a
 # third copy buys nothing (measured: empty bash 2.2 ms, with the source 2.0 ms).
-. "${CLAUDE_STATE_LIB:-$HOME/.local/share/claude-menubar/claude-state.sh}"
+. "${AGENT_STATE_LIB:-$HOME/.local/share/agent-menubar/agent-state.sh}"
 
 # prio < 3: waiting / done-bg / done. A running session has nothing to answer.
 mapfile -t rows < <(emit_rows | awk -F'\t' '$1 < 3')

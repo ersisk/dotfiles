@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# @claude_state: the state glyph claude-tmux-notify writes onto the window.
+# @agent_state: the state glyph agent-tmux-notify writes onto the window.
 # When empty (no hook fired yet / idle) a neutral marker is shown.
 state_label() {
   case "$1" in
@@ -14,7 +14,7 @@ state_label() {
 }
 
 list_claude_panes() {
-  tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}|#{pane_tty}|#{pane_current_path}|#{@claude_state}' |
+  tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}|#{pane_tty}|#{pane_current_path}|#{@agent_state}' |
   while IFS='|' read -r target tty path state; do
     # is claude running on that pane's tty?
     if ps -o args= -t "${tty#/dev/}" 2>/dev/null | grep -q '[c]laude'; then
