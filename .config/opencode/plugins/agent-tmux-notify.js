@@ -11,7 +11,8 @@
 //   chat.message                          → UserPromptSubmit
 //   tool.execute.before                   → PreToolUse
 //   tool.execute.after  (bash only)       → PostToolUse
-//   permission.updated / session.error    → Notification
+//   permission.asked / question.asked     → Notification
+//   session.error                         → Notification
 //   session.idle                          → Stop
 //   session.deleted                       → SessionEnd
 //
@@ -188,12 +189,31 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
           return;
         }
 
-        case "permission.updated": {
+        // The two ways opencode blocks on the user. The notifier keys the detail
+        // line off the word "permission", so the prefix is load-bearing: without
+        // it the approval request loses to the last assistant message.
+        case "permission.asked": {
           const id = props.sessionID;
           if (!id) return;
+          const patterns = Array.isArray(props.patterns)
+            ? props.patterns.join(", ")
+            : "";
+          const what = [props.permission, patterns].filter(Boolean).join(" ");
           await send(
             payload("Notification", id, {
-              message: props.title || "permission requested",
+              message: `permission: ${what || "requested"}`,
+            }),
+          );
+          return;
+        }
+
+        case "question.asked": {
+          const id = props.sessionID;
+          if (!id) return;
+          const first = props.questions?.[0];
+          await send(
+            payload("Notification", id, {
+              message: first?.question || first?.header || "question",
             }),
           );
           return;
@@ -202,8 +222,14 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
         case "session.error": {
           const id = props.sessionID;
           if (!id || childSessions.has(id)) return;
+          // Errors also come from the throwaway models opencode runs on the side
+          // (session titles), and the pane says "needs input" either way — naming
+          // the failure is what tells the two apart.
+          const err = props.error;
           await send(
-            payload("Notification", id, { message: "session error" }),
+            payload("Notification", id, {
+              message: err?.data?.message || err?.name || "session error",
+            }),
           );
           return;
         }

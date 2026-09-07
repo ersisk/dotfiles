@@ -33,6 +33,7 @@
 # config itself can be versioned; the key never can. The rest is runtime state
 # opencode writes into its own config dir, and the herdr plugin is herdr-managed.
 .config/opencode/llmroute.key
+.config/opencode/github.key
 .config/opencode/node_modules/
 .config/opencode/package.json
 .config/opencode/package-lock.json

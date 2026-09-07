@@ -13,19 +13,28 @@ state_label() {
   esac
 }
 
-list_claude_panes() {
+# Process names that count as an agent, same list as AgentMenubar.swift's agentComms.
+# ps reports either a bare name or an absolute path, hence the basename.
+declare -A agent_by_tty
+while read -r tty comm; do
+  agent_by_tty["$tty"]="$comm"
+done < <(ps -ax -o tty=,comm= | awk '$1 != "??" { n = split($2, p, "/"); c = p[n]
+  if (c == "claude" || c == "opencode") print $1, c }')
+
+list_agent_panes() {
+  (( ${#agent_by_tty[@]} )) || return 0
   tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}|#{pane_tty}|#{pane_current_path}|#{@agent_state}' |
   while IFS='|' read -r target tty path state; do
-    # is claude running on that pane's tty?
-    if ps -o args= -t "${tty#/dev/}" 2>/dev/null | grep -q '[c]laude'; then
-      printf '%s\t %s\t %s\n' "$target" "$(state_label "$state")" "$(printf '%s' "$path" | sed "s|^$HOME|~|")"
-    fi
+    agent="${agent_by_tty[${tty#/dev/}]:-}"
+    [ -n "$agent" ] || continue
+    printf '%s\t %s\t %-9s %s\n' "$target" "$(state_label "$state")" "$agent" \
+      "$(printf '%s' "$path" | sed "s|^$HOME|~|")"
   done
 }
 
-panes=$(list_claude_panes)
+panes=$(list_agent_panes)
 if [ -z "$panes" ]; then
-  tmux display-message -d 1500 "#[fg=#16161d,bg=#7e9cd8,bold] 󰘦  CLAUDE #[fg=#7e9cd8,bg=#1f1f28,nobold]#[fg=#dcd7ba,bg=#1f1f28] no claude pane "
+  tmux display-message -d 1500 "#[fg=#16161d,bg=#7e9cd8,bold] 󰘦  AGENTS #[fg=#7e9cd8,bg=#1f1f28,nobold]#[fg=#dcd7ba,bg=#1f1f28] no agent pane "
   exit 0
 fi
 

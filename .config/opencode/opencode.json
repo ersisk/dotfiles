@@ -27,7 +27,10 @@
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/",
       "enabled": true,
-      "oauth": {}
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {file:~/.config/opencode/github.key}"
+      }
     },
     "atlassian": {
       "type": "remote",

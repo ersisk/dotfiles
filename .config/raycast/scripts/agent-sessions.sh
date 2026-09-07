@@ -19,8 +19,8 @@ if [[ -z "$rows" ]]; then
   exit 0
 fi
 
-printf '%s\n' "$rows" | while IFS=$'\t' read -r _ state project age sess win _ _ detail; do
-  printf '%s  %-13s %-16s %s:%s  (%s)\n' \
-    "$(state_icon "$state")" "$(state_label "$state")" "$project" "$sess" "$win" "$age"
+printf '%s\n' "$rows" | while IFS=$'\t' read -r _ state project agent age sess win _ _ detail; do
+  printf '%s  %-13s %-16s %-9s %s:%s  (%s)\n' \
+    "$(state_icon "$state")" "$(state_label "$state")" "$project" "$agent" "$sess" "$win" "$age"
   [[ -n "$detail" ]] && printf '      %s\n' "$detail"
 done

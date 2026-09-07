@@ -60,9 +60,10 @@ short_age() {
   else printf '%dd' $(( secs / 86400 )); fi
 }
 
-# prio \t state \t project \t age \t session \t window \t pane \t socket \t detail
+# prio \t state \t project \t agent \t age \t session \t window \t pane \t socket \t detail
+# detail stays last: it is the one field whose text this reader does not control.
 emit_rows() {
-  local f line state sess now
+  local f line state sess agent now
   now=$(date +%s)   # once, not per row
   for f in "$STATE_DIR"/*.json; do
     [[ -r "$f" ]] || continue
@@ -70,14 +71,17 @@ emit_rows() {
     state=$(json_field "$line" state)
     sess=$(json_field "$line" tmux_session)
     [[ -n "$sess" ]] || continue
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    # Files written before the field existed are Claude Code's.
+    agent=$(json_field "$line" agent)
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$(state_prio "$state")" "$state" \
       "$(json_field "$line" project)" \
+      "${agent:-claude}" \
       "$(short_age "$(json_num "$line" updated_at)" "$now")" \
       "$sess" \
       "$(json_field "$line" tmux_window)" \
       "$(json_field "$line" tmux_pane)" \
       "$(json_field "$line" tmux_socket)" \
       "$(json_field "$line" detail)"
-  done | sort -t"$(printf '\t')" -k1,1n -k5,5
+  done | sort -t"$(printf '\t')" -k1,1n -k6,6
 }

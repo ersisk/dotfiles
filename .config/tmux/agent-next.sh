@@ -34,7 +34,7 @@ fi
 
 targets=()
 for row in "${rows[@]}"; do
-  IFS=$'\t' read -r _ _ _ _ sess widx _ <<< "$row"
+  IFS=$'\t' read -r _ _ _ _ _ sess widx _ <<< "$row"
   targets+=("${sess}:${widx}")
 done
 
@@ -49,7 +49,7 @@ for i in "${!targets[@]}"; do
   fi
 done
 
-IFS=$'\t' read -r _ _ _ _ _ _ pane _ <<< "${rows[idx]}"
+IFS=$'\t' read -r _ _ _ _ _ _ _ pane _ <<< "${rows[idx]}"
 target="${targets[idx]}"
 
 tmux switch-client -t "${target%%:*}" 2>/dev/null

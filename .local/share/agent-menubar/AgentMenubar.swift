@@ -101,6 +101,7 @@ struct Session {
     let file: URL
     let phase: Phase
     let project: String
+    let agent: String
     let detail: String
     let tmuxSocket: String
     let tmuxSession: String
@@ -120,6 +121,8 @@ struct Session {
         self.file = file
         phase = Phase(rawValue: str("state")) ?? .idle
         project = str("project").isEmpty ? "unknown" : str("project")
+        // Files written before the field existed are Claude Code's.
+        agent = str("agent").isEmpty ? "claude" : str("agent")
         detail = str("detail")
         tmuxSocket = str("tmux_socket")
         tmuxSession = str("tmux_session")
@@ -315,18 +318,19 @@ final class Controller: NSObject, NSMenuDelegate {
     // single-file build); the ps name is what has to match here.
     private static let agentComms = ["claude", "opencode"]
 
-    // ttys running a live agent. tmux reports the pane's foreground command as the
+    // tty → the agent running on it. tmux reports the pane's foreground command as the
     // shell even while the agent is running, so the tty is the only cheap link
-    // between a state file and the process that wrote it. nil when ps fails.
-    private func agentTtys() -> Set<String>? {
+    // between a state file and the process that wrote it. The name rides along so a
+    // recovered entry can say which agent it belongs to. nil when ps fails.
+    private func agentTtys() -> [String: String]? {
         guard let out = capture("/bin/ps", ["-ax", "-o", "tty=,comm="]) else { return nil }
-        var ttys: Set<String> = []
+        var ttys: [String: String] = [:]
         for line in out.split(separator: "\n") {
             let fields = line.split(separator: " ", omittingEmptySubsequences: true)
             guard fields.count >= 2, fields[0] != "??" else { continue }
             let comm = fields[1]
-            if Self.agentComms.contains(where: { comm.hasSuffix($0) }) {
-                ttys.insert(String(fields[0]))
+            if let agent = Self.agentComms.first(where: { comm.hasSuffix($0) }) {
+                ttys[String(fields[0])] = agent
             }
         }
         return ttys
@@ -381,7 +385,7 @@ final class Controller: NSObject, NSMenuDelegate {
 
             if reason == nil, let ttys, !session.tmuxTty.isEmpty,
                now.timeIntervalSince(session.updatedAt) > agentGrace,
-               !ttys.contains(session.ttyName) {
+               ttys[session.ttyName] == nil {
                 reason = "no agent on \(session.ttyName)"
             }
 
@@ -442,11 +446,11 @@ final class Controller: NSObject, NSMenuDelegate {
     // coming. So a pane running an agent with no state file gets one written from what
     // tmux still knows. The hook stays the primary writer; this only fills gaps.
     //
-    private func recover(from probe: (socket: String, panes: [PaneInfo]), ttys: Set<String>) {
+    private func recover(from probe: (socket: String, panes: [PaneInfo]), ttys: [String: String]) {
         let claimed = Set(sessions.map(\.tmuxPane))
 
         for pane in probe.panes
-        where ttys.contains(pane.ttyName) && !claimed.contains(pane.id) {
+        where ttys[pane.ttyName] != nil && !claimed.contains(pane.id) {
             // No glyph means either nothing has happened yet or the entry was
             // acknowledged; either way idle is the honest answer.
             let phase = Self.phaseByGlyph[pane.glyph] ?? .idle
@@ -455,6 +459,7 @@ final class Controller: NSObject, NSMenuDelegate {
                 "session_id": "recovered-\(pane.ttyName)",
                 "state": phase.rawValue,
                 "project": (pane.path as NSString).lastPathComponent,
+                "agent": ttys[pane.ttyName] ?? "",
                 "cwd": pane.path,
                 "detail": pane.last,
                 "tmux_socket": probe.socket,
@@ -552,7 +557,7 @@ final class Controller: NSObject, NSMenuDelegate {
         item.button?.toolTip = rows.isEmpty
             ? "Coding agents — no sessions"
             : rows
-                .map { "\($0.project) — \($0.phase.label), \(shortAge($0.updatedAt))" }
+                .map { "\($0.project) · \($0.agent) — \($0.phase.label), \(shortAge($0.updatedAt))" }
                 .joined(separator: "\n")
     }
 
@@ -607,7 +612,8 @@ final class Controller: NSObject, NSMenuDelegate {
                 .foregroundColor: NSColor.labelColor,
             ]
         )
-        var context = session.context.isEmpty ? "" : "\(session.context) · "
+        var context = "\(session.agent) · "
+        if !session.context.isEmpty { context += "\(session.context) · " }
         context += session.phase.label
         if !session.isRecovered { context += " · \(shortAge(session.updatedAt))" }
         title.append(NSAttributedString(
