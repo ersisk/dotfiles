@@ -11,6 +11,7 @@ the files where they are; unlike the AI Commands, these really are versioned.
 | Screen OCR | `⌃⌥O` | Select a screen region, copy the text to the clipboard (macOS Vision) |
 | Sesh Session | `⌃⌥S` | Raise kitty and switch to the matching sesh session |
 | Shortcut Panel | `⌃⌥/` | Raise kitty, open the shortcut panel in a tmux popup |
+| Zen Window | `⌃⌥Z` | Open a new Zen window — normal or private — on the chosen aerospace workspace and Zen space |
 
 **The table above is also data:** `keys-panel.py` reads its Raycast rows from
 here. Raycast script hotkeys live in Raycast's own encrypted state, and this
@@ -36,6 +37,42 @@ dismisses an open menu.
 - **The shared reader is not here.** The code that parses Claude session state is
   in `~/.local/share/agent-menubar/agent-state.sh` — next to the app that
   defines the contract, and `agent-next.sh` sources the same file.
+
+## Zen Window
+
+`zen-window.sh` runs `Zen.app/Contents/MacOS/zen --new-window`: with Zen already up
+the flag is forwarded to the live instance, while `open -n` would start a second one
+and hit the profile lock. The workspace cannot be passed to Zen, so the window is
+moved afterwards — and `on-window-detected` pins every Zen window to `B`, which is
+why the script polls for the new window id instead of sleeping, then verifies the
+move landed and retries: the callback can still be in flight when the window first
+shows up in `list-windows`.
+
+The second argument picks the **Zen** space, and there is no clean way in: no CLI
+flag, no IPC short of `--marionette`, and the Spaces menu only cycles forward and
+back. What Zen does have is `cmd_zenWorkspaceSwitch1..10`, unbound by default and
+bound here to `⌘⌥1..0` in the profile's `zen-keyboard-shortcuts.json` — free inside
+Zen (only `⌘0`-`⌘9` are taken, by tab selection) and free globally, since aerospace
+binds no `cmd-` chord. Each browser window reads that file at startup and applies it
+to itself, so the window the script just opened has the bindings even though the
+windows already open do not; after focusing it, `osascript` sends the chord. `key
+code` rather than `keystroke`, so a layout where `⌥1` types some other character
+still matches. Sending UI events needs Raycast to hold Accessibility permission.
+
+`Private` sits in the same dropdown rather than in a third one, because a private
+window has no spaces to choose from — `gZenWorkspaces` is disabled there, so the two
+choices are mutually exclusive by construction. It opens through `--private-window`
+and skips the chord; everything before that, the move and the raise, is shared.
+
+Two drift traps come with it. The space is addressed **by position in the sidebar**,
+and the argument2 dropdown spells the names out, so adding, renaming or reordering a
+space means editing that dropdown. And Zen rewrites `zen-keyboard-shortcuts.json`
+from its own in-memory list whenever shortcuts change, so a binding can go missing —
+the script then opens the window on whatever space was last active and says nothing.
+Rebind from Zen's own Settings → Keyboard shortcuts (*Switch to space N*), which
+applies to every window at once. The space list itself lives in
+`zen-sessions.jsonlz4`, not in `places.sqlite` — that table is only read once, for
+migration, and its names go stale.
 
 ## Claude session state
 
