@@ -18,7 +18,13 @@ table is the only file-based record — change a hotkey on the Raycast side and
 update this too, or the panel shows the wrong key.
 
 The `⌃⌥` block was chosen deliberately: aerospace has filled `⌥` and kitty `⌘`,
-while `⌃⌥` is entirely free — a collision-free namespace for Raycast scripts.
+while `⌃⌥` is entirely free — a collision-free namespace for Raycast scripts. Free of
+*other apps*, that is: Raycast's own AI commands and quicklinks live in the same block
+and are not versioned here, so a key can be taken without appearing in the table
+above. `⌃⌥A` is one of those, which is why the `agent-menubar` hotkey
+(`hotKeyModifiers` in `AgentMenubar.swift`) sits in Scoot's `⌃⇧` block instead —
+Raycast's event tap sees the key before a Carbon hotkey does, and the window it raises
+dismisses an open menu.
 
 ## Writing a script in this directory
 

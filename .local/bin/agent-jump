@@ -38,6 +38,21 @@ command -v tmux &>/dev/null || exit 0
 
 tmux() { command tmux -S "$socket" "$@"; }
 
+# Closing or moving a window renumbers the ones after it, and the recorded index is as
+# old as the last hook event — a stale one makes select-window fail and select-pane
+# then only rearranges a window that is not on screen, which looks like the jump did
+# nothing. The pane id survives renumbering and even a move to another session, so the
+# coordinates are re-derived from it; the recorded pair stays as the fallback for a
+# pane that is already gone. window_index leads because it is numeric: the split on
+# the first '|' cannot be confused by a session name.
+if [[ -n "$pane" ]]; then
+  live=$(tmux display-message -p -t "$pane" '#{window_index}|#{session_name}' 2>/dev/null)
+  if [[ "$live" == *"|"* ]]; then
+    window="${live%%|*}"
+    session="${live#*|}"
+  fi
+fi
+
 # A client already on the target session is the natural one to move, but the usual
 # case is jumping to a session nobody is attached to — then any attached client
 # will do. Without a client the select-* calls would only rearrange a session that

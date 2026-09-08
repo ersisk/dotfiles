@@ -275,7 +275,12 @@ commands in `.config/raycast/scripts`.
 - **One file per agent session**, single-line JSON, always replaced by writing a
   temp file and renaming it. The rename is what wakes the menu bar app's directory
   watcher — an in-place rewrite leaves the icon stale. Single line so the reader can
-  parse it with bash alone, without spawning `jq` on a keypress.
+  parse it with bash alone, without spawning `jq` on a keypress. **The pane id is the
+  only durable coordinate in it:** tmux renumbers window indices when a window is
+  closed or moved, so the recorded `session:window` is a hint as old as the last hook
+  event and `agent-jump` re-derives the pair from the pane before switching. On a stale
+  index `select-window` fails and `select-pane` merely rearranges an off-screen window
+  — a jump that looks like it did nothing.
 - **One reader, `agent-state.sh`**, next to the app that defines the contract.
   `agent-next.sh` and both Raycast scripts source it. The tmux side used to carry
   its own copy to avoid sourcing a file on a keypress; measured, that costs nothing
@@ -309,7 +314,11 @@ commands in `.config/raycast/scripts`.
   on screen even when kitty is not focused, and it tracks every session including the
   finished and idle ones. `prefix + j` is the keyboard one, but it only exists once you
   are already in tmux. Raycast (`⌃⌥J`) is the one that works from Slack or a browser;
-  it reuses `agent-jump` rather than reimplementing the switch. The tmux status bar
+  it reuses `agent-jump` rather than reimplementing the switch. `⌃⇧A` opens the menu
+  bar's own menu from anywhere and numbers its rows, so a digit picks a session — the
+  only surface that reaches a *working* or *idle* one from outside tmux, since both
+  jump keys deliberately visit nothing but the sessions that want an answer. The tmux
+  status bar
   used to carry a fourth copy of the same signal; it was removed rather than kept in
   sync.
 - **launchd gives the app no UTF-8 locale**, and tmux then mangles its own output:

@@ -10,6 +10,7 @@
 // Build: .local/share/agent-menubar/build.sh
 
 import AppKit
+import Carbon.HIToolbox
 
 // MARK: - Palette
 
@@ -147,6 +148,18 @@ struct Session {
     }
 }
 
+// MARK: - Global hotkey
+
+// ⌃⇧A opens the menu wherever you are — the mouse-free twin of clicking the icon,
+// and the only surface that reaches an idle or working session from outside tmux.
+// Not in the ⌃⌥ block: Raycast holds ⌃⌥A too, and its event tap sees the key first,
+// so the window it raises dismissed this menu the instant it opened. ⌃⇧ is Scoot's
+// block and it only takes J/K/L.
+// Carbon's hotkey API is used because it needs no Accessibility grant, unlike an
+// NSEvent global monitor.
+let hotKeyCode = UInt32(kVK_ANSI_A)
+let hotKeyModifiers = UInt32(controlKey | shiftKey)
+
 // MARK: - Controller
 
 final class Controller: NSObject, NSMenuDelegate {
@@ -159,6 +172,8 @@ final class Controller: NSObject, NSMenuDelegate {
     private var sessions: [Session] = []
     private var watcher: DispatchSourceFileSystemObject?
     private var pending: DispatchWorkItem?
+    private var hotKey: EventHotKeyRef?
+    private var menuOpenedAt = Date()
 
     // Fallback only, for entries whose tmux server cannot be reached at all.
     private let maxAge: TimeInterval = 24 * 3600
@@ -186,6 +201,7 @@ final class Controller: NSObject, NSMenuDelegate {
         reload()
         prune()
         startWatching()
+        registerHotKey()
 
         // reload first: prune walks the sessions list, so pruning ahead of it would
         // always be judging the previous tick's snapshot.
@@ -486,7 +502,7 @@ final class Controller: NSObject, NSMenuDelegate {
 
     // launchd captures stderr to the path in the plist; a background app that drops
     // and re-adds entries on its own needs to be able to say why.
-    private func log(_ message: String) {
+    func log(_ message: String) {
         FileHandle.standardError.write(Data("agent-menubar: \(message)\n".utf8))
     }
 
@@ -561,9 +577,44 @@ final class Controller: NSObject, NSMenuDelegate {
                 .joined(separator: "\n")
     }
 
+    // MARK: Hotkey
+
+    private func registerHotKey() {
+        var spec = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+        // A C callback captures nothing, so the controller travels as userData.
+        InstallEventHandler(GetApplicationEventTarget(), { _, _, context in
+            guard let context else { return OSStatus(eventNotHandledErr) }
+            let controller = Unmanaged<Controller>.fromOpaque(context).takeUnretainedValue()
+            // Opening the menu starts a nested tracking loop; let the Carbon handler
+            // return first instead of blocking inside it.
+            DispatchQueue.main.async { controller.log("hotkey"); controller.openMenu() }
+            return noErr
+        }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), nil)
+
+        let id = EventHotKeyID(signature: OSType(0x41_47_4e_54), id: 1) // 'AGNT'
+        let status = RegisterEventHotKey(
+            hotKeyCode, hotKeyModifiers, id, GetApplicationEventTarget(), 0, &hotKey
+        )
+        // A key another app already holds fails silently otherwise: the shortcut is
+        // simply dead, with nothing anywhere saying why.
+        if status != noErr { log("hotkey unavailable (status \(status))") }
+    }
+
+    // performClick, not menu.popUp: a status item menu opened through its own button
+    // takes keyboard control without the app having to activate, so escaping the menu
+    // leaves focus where it was.
+    private func openMenu() {
+        item.button?.performClick(nil)
+    }
+
     // MARK: Menu
 
     func menuNeedsUpdate(_ menu: NSMenu) {
+        log("menu open")
+        menuOpenedAt = Date()
         reload()
         menu.removeAllItems()
 
@@ -573,7 +624,7 @@ final class Controller: NSObject, NSMenuDelegate {
             empty.isEnabled = false
             menu.addItem(empty)
         } else {
-            for session in rows { menu.addItem(row(for: session)) }
+            for (index, session) in rows.enumerated() { menu.addItem(row(for: session, index: index)) }
         }
 
         menu.addItem(.separator())
@@ -589,7 +640,11 @@ final class Controller: NSObject, NSMenuDelegate {
         menu.addItem(quit)
     }
 
-    private func row(for session: Session) -> NSMenuItem {
+    func menuDidClose(_ menu: NSMenu) {
+        log("menu closed after \(Int(Date().timeIntervalSince(menuOpenedAt) * 1000))ms")
+    }
+
+    private func row(for session: Session, index: Int) -> NSMenuItem {
         let row = NSMenuItem(title: session.project, action: nil, keyEquivalent: "")
         let config = NSImage.SymbolConfiguration(pointSize: 12, weight: .medium)
         let accent = tint(session)
@@ -639,6 +694,13 @@ final class Controller: NSObject, NSMenuDelegate {
             row.target = self
             row.representedObject = session
             row.isEnabled = true
+            // Numbered by position, so ⌃⌥A then a digit is the whole jump. The digits
+            // stay aligned with what is on screen: a row nobody can jump to burns its
+            // own number rather than shifting the ones below it.
+            if index < 9 {
+                row.keyEquivalent = String(index + 1)
+                row.keyEquivalentModifierMask = []
+            }
         } else {
             row.isEnabled = false
         }
@@ -654,8 +716,9 @@ final class Controller: NSObject, NSMenuDelegate {
         proc.executableURL = jumpTool
         proc.arguments = [session.tmuxSocket, session.tmuxSession, session.tmuxWindow, session.tmuxPane]
         proc.standardOutput = FileHandle.nullDevice
-        proc.standardError = FileHandle.nullDevice
-        try? proc.run()
+        log("jump argv=\(proc.arguments ?? [])")
+        proc.terminationHandler = { [weak self] p in self?.log("jump exit=\(p.terminationStatus)") }
+        do { try proc.run() } catch { log("jump spawn failed: \(error)") }
     }
 
     @objc private func clearFinished() {
