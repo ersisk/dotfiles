@@ -132,7 +132,7 @@ alt-shift-0 = 'resize smart +50'
 # ctrl-9 = 'workspace 9'
 alt-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
 alt-b = 'workspace B' # Browser
-alt-c = 'workspace C' # Mail (apple mail, thunderbird)
+alt-c = 'workspace C' # Terminal (kitty, wezterm)
 alt-d = 'workspace D' # Database (Beekeeper studio)
 # alt-e -> used as focus-monitor (below)
 # alt-f = 'workspace F'
@@ -145,10 +145,12 @@ alt-p = 'workspace P' # Postman and Bruno
 # alt-q = 'workspace Q'
 # alt-r = 'workspace R'
 # alt-s = 'workspace S' # Slack
-alt-t = 'workspace T' # Terminal (currently wezterm)
+# alt-t: left unbound on purpose. alt is AltGr on Turkish-Q and alt-t is the
+# only way to type the lira sign.
+# alt-t = 'workspace T'
 # alt-u = 'workspace U'
 # alt-v = 'workspace V'
-# alt-w = 'workspace W'
+alt-w = 'workspace W' # Mail (apple mail, thunderbird)
 alt-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
 # alt-y = 'workspace Y'
 alt-z = 'workspace Z' # Slack
@@ -178,10 +180,10 @@ alt-shift-p = 'move-node-to-workspace P'
 # alt-shift-q = 'move-node-to-workspace Q'
 # alt-shift-r = 'move-node-to-workspace R'
 # alt-shift-s = 'move-node-to-workspace S'
-alt-shift-t = 'move-node-to-workspace T'
+# alt-shift-t = 'move-node-to-workspace T'
 # alt-shift-u = 'move-node-to-workspace U'
 # alt-shift-v = 'move-node-to-workspace V'
-# alt-shift-w = 'move-node-to-workspace W'
+alt-shift-w = 'move-node-to-workspace W'
 alt-shift-x = 'move-node-to-workspace X'
 # alt-shift-y = 'move-node-to-workspace Y'
 alt-shift-z = 'move-node-to-workspace Z'
@@ -189,21 +191,22 @@ alt-shift-z = 'move-node-to-workspace Z'
 ctrl-left = 'workspace prev'
 ctrl-right = 'workspace next'
 
-# Q instead of Tab: with a modifier held, Logi POP Keys drops ~25% of Tab presses
+# " instead of Tab: with a modifier held, Logi POP Keys drops ~25% of Tab presses
 # entirely (no event is born at the HID layer, regardless of transport).
+# sectionSign is keycode 10, left of Z, which is " on Turkish-Q. ctrl, not cmd or
+# alt: kitty maps cmd-" to the tmux split, and alt is AltGr on this layout.
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-alt-w = 'workspace-back-and-forth'
-# See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
-# Temporary move for force-assigned workspaces: on reload / monitor reconnect it
-# returns to the monitor it is assigned to.
-alt-shift-w = 'move-workspace-to-monitor --wrap-around next'
-
-# The window-level counterpart of alt-w: toggles between the last two windows.
+ctrl-sectionSign = 'workspace-back-and-forth'
+# The window-level counterpart of ctrl-": toggles between the last two windows.
 alt-o = 'focus-back-and-forth'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
 alt-e = 'focus-monitor --wrap-around next'
 alt-shift-e = 'move-node-to-monitor --wrap-around next'
+# See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+# Temporary move for force-assigned workspaces: on reload / monitor reconnect it
+# returns to the monitor it is assigned to.
+ctrl-shift-e = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 ctrl-alt-0 = 'mode service'
@@ -241,17 +244,17 @@ alt-shift-f = 'fullscreen'
 # So wide/reference content goes outside, heavy reading and writing on the Retina.
 [workspace-to-monitor-force-assignment]
 A = ['secondary', 'main']
-C = ['secondary', 'main']
 D = ['secondary', 'main']
 I = ['secondary', 'main']
 M = ['secondary', 'main']
+W = ['secondary', 'main']
 Z = ['secondary', 'main']
 
 B = 'built-in'
+C = 'built-in'
 G = 'built-in'
 N = 'built-in'
 P = 'built-in'
-T = 'built-in'
 
 # ==============================================================================
 # FLOATING WINDOWS
@@ -321,17 +324,17 @@ run = "move-node-to-workspace A"
 if.app-id = 'com.brave.Browser'
 run = "move-node-to-workspace A"
 
-# --- TERMINALS (WORKSPACES: T) ---
+# --- TERMINALS (WORKSPACE: C) ---
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace C"
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace C"
 
-# --- COMMUNICATION & EMAIL (WORKSPACES: Z, C) ---
+# --- COMMUNICATION & EMAIL (WORKSPACES: Z, W) ---
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -339,12 +342,12 @@ run = ["move-node-to-workspace Z", "layout floating"]
 
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
-run = ["move-node-to-workspace C", "layout floating"]
+run = ["move-node-to-workspace W", "layout floating"]
 
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.thunderbird'
-run = ["move-node-to-workspace C", "layout floating"]
+run = ["move-node-to-workspace W", "layout floating"]
 
 # --- MESSAGING & MEDIA (WORKSPACE: M) ---
 
