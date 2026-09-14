@@ -158,7 +158,7 @@ struct Session {
 // Carbon's hotkey API is used because it needs no Accessibility grant, unlike an
 // NSEvent global monitor.
 let hotKeyCode = UInt32(kVK_ANSI_A)
-let hotKeyModifiers = UInt32(controlKey | shiftKey)
+let hotKeyModifiers = UInt32(controlKey | optionKey)
 
 // MARK: - Controller
 
@@ -486,7 +486,11 @@ final class Controller: NSObject, NSMenuDelegate {
                 "recovered": true,
                 "updated_at": Date().timeIntervalSince1970.rounded(),
             ]
-            guard let data = try? JSONSerialization.data(withJSONObject: payload) else { continue }
+            // Without .withoutEscapingSlashes every path lands as \\/private\\/tmp, which the
+            // bash reader would hand to tmux -S verbatim.
+            guard let data = try? JSONSerialization.data(
+                withJSONObject: payload, options: [.withoutEscapingSlashes]
+            ) else { continue }
 
             let target = stateDir.appendingPathComponent("recovered-\(pane.ttyName).json")
             let tmp = target.appendingPathExtension("tmp")

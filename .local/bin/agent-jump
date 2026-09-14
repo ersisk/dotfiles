@@ -9,6 +9,10 @@
 # switch-client needs an explicit client: without $TMUX there is no current one.
 set -uo pipefail
 
+# GUI callers (Raycast, the menubar app) can arrive with an unusable LC_ALL. In the C
+# locale tmux mangles the emoji in session names and switch-client finds nothing.
+export LC_ALL=en_US.UTF-8
+
 socket="${1:-}"
 session="${2:-}"
 window="${3:-}"

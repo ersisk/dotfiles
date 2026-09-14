@@ -25,7 +25,7 @@ set -uo pipefail
 . "${AGENT_STATE_LIB:-$HOME/.local/share/agent-menubar/agent-state.sh}"
 
 # prio < 3: waiting / done-bg / done. A running session has nothing to answer.
-mapfile -t rows < <(emit_rows | awk -F'\t' '$1 < 3')
+mapfile -t rows < <(emit_rows | awk -F"$AGENT_ROW_SEP" '$1 < 3')
 
 if (( ${#rows[@]} == 0 )); then
   tmux display-message -d 1500 "#[fg=#16161d,bg=#7e9cd8,bold] 󰘦  CLAUDE #[fg=#7e9cd8,bg=#1f1f28,nobold]#[fg=#dcd7ba,bg=#1f1f28] no pane waiting "
@@ -34,7 +34,7 @@ fi
 
 targets=()
 for row in "${rows[@]}"; do
-  IFS=$'\t' read -r _ _ _ _ _ sess widx _ <<< "$row"
+  IFS="$AGENT_ROW_SEP" read -r _ _ _ _ _ sess widx _ <<< "$row"
   targets+=("${sess}:${widx}")
 done
 
@@ -49,7 +49,7 @@ for i in "${!targets[@]}"; do
   fi
 done
 
-IFS=$'\t' read -r _ _ _ _ _ _ _ pane _ <<< "${rows[idx]}"
+IFS="$AGENT_ROW_SEP" read -r _ _ _ _ _ _ _ pane _ <<< "${rows[idx]}"
 target="${targets[idx]}"
 
 tmux switch-client -t "${target%%:*}" 2>/dev/null

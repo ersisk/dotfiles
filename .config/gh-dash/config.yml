@@ -68,6 +68,14 @@ keybindings:
           # The xargs placeholder is % — so {} does not clash with the gh-dash template.
           command: >-
             tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+        - key: O
+          name: opencode review
+          # --agent build bypasses the orchestrator default_agent, which would delegate
+          # the review to the reviewer subagent (no bash/gh access) instead of running it.
+          # opencode's skill tool takes only a name, so $ARGUMENTS is never substituted —
+          # the PR number has to be in the prompt itself.
+          command: >-
+            tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "OC-{{.PrNumber}}" "opencode --agent build --auto --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: D
           name: codediff in nvim
           command: >-

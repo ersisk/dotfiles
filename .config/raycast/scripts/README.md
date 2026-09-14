@@ -7,7 +7,6 @@ the files where they are; unlike the AI Commands, these really are versioned.
 | Command | Hotkey | What it does |
 | --- | --- | --- |
 | Jump to Claude | `⌃⌥J` | Raises kitty on the Claude session that wants attention |
-| Claude Sessions | `⌃⌥K` | Lists every running session, most urgent first |
 | Screen OCR | `⌃⌥O` | Select a screen region, copy the text to the clipboard (macOS Vision) |
 | Sesh Session | `⌃⌥S` | Raise kitty and switch to the matching sesh session |
 | Shortcut Panel | `⌃⌥/` | Raise kitty, open the shortcut panel in a tmux popup |
@@ -22,10 +21,11 @@ The `⌃⌥` block was chosen deliberately: aerospace has filled `⌥` and kitty
 while `⌃⌥` is entirely free — a collision-free namespace for Raycast scripts. Free of
 *other apps*, that is: Raycast's own AI commands and quicklinks live in the same block
 and are not versioned here, so a key can be taken without appearing in the table
-above. `⌃⌥A` is one of those, which is why the `agent-menubar` hotkey
-(`hotKeyModifiers` in `AgentMenubar.swift`) sits in Scoot's `⌃⇧` block instead —
-Raycast's event tap sees the key before a Carbon hotkey does, and the window it raises
-dismisses an open menu.
+above. `⌃⌥A` was one of those, which is why the `agent-menubar` hotkey
+(`hotKeyModifiers` in `AgentMenubar.swift`) sat in Scoot's `⌃⇧` block; that Raycast
+command is gone and the hotkey moved onto `⌃⌥A`. If a Raycast command ever claims the
+key again the menu bar loses it without a word: Raycast's event tap sees the key before
+a Carbon hotkey does, and the window it raises dismisses an open menu.
 
 ## Writing a script in this directory
 
@@ -34,6 +34,11 @@ dismisses an open menu.
   macOS's 3.2. Target 3.2: no `mapfile`, no associative arrays.
 - **Set PATH by hand.** For the same reason `tmux`, `git` and `jq` are invisible;
   every script starts with `PATH="/opt/homebrew/bin:/usr/bin:/bin:..."`.
+- **Set the locale by hand too.** Raycast 2.2 exports `LC_ALL` as a BCP-47 tag
+  (`en-TR-u-ca-gregory-...`), which `setlocale` rejects, so tmux runs in C and
+  prints `__ Main` for `💼 Main` — every `-t` lookup on a session name then
+  misses, silently. Scripts that read a session name out of tmux set
+  `LC_ALL=en_US.UTF-8` first.
 - **The shared reader is not here.** The code that parses Claude session state is
   in `~/.local/share/agent-menubar/agent-state.sh` — next to the app that
   defines the contract, and `agent-next.sh` sources the same file.
@@ -91,9 +96,9 @@ aerospace tiled the new window into whatever workspace you were on, which moved
 the panel visually. Instead it opens over the attached client with
 `display-popup -c` and delegates raising to `agent-jump`.
 
-`agent-jump.sh` and `agent-sessions.sh` read the single-line JSON files under
+`agent-jump.sh` reads the single-line JSON files under
 `~/.local/state/agent-menubar/sessions` — the contract is written down in the
-main README. They do not jump themselves, they delegate to
+main README. It does not jump itself, it delegates to
 `~/.local/bin/agent-jump`: from outside tmux, `switch-client` needs an attached
 client, and that script exists exactly for this.
 

@@ -1,25 +1,30 @@
 # agent-state — reader for ~/.local/state/agent-menubar/sessions.
 #
 # The contract is written down in the main README. The reader lives here because the
-# app that defines it (AgentMenubar.swift) is in this directory too; three separate
+# app that defines it (AgentMenubar.swift) is in this directory too; two separate
 # callers source it:
 #   agent-next.sh                      (tmux, prefix + j)
 #   .config/raycast/scripts/agent-jump.sh
-#   .config/raycast/scripts/agent-sessions.sh
 # The tmux side used to carry its own copy, justified as "do not source a file on a
 # keypress". Measured: no difference (empty bash 2.2 ms, with the source 2.0 ms).
 
 STATE_DIR="${AGENT_MENUBAR_STATE_DIR:-$HOME/.local/state/agent-menubar/sessions}"
 
-# The leading comma is required: a quote inside a field value must not produce a
-# false key match.
+# Field separator for emit_rows. Not a tab: bash treats a tab as IFS whitespace, so a
+# run of them collapses into one and a single empty field shifts every field after it.
+# agent-tmux-notify hit the same trap and settled on 0x1F for the same reason.
+AGENT_ROW_SEP=$(printf '\037')
+
+# The leading { or , is required: a quote inside a field value must not produce a
+# false key match. Both, not only the comma: the app writes its recovered entries from
+# an unordered Swift dictionary, so any key can turn up first in the object.
 json_field() {
-  local re=",\"$2\":\"([^\"]*)\""
+  local re="[{,]\"$2\":\"([^\"]*)\""
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
 }
 
 json_num() {
-  local re=",\"$2\":([0-9]+)"
+  local re="[{,]\"$2\":([0-9]+)"
   [[ "$1" =~ $re ]] && printf '%s' "${BASH_REMATCH[1]}"
 }
 
@@ -60,7 +65,8 @@ short_age() {
   else printf '%dd' $(( secs / 86400 )); fi
 }
 
-# prio \t state \t project \t agent \t age \t session \t window \t pane \t socket \t detail
+# prio, state, project, agent, age, session, window, pane, socket, detail — joined
+# with $AGENT_ROW_SEP.
 # detail stays last: it is the one field whose text this reader does not control.
 emit_rows() {
   local f line state sess agent now
@@ -73,7 +79,7 @@ emit_rows() {
     [[ -n "$sess" ]] || continue
     # Files written before the field existed are Claude Code's.
     agent=$(json_field "$line" agent)
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    printf "%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s${AGENT_ROW_SEP}%s\n" \
       "$(state_prio "$state")" "$state" \
       "$(json_field "$line" project)" \
       "${agent:-claude}" \
@@ -83,5 +89,5 @@ emit_rows() {
       "$(json_field "$line" tmux_pane)" \
       "$(json_field "$line" tmux_socket)" \
       "$(json_field "$line" detail)"
-  done | sort -t"$(printf '\t')" -k1,1n -k6,6
+  done | sort -t"$AGENT_ROW_SEP" -k1,1n -k6,6
 }

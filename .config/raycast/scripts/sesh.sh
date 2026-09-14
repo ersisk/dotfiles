@@ -9,6 +9,9 @@
 # @raycast.argument1 { "type": "text", "placeholder": "session", "optional": true }
 
 export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# Raycast hands scripts a BCP-47 LC_ALL that setlocale rejects; tmux then runs in C
+# and mangles the emoji in session names, so client_last_session comes back unusable.
+export LC_ALL=en_US.UTF-8
 set -uo pipefail
 
 SOCKET="${TMUX_SOCKET:-/tmp/tmux-$(id -u)/default}"
