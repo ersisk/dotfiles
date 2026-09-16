@@ -1,22 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "llmroute": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "llm-route",
-      "options": {
-        "baseURL": "https://llmgateway.teknasyon.com/v1",
-        "apiKey": "{file:~/.config/opencode/llmroute.key}"
-      },
-      "models": {
-        "Orchestrator": {},
-        "Explorer": {},
-        "Planner": {},
-        "Executer": {},
-        "Reviewer": {}
-      }
-    }
-  },
+  "instructions": ["AGENTS.md", "CLAUDE.md"],
+  "default_agent": "orchestrator",
+  "lsp": true,
   "mcp": {
     "qmd": {
       "type": "local",
@@ -38,5 +24,11 @@
       "enabled": true,
       "oauth": {}
     }
-  }
+  },
+  "plugin": [
+    [
+      "@llmgateway/opencode-llmgateway@0.1.0",
+      { "apiKey": "{file:~/.config/opencode/llmroute.key}" }
+    ]
+  ]
 }

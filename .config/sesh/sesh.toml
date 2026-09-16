@@ -36,7 +36,7 @@ path = "~/workspace"
 name = "📥 Downloads"
 alias = "dl"
 path = "~/Downloads"
-startup_command = "yazi"
+startup_command = "exec yazi"
 
 [[session]]
 name = "🧩 Dotfiles"
@@ -50,7 +50,7 @@ name = "🐳 LazyDocker"
 alias = "lzd"
 alias_auto_connect = true
 path = "~/Library/Application Support/lazydocker"
-startup_command = "lazydocker"
+startup_command = "exec lazydocker"
 preview_command = "bat --language=yaml --style=snip --color=always ~/Library/Application Support/lazydocker/config.yml"
 
 [[session]]
@@ -58,14 +58,14 @@ name = "🗄 LazySQL"
 alias = "lsq"
 alias_auto_connect = true
 path = "~/Library/Application Support/lazysql"
-startup_command = "lazysql"
+startup_command = "exec lazysql"
 preview_command = "bat --language=bash --style=snip --color=always ~/Library/Application Support/lazysql/config.toml"
 
 [[session]]
 name = "📰 Rss Feeds"
 alias = "rss"
 path = "~/.newsboat"
-startup_command = "newsboat -r"
+startup_command = "exec newsboat -r"
 preview_command = "~/.config/sesh/rss-preview.sh"
 
 
