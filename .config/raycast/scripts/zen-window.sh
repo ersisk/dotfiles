@@ -4,7 +4,7 @@
 # @raycast.title Zen Window
 # @raycast.mode compact
 # @raycast.packageName Tools
-# @raycast.icon 🌐
+# @raycast.icon images/zen.png
 # @raycast.description Open a new Zen window on the chosen aerospace workspace and Zen space.
 # @raycast.argument1 { "type": "dropdown", "placeholder": "workspace", "data": [{"title": "Current", "value": "focused"}, {"title": "A · Browsers", "value": "A"}, {"title": "B · Zen", "value": "B"}, {"title": "C · Terminal", "value": "C"}, {"title": "D · Database", "value": "D"}, {"title": "G · Passwords", "value": "G"}, {"title": "I · IDE", "value": "I"}, {"title": "M · Messaging", "value": "M"}, {"title": "N · Notes", "value": "N"}, {"title": "P · API", "value": "P"}, {"title": "W · Mail", "value": "W"}, {"title": "X · Scratch", "value": "X"}, {"title": "Z · Slack", "value": "Z"}] }
 # @raycast.argument2 { "type": "dropdown", "placeholder": "space", "optional": true, "data": [{"title": "Current", "value": "current"}, {"title": "1 · Genel", "value": "1"}, {"title": "2 · Personel", "value": "2"}, {"title": "Private", "value": "private"}] }
