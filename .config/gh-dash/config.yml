@@ -62,16 +62,18 @@ keybindings:
     prs:
         - key: C
           name: code review
+          # gh-repo-path: {{.RepoPath}} would need a repoPaths map of org and repo
+          # names in this file, and this repo is public.
           # -d: keep the focus here so several reviews can be started back to back.
           # remain-on-exit failed: a window opened with -d that dies immediately goes
           # unseen; a failed one stays on screen, a successful one closes as before.
           # The xargs placeholder is % — so {} does not clash with the gh-dash template.
           command: >-
-            tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "PR-{{.PrNumber}}" "claude --dangerously-skip-permissions 'Detaylı Review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: T
           name: t2 review
           command: >-
-            tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "T2-{{.PrNumber}}" "claude --dangerously-skip-permissions 'T2 review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "T2-{{.PrNumber}}" "claude --dangerously-skip-permissions 'T2 review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: O
           name: opencode review
           # --agent build bypasses the orchestrator default_agent, which would delegate
@@ -79,11 +81,18 @@ keybindings:
           # opencode's skill tool takes only a name, so $ARGUMENTS is never substituted —
           # the PR number has to be in the prompt itself.
           command: >-
-            tmux new-window -d -P -F '#{window_id}' -c "{{.RepoPath}}" -n "OC-{{.PrNumber}}" "opencode --agent build --auto --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "OC-{{.PrNumber}}" "opencode --agent build --auto --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+        - key: K
+          name: kilo review
+          # Kilo is an opencode fork: same flags, and code is its build agent.
+          command: >-
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "KC-{{.PrNumber}}" "kilo --agent code --auto --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: D
           name: codediff in nvim
+          # PR branches are rarely fetched already, so origin/<head> would not resolve.
+          # remain-on-exit failed: without it a failing fetch closes the window unseen.
           command: >-
-            tmux new-window -c "{{.RepoPath}}" -n "diff-{{.PrNumber}}" "nvim -c 'CodeDiffSolo origin/{{.BaseRefName}} origin/{{.HeadRefName}}'"
+            tmux new-window -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "diff-{{.PrNumber}}" "git fetch --quiet origin {{.BaseRefName}} {{.HeadRefName}} && nvim -c 'CodeDiffSolo origin/{{.BaseRefName}} origin/{{.HeadRefName}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
 theme:
     ui:
         sectionsShowCount: true

@@ -22,12 +22,13 @@
 
 import { spawn } from "node:child_process";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 const NOTIFY =
   process.env.AGENT_TMUX_NOTIFY ||
   join(homedir(), ".local", "bin", "agent-tmux-notify");
-const AGENT = "opencode";
+// Kilo is an opencode fork that loads this same file from its own plugins dir.
+const AGENT = basename(process.execPath).startsWith("kilo") ? "kilo" : "opencode";
 
 // opencode tool ids are lower case; agent-tmux-notify branches on Claude Code's
 // names for the two it treats specially. Everything else is passed through as is

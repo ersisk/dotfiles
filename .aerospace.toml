@@ -409,6 +409,10 @@ run = ["move-node-to-workspace D", "layout floating"] # TablePro has some weird 
 if.app-id = 'org.jkiss.dbeaver.core.product'
 run = "move-node-to-workspace D"
 
+[[on-window-detected]]
+if.app-id = 'ai.reyz.tusk'
+run = "move-node-to-workspace D"
+
 # --- API TESTING & TOOLS (WORKSPACE: P) ---
 
 [[on-window-detected]]

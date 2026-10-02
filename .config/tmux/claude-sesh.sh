@@ -19,7 +19,7 @@ declare -A agent_by_tty
 while read -r tty comm; do
   agent_by_tty["$tty"]="$comm"
 done < <(ps -ax -o tty=,comm= | awk '$1 != "??" { n = split($2, p, "/"); c = p[n]
-  if (c == "claude" || c == "opencode") print $1, c }')
+  if (c == "claude" || c == "opencode" || c == "kilo") print $1, c }')
 
 list_agent_panes() {
   (( ${#agent_by_tty[@]} )) || return 0

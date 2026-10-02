@@ -66,17 +66,18 @@ main_path = paths[0] if paths else None  # git does not allow deleting the main 
 
 # Fetch PR states in one call: asking per branch is slow
 cache = cache_path(repo)
-pr_state = cache_load(cache)
-if pr_state is None:
-    pr_state = {}
+
+def fetch_prs():
+    state = {}
     raw = run(["gh", "pr", "list", "--state", "all", "--limit", "100",
                "--json", "number,state,headRefName"], repo)
     if raw:
         try:
             for pr in json.loads(raw):
-                pr_state.setdefault(pr["headRefName"], [pr["number"], pr["state"]])
+                state.setdefault(pr["headRefName"], [pr["number"], pr["state"]])
         except Exception:
             pass
+    return state
 
 now = time.time()
 
@@ -84,9 +85,14 @@ def collect(p):
     branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], p)
     detached = branch == "HEAD"
     if detached:
-        branch = "detached " + (run(["git", "rev-parse", "--short", "HEAD"], p) or "?")
+        # No branch name; the directory name is the only readable label. Trimmed so the hash survives the column cut.
+        short = run(["git", "rev-parse", "--short", "HEAD"], p) or "?"
+        branch = "{} @{}".format(os.path.basename(p)[:44 - len(short) - 2], short)
 
-    dirty = len([l for l in run(["git", "status", "--porcelain"], p).splitlines() if l])
+    # A full scan of ~20k files per worktree is the panel's main cost. fsmonitor starts
+    # a watcher daemon per worktree on first use; after that status is near-instant.
+    dirty = len([l for l in run(["git", "-c", "core.fsmonitor=true", "-c", "core.untrackedCache=true",
+                                 "status", "--porcelain"], p).splitlines() if l])
     # worktree-remove.sh counts this too and refuses the delete when it is non-zero;
     # the panel not counting it led to "cleanable" followed by a refusal.
     # With no upstream remove.sh counts 0, and the same behaviour is kept here.
@@ -112,7 +118,12 @@ def lookup_pr(branch):
 
 # Two git calls per worktree plus the missing-PR queries; run serially the panel takes seconds
 with ThreadPoolExecutor(max_workers=8) as ex:
+    pr_state = cache_load(cache)
+    # The bulk gh call is network-bound; overlap it with the git scan instead of waiting first
+    pr_future = ex.submit(fetch_prs) if pr_state is None else None
     rows = list(ex.map(collect, paths))
+    if pr_future:
+        pr_state = pr_future.result()
     missing = [b for _, b, detached, _, _, _ in rows if not detached and b not in pr_state]
     if missing:
         pr_state.update(dict(ex.map(lookup_pr, missing)))
@@ -137,8 +148,13 @@ for p, branch, detached, dirty, unpushed, days in rows:
     # Non-merged ones get no extra note — the PR column already gives the reason.
     flag = ""
     if p == main_path:
-        flag = " {}(main){}".format(KW["grey"], KW["off"])
-    elif state == "MERGED":
+        # Padded by hand: the colour codes would throw off format()'s width count
+        tag = " (main)"
+        name = branch[:44 - len(tag)]
+        name = "{}{}{}{}{}".format(name, KW["grey"], tag, KW["off"], " " * (46 - len(name) - len(tag)))
+    else:
+        name = "{:<46}".format(branch[:44])
+    if p != main_path and state == "MERGED":
         if detached:
             blocker = "detached"
         elif dirty:
@@ -153,7 +169,7 @@ for p, branch, detached, dirty, unpushed, days in rows:
                 else " {}← {}{}".format(KW["orange"], blocker, KW["off"]))
 
     age = "{}{}d{}".format(KW["grey"], days, KW["off"])
-    print("{}\t{:<46} {:<22} {:<26} {:>5}{}".format(
-        p, branch[:44], status, pr, age, flag))
+    print("{}\t{} {:<22} {:<26} {:>5}{}".format(
+        p, name, status, pr, age, flag))
 
 cache_save(cache, pr_state)

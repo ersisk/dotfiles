@@ -332,7 +332,7 @@ final class Controller: NSObject, NSMenuDelegate {
     // Process names that count as a coding agent. `ps` reports opencode as
     // `opencode` even though tmux calls the pane command `opencode.exe` (a Bun
     // single-file build); the ps name is what has to match here.
-    private static let agentComms = ["claude", "opencode"]
+    private static let agentComms = ["claude", "opencode", "kilo"]
 
     // tty → the agent running on it. tmux reports the pane's foreground command as the
     // shell even while the agent is running, so the tty is the only cheap link

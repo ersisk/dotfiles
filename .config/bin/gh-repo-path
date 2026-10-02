@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#
+# gh-repo-path — print the local clone directory for a GitHub owner/repo.
+#
+# gh-dash fills {{.RepoPath}} only from a repoPaths map in its config.yml, and
+# that map is a list of org and repo names plus absolute paths — none of which
+# belongs in a public repo. Clones are matched by their origin remote instead,
+# so a newly cloned repo needs no config change.
+
+set -euo pipefail
+
+nwo=$(printf '%s' "${1:?usage: gh-repo-path <owner/repo>}" | tr '[:upper:]' '[:lower:]')
+root=${GH_REPO_ROOT:-$HOME/workspace}
+cache=${XDG_CACHE_HOME:-$HOME/.cache}/gh-repo-path
+
+# Normalise both ssh and https remotes, and the casing GitHub preserves in names.
+remote_nwo() {
+  git -C "$1" remote get-url origin 2>/dev/null |
+    sed -E 's|.*github\.com[:/]||; s|\.git$||' |
+    tr '[:upper:]' '[:lower:]'
+}
+
+if [ -f "$cache" ]; then
+  hit=$(awk -F'\t' -v k="$nwo" '$1 == k { print $2; exit }' "$cache")
+  if [ -n "$hit" ] && [ -d "$hit" ]; then
+    printf '%s\n' "$hit"
+    exit 0
+  fi
+fi
+
+# -prune keeps find out of the .git trees; a worktree's .git is a file, not a dir.
+while IFS= read -r marker; do
+  dir=${marker%/.git}
+  [ "$(remote_nwo "$dir")" = "$nwo" ] || continue
+
+  tmp=$(mktemp)
+  if [ -f "$cache" ]; then
+    awk -F'\t' -v k="$nwo" '$1 != k' "$cache" > "$tmp"
+  fi
+  printf '%s\t%s\n' "$nwo" "$dir" >> "$tmp"
+  mkdir -p "$(dirname "$cache")"
+  mv "$tmp" "$cache"
+
+  printf '%s\n' "$dir"
+  exit 0
+done < <(find "$root" -maxdepth 5 \( -name node_modules -o -name vendor \) -prune -o \
+  -name .git -prune -print 2>/dev/null)
+
+echo "gh-repo-path: no clone of $1 under $root" >&2
+exit 1

@@ -140,3 +140,6 @@ alias lzd="sesh connect lzd"
 
 # The next line updates PATH for the Google Cloud SDK.
 if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/path.fish.inc; end
+
+# kilo
+fish_add_path /Users/ersanisik/.kilo/bin
