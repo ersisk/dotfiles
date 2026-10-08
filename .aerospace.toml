@@ -413,6 +413,10 @@ run = "move-node-to-workspace D"
 if.app-id = 'ai.reyz.tusk'
 run = "move-node-to-workspace D"
 
+[[on-window-detected]]
+if.app-id = 'com.dbx.app'
+run = "move-node-to-workspace D"
+
 # --- API TESTING & TOOLS (WORKSPACE: P) ---
 
 [[on-window-detected]]
