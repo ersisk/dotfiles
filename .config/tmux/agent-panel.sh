@@ -3,7 +3,8 @@
 #
 # No argument (prefix+C, ⌘+⇧+A): opens the panel in the current window, focuses it
 # if it is open elsewhere in the window, closes it if it already has focus. Panes
-# belong to a window, so the panel stays in the window it was opened in.
+# belong to a window, so the panel is closed when you switch away (prune, hooked in
+# utility.conf) instead of being left behind.
 # The list is re-read every 2s through fzf's --listen socket; --id-nth keeps the
 # cursor on the same session across reloads. Enter jumps and leaves the panel open.
 
@@ -104,8 +105,21 @@ toggle() {
   tmux set-option -p -t "$panel" @agent_panel 1
 }
 
+# Hooked to window/session changes: a panel left behind in a window no client is
+# looking at gets closed.
+prune() {
+  local visible
+  visible=" $(tmux list-clients -F '#{window_id}' | tr '\n' ' ')"
+  tmux list-panes -a -F '#{pane_id} #{window_id} #{@agent_panel}' |
+    while read -r pane win flag; do
+      [[ "$flag" == 1 && "$visible" != *" $win "* ]] && tmux kill-pane -t "$pane"
+    done
+  return 0
+}
+
 case "${1:-}" in
   list) list ;;
+  prune) prune ;;
   jump) jump "${2:-}" ;;
   run) run ;;
   *) toggle ;;
