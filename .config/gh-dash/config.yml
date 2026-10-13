@@ -74,14 +74,6 @@ keybindings:
           name: t2 review
           command: >-
             tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "T2-{{.PrNumber}}" "claude --dangerously-skip-permissions 'T2 review #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
-        - key: O
-          name: opencode review
-          # --agent build bypasses the orchestrator default_agent, which would delegate
-          # the review to the reviewer subagent (no bash/gh access) instead of running it.
-          # opencode's skill tool takes only a name, so $ARGUMENTS is never substituted —
-          # the PR number has to be in the prompt itself.
-          command: >-
-            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "OC-{{.PrNumber}}" "opencode --agent build --auto --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: K
           name: kilo review
           # Kilo is an opencode fork: same flags, and code is its build agent.
