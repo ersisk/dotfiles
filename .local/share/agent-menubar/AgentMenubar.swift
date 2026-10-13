@@ -12,6 +12,9 @@
 import AppKit
 import Carbon.HIToolbox
 
+let appName = "Agent Menubar"
+let appVersion = "1.1.0"
+
 // MARK: - Palette
 
 enum Kanagawa {
@@ -96,6 +99,24 @@ func shortAge(_ date: Date) -> String {
     return "\(s / 86400)d"
 }
 
+// The GUI app an agent runs under (Zed, kitty, ...): the first ancestor that is a
+// regular app. Walking the tree, rather than having the hook record a bundle id,
+// also covers agents whose env does not carry one, such as Zed's ACP children.
+func hostApp(of pid: pid_t) -> NSRunningApplication? {
+    var pid = pid
+    while pid > 1 {
+        if let app = NSRunningApplication(processIdentifier: pid), app.activationPolicy == .regular {
+            return app
+        }
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        guard sysctl(&mib, 4, &info, &size, nil, 0) == 0, size > 0 else { return nil }
+        pid = info.kp_eproc.e_ppid
+    }
+    return nil
+}
+
 // MARK: - Session
 
 struct Session {
@@ -109,6 +130,7 @@ struct Session {
     let tmuxWindow: String
     let tmuxPane: String
     let tmuxTty: String
+    let agentPid: pid_t
     let isRecovered: Bool
     let updatedAt: Date
 
@@ -130,6 +152,7 @@ struct Session {
         tmuxWindow = str("tmux_window")
         tmuxPane = str("tmux_pane")
         tmuxTty = str("tmux_tty")
+        agentPid = (obj["agent_pid"] as? NSNumber)?.int32Value ?? 0
         isRecovered = (obj["recovered"] as? Bool) ?? false
         updatedAt = Date(timeIntervalSince1970: (obj["updated_at"] as? Double) ?? 0)
     }
@@ -391,6 +414,10 @@ final class Controller: NSObject, NSMenuDelegate {
                 } else if now.timeIntervalSince(session.updatedAt) > maxAge {
                     reason = "tmux server unreachable, aged out"
                 }
+            } else if session.agentPid > 0,
+                      now.timeIntervalSince(session.updatedAt) > agentGrace,
+                      kill(session.agentPid, 0) != 0, errno == ESRCH {
+                reason = "agent pid \(session.agentPid) gone"
             } else if now.timeIntervalSince(session.updatedAt) > maxAge {
                 reason = "no tmux coordinates, aged out"
             }
@@ -622,6 +649,11 @@ final class Controller: NSObject, NSMenuDelegate {
         reload()
         menu.removeAllItems()
 
+        let header = NSMenuItem(title: "\(appName) \(appVersion)", action: nil, keyEquivalent: "")
+        header.isEnabled = false
+        menu.addItem(header)
+        menu.addItem(.separator())
+
         let rows = displayed
         if rows.isEmpty {
             let empty = NSMenuItem(title: "No agent sessions", action: nil, keyEquivalent: "")
@@ -639,6 +671,10 @@ final class Controller: NSObject, NSMenuDelegate {
             menu.addItem(clear)
         }
 
+        let refresh = NSMenuItem(title: "Refresh", action: #selector(refresh), keyEquivalent: "r")
+        refresh.target = self
+        menu.addItem(refresh)
+
         let quit = NSMenuItem(title: "Quit", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
@@ -652,6 +688,7 @@ final class Controller: NSObject, NSMenuDelegate {
         let row = NSMenuItem(title: session.project, action: nil, keyEquivalent: "")
         let config = NSImage.SymbolConfiguration(pointSize: 12, weight: .medium)
         let accent = tint(session)
+        let host = session.isJumpable ? nil : hostApp(of: session.agentPid)
         var icon = NSImage(systemSymbolName: session.phase.symbol, accessibilityDescription: nil)
         if let color = accent {
             icon = icon?.withSymbolConfiguration(
@@ -673,6 +710,7 @@ final class Controller: NSObject, NSMenuDelegate {
         )
         var context = "\(session.agent) · "
         if !session.context.isEmpty { context += "\(session.context) · " }
+        if let name = host?.localizedName { context += "\(name) · " }
         context += session.phase.label
         if !session.isRecovered { context += " · \(shortAge(session.updatedAt))" }
         title.append(NSAttributedString(
@@ -693,10 +731,10 @@ final class Controller: NSObject, NSMenuDelegate {
         }
         row.attributedTitle = title
 
-        if session.isJumpable {
-            row.action = #selector(jump(_:))
+        if session.isJumpable || host != nil {
+            row.action = session.isJumpable ? #selector(jump(_:)) : #selector(activateHost(_:))
             row.target = self
-            row.representedObject = session
+            row.representedObject = session.isJumpable ? session : host
             row.isEnabled = true
             // Numbered by position, so ⌃⌥A then a digit is the whole jump. The digits
             // stay aligned with what is on screen: a row nobody can jump to burns its
@@ -725,12 +763,29 @@ final class Controller: NSObject, NSMenuDelegate {
         do { try proc.run() } catch { log("jump spawn failed: \(error)") }
     }
 
+    // openApplication rather than NSRunningApplication.activate: since macOS 14 an
+    // accessory app asking another app to activate itself is routinely ignored.
+    @objc private func activateHost(_ sender: NSMenuItem) {
+        guard let app = sender.representedObject as? NSRunningApplication,
+              let url = app.bundleURL
+        else { return }
+        log("activate \(app.bundleIdentifier ?? url.path)")
+        let config = NSWorkspace.OpenConfiguration()
+        config.activates = true
+        NSWorkspace.shared.openApplication(at: url, configuration: config)
+    }
+
     @objc private func clearFinished() {
         for session in displayed where session.phase.clearsWhenSeen {
             acknowledge(session)
             try? FileManager.default.removeItem(at: session.file)
         }
         reload()
+    }
+
+    @objc private func refresh() {
+        reload()
+        prune()
     }
 
     @objc private func quit() {

@@ -201,7 +201,9 @@ state_file() {
 # Replaces the state file atomically. The rename is what wakes the app's directory
 # watcher, so writing into the final path directly would leave the icon stale.
 # The recorded tmux coordinates are what agent-jump uses to focus this pane; the
-# tty is how the app notices Claude died without a SessionEnd. One line per file,
+# tty is how the app notices Claude died without a SessionEnd. Outside tmux (Zed, an
+# IDE terminal) there is no tty to go by, so the agent's pid does that job: both
+# Claude Code and the opencode bridge spawn this script directly, so $PPID is it. One line per file,
 # so agent-next.sh can parse it with bash alone, without spawning jq.
 write_state() {
   local state="$1" detail="${2:-}" file tmp socket=""
@@ -224,14 +226,15 @@ write_state() {
       --arg tmux_window "$TMUX_WIN" \
       --arg tmux_pane "${TMUX_PANE:-}" \
       --arg tmux_tty "$TMUX_TTY" \
+      --argjson agent_pid "$PPID" \
       --argjson updated_at "$(date +%s)" \
       '$ARGS.named' > "$tmp" 2>/dev/null || { rm -f "$tmp"; return 0; }
   else
-    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","agent":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","updated_at":%s}\n' \
+    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","agent":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","agent_pid":%s,"updated_at":%s}\n' \
       "$(json_escape "$SESSION_ID")" "$state" "$(json_escape "$PROJECT")" \
       "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$AGENT")" "$(json_escape "$socket")" \
       "$(json_escape "$TMUX_SESS")" "$(json_escape "$TMUX_WIN")" \
-      "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$(date +%s)" > "$tmp" 2>/dev/null \
+      "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$PPID" "$(date +%s)" > "$tmp" 2>/dev/null \
       || { rm -f "$tmp"; return 0; }
   fi
 
