@@ -286,7 +286,7 @@ tmux_styled() {
 #     the glyph reappears if auto-rename is later turned back on.
 # Nerd Font state glyphs (not emoji, so they can be coloured with Kanagawa).
 # If this list changes, AgentMenubar.swift (phaseByGlyph) has to change with it;
-# claude-sesh.sh shows the glyph as is.
+# agent-panel.sh reads the state files, not the glyph.
 # @agent_state doubles as an "unacknowledged work" mark: agent-menubar clears the
 # option once it sees you have looked at a finished session's pane.
 STATE_GLYPHS='󰓦󰛐󱎫'
