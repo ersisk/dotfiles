@@ -175,13 +175,13 @@ struct Session {
 
 // ⌃⇧A opens the menu wherever you are — the mouse-free twin of clicking the icon,
 // and the only surface that reaches an idle or working session from outside tmux.
-// Not in the ⌃⌥ block: Raycast holds ⌃⌥A too, and its event tap sees the key first,
-// so the window it raises dismissed this menu the instant it opened. ⌃⇧ is Scoot's
-// block and it only takes J/K/L.
+// Not in the ⌃⌥ block: Raycast's event tap sees those keys first, and a Raycast
+// command there dismisses this menu the instant it opens. ⌃⇧ is Scoot's block and it
+// only takes J/K/L.
 // Carbon's hotkey API is used because it needs no Accessibility grant, unlike an
 // NSEvent global monitor.
 let hotKeyCode = UInt32(kVK_ANSI_A)
-let hotKeyModifiers = UInt32(controlKey | optionKey)
+let hotKeyModifiers = UInt32(controlKey | shiftKey)
 
 // MARK: - Controller
 
@@ -736,7 +736,7 @@ final class Controller: NSObject, NSMenuDelegate {
             row.target = self
             row.representedObject = session.isJumpable ? session : host
             row.isEnabled = true
-            // Numbered by position, so ⌃⌥A then a digit is the whole jump. The digits
+            // Numbered by position, so ⌃⇧A then a digit is the whole jump. The digits
             // stay aligned with what is on screen: a row nobody can jump to burns its
             // own number rather than shifting the ones below it.
             if index < 9 {

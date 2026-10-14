@@ -22,10 +22,9 @@ while `⌃⌥` is entirely free — a collision-free namespace for Raycast scrip
 *other apps*, that is: Raycast's own AI commands and quicklinks live in the same block
 and are not versioned here, so a key can be taken without appearing in the table
 above. `⌃⌥A` was one of those, which is why the `agent-menubar` hotkey
-(`hotKeyModifiers` in `AgentMenubar.swift`) sat in Scoot's `⌃⇧` block; that Raycast
-command is gone and the hotkey moved onto `⌃⌥A`. If a Raycast command ever claims the
-key again the menu bar loses it without a word: Raycast's event tap sees the key before
-a Carbon hotkey does, and the window it raises dismisses an open menu.
+(`hotKeyModifiers` in `AgentMenubar.swift`) sits in Scoot's `⌃⇧` block as `⌃⇧A`:
+Raycast's event tap sees a key before a Carbon hotkey does, and the window it raises
+dismisses an open menu.
 
 ## Writing a script in this directory
 
