@@ -12,6 +12,7 @@
 //   tool.execute.before                   → PreToolUse
 //   tool.execute.after  (bash only)       → PostToolUse
 //   permission.asked / question.asked     → Notification
+//   permission.replied / question.replied → UserPromptSubmit (back to working)
 //   session.error                         → Notification
 //   session.idle                          → Stop
 //   session.deleted                       → SessionEnd
@@ -34,6 +35,8 @@ const AGENT = basename(process.execPath).startsWith("kilo") ? "kilo" : "opencode
 // names for the two it treats specially. Everything else is passed through as is
 // and only ever lands in the "working" detail line.
 const TOOL_NAMES = { bash: "Bash", task: "Task" };
+
+const ASK_GRACE_MS = 1500;
 
 // Serialised: PreToolUse stashes a start timestamp that PostToolUse reads back,
 // so payloads must reach the script in the order they were produced.
@@ -78,6 +81,8 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
   const assistantMessage = new Map();
   // sessionID → that assistant message's text; the "done" detail line.
   const lastText = new Map();
+  // permission request id → timer of its not-yet-sent Notification.
+  const pendingAsks = new Map();
 
   let started = false;
 
@@ -200,10 +205,21 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
             ? props.patterns.join(", ")
             : "";
           const what = [props.permission, patterns].filter(Boolean).join(" ");
-          await send(
-            payload("Notification", id, {
-              message: `permission: ${what || "requested"}`,
-            }),
+          const notify = () =>
+            send(
+              payload("Notification", id, {
+                message: `permission: ${what || "requested"}`,
+              }),
+            );
+          // The TUI's auto-approve mode answers every ask right after it is
+          // published, so notifying at once would flag each tool call as input.
+          if (!props.id) return notify();
+          pendingAsks.set(
+            props.id,
+            setTimeout(() => {
+              pendingAsks.delete(props.id);
+              notify();
+            }, ASK_GRACE_MS),
           );
           return;
         }
@@ -217,6 +233,24 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
               message: first?.question || first?.header || "question",
             }),
           );
+          return;
+        }
+
+        // The ask happens inside the tool, after tool.execute.before, so nothing
+        // else flips the pane back while the approved call runs. A rejection that
+        // ends the turn still lands on session.idle afterwards.
+        case "permission.replied":
+        case "question.replied":
+        case "question.rejected": {
+          const id = props.sessionID;
+          if (!id) return;
+          const timer = pendingAsks.get(props.requestID);
+          if (timer) {
+            clearTimeout(timer);
+            pendingAsks.delete(props.requestID);
+            return;
+          }
+          await send(payload("UserPromptSubmit", id));
           return;
         }
 

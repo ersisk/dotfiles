@@ -143,3 +143,6 @@ if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/p
 
 # kilo
 fish_add_path /Users/ersanisik/.kilo/bin
+
+# Added by Antigravity IDE
+fish_add_path /Users/ersanisik/.antigravity-ide/antigravity-ide/bin
