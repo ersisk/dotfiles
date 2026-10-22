@@ -378,6 +378,11 @@ notify() {
 # Nothing is written to stdout: for these events Claude Code would feed it back
 # into the session as context.
 if [[ "$EVENT" == "SessionStart" ]]; then
+  # The Claude Code daemon pre-warms `--bg-spare` processes that fire SessionStart with
+  # no user behind them; registering one leaves a ghost idle row while the daemon lives.
+  # Only this event is skipped: a claimed spare keeps the same argv, and its first
+  # UserPromptSubmit registers it.
+  [[ "$(ps -o command= -p "$PPID" 2>/dev/null)" == *--bg-spare* ]] && exit 0
   write_state idle ""
   exit 0
 fi
