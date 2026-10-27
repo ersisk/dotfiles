@@ -88,6 +88,9 @@ enum Phase: String, CaseIterable {
     // Nothing is going to happen in these on its own, so looking at the pane is
     // all the acknowledgement they need.
     var clearsWhenSeen: Bool { self == .done || self == .doneBg }
+
+    // working and idle follow from something you just did; a toast for them is noise.
+    var announces: Bool { self != .working && self != .idle }
 }
 
 // Compact relative age: what turns "needs input" into "needs input, 20 minutes ago".
@@ -171,6 +174,134 @@ struct Session {
     }
 }
 
+// MARK: - Toast
+
+// Takes the whole toast as one click target. acceptsFirstMouse because the panel is
+// never key: without it the first click would only be spent focusing the window.
+private final class ClickView: NSVisualEffectView {
+    var onClick: (() -> Void)?
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+    override func hitTest(_ point: NSPoint) -> NSView? { frame.contains(point) ? self : nil }
+    override func mouseUp(with event: NSEvent) { onClick?() }
+}
+
+// A transient HUD under the status item. Non-activating, so it never takes focus
+// from whatever you are typing into; clicking it jumps to the session.
+final class Toast {
+    private let panel: NSPanel
+    private let icon = NSImageView()
+    private let text = NSTextField(labelWithString: "")
+    private var hide: DispatchWorkItem?
+    private var session: Session?
+    private let duration: TimeInterval = 3
+    private let onClick: (Session) -> Void
+
+    init(onClick: @escaping (Session) -> Void) {
+        self.onClick = onClick
+        panel = NSPanel(
+            contentRect: .zero,
+            styleMask: [.borderless, .nonactivatingPanel],
+            backing: .buffered,
+            defer: true
+        )
+        panel.level = .statusBar
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = true
+        panel.hidesOnDeactivate = false
+        panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+
+        let background = ClickView()
+        background.material = .hudWindow
+        background.state = .active
+        background.wantsLayer = true
+        background.layer?.cornerRadius = 8
+        background.layer?.masksToBounds = true
+
+        // Each line truncates instead of wrapping; the cap is what stops a long
+        // command from stretching the toast across the screen.
+        text.widthAnchor.constraint(lessThanOrEqualToConstant: 300).isActive = true
+
+        let stack = NSStackView(views: [icon, text])
+        stack.orientation = .horizontal
+        stack.alignment = .centerY
+        stack.spacing = 8
+        stack.edgeInsets = NSEdgeInsets(top: 8, left: 10, bottom: 8, right: 12)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        background.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: background.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: background.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: background.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: background.bottomAnchor),
+        ])
+        panel.contentView = background
+        background.onClick = { [weak self] in
+            guard let self, let session = self.session else { return }
+            self.hide?.cancel()
+            self.panel.orderOut(nil)
+            self.onClick(session)
+        }
+    }
+
+    func show(_ session: Session, tint: NSColor?, under button: NSStatusBarButton?) {
+        guard let anchor = button?.window?.frame,
+              let screen = button?.window?.screen ?? NSScreen.main
+        else { return }
+        self.session = session
+
+        let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        var image = NSImage(systemSymbolName: session.phase.symbol, accessibilityDescription: nil)
+        if let tint {
+            image = image?.withSymbolConfiguration(
+                config.applying(NSImage.SymbolConfiguration(paletteColors: [tint]))
+            )
+        } else {
+            image = image?.withSymbolConfiguration(config)
+        }
+        icon.image = image
+
+        let oneLine = NSMutableParagraphStyle()
+        oneLine.lineBreakMode = .byTruncatingTail
+        let title = NSMutableAttributedString(
+            string: session.project,
+            attributes: [.font: NSFont.boldSystemFont(ofSize: 12), .foregroundColor: NSColor.labelColor]
+        )
+        title.append(NSAttributedString(
+            string: "  \(session.agent) · \(session.phase.label)",
+            attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: tint ?? NSColor.secondaryLabelColor]
+        ))
+        let detail = session.detail.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? ""
+        if !detail.isEmpty {
+            title.append(NSAttributedString(
+                string: "\n\(detail)",
+                attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: NSColor.secondaryLabelColor]
+            ))
+        }
+        title.addAttribute(.paragraphStyle, value: oneLine, range: NSRange(location: 0, length: title.length))
+        text.attributedStringValue = title
+
+        let size = panel.contentView?.fittingSize ?? .zero
+        let bounds = screen.visibleFrame
+        let x = min(max(anchor.midX - size.width / 2, bounds.minX + 8), bounds.maxX - size.width - 8)
+        panel.setFrame(NSRect(x: x, y: anchor.minY - size.height - 6, width: size.width, height: size.height), display: true)
+
+        hide?.cancel()
+        panel.alphaValue = 1
+        panel.orderFrontRegardless()
+
+        let work = DispatchWorkItem { [weak self] in
+            guard let panel = self?.panel else { return }
+            NSAnimationContext.runAnimationGroup({ $0.duration = 0.3; panel.animator().alphaValue = 0 }) {
+                if panel.alphaValue == 0 { panel.orderOut(nil) }
+            }
+        }
+        hide = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: work)
+    }
+}
+
 // MARK: - Global hotkey
 
 // ⌃⇧A opens the menu wherever you are — the mouse-free twin of clicking the icon,
@@ -197,6 +328,9 @@ final class Controller: NSObject, NSMenuDelegate {
     private var pending: DispatchWorkItem?
     private var hotKey: EventHotKeyRef?
     private var menuOpenedAt = Date()
+    private lazy var toast = Toast { [weak self] session in self?.reveal(session) }
+    // Keyed by state file name; nil until the first reload so startup is silent.
+    private var lastPhase: [String: Phase]?
 
     // Fallback only, for entries whose tmux server cannot be reached at all.
     private let maxAge: TimeInterval = 24 * 3600
@@ -273,6 +407,16 @@ final class Controller: NSObject, NSMenuDelegate {
                     ? $0.phase.rank < $1.phase.rank
                     : $0.updatedAt > $1.updatedAt
             }
+
+        let previous = lastPhase
+        lastPhase = Dictionary(sessions.map { ($0.file.lastPathComponent, $0.phase) }) { a, _ in a }
+        // Recovered entries are this app's own reconstruction, not news. sessions is
+        // rank-sorted, so a burst shows the change that matters most.
+        if let previous, let changed = displayed.first(where: {
+            !$0.isRecovered && $0.phase.announces && previous[$0.file.lastPathComponent] != $0.phase
+        }) {
+            toast.show(changed, tint: tint(changed), under: item.button)
+        }
 
         updateIcon()
     }
@@ -749,10 +893,22 @@ final class Controller: NSObject, NSMenuDelegate {
         return row
     }
 
+    // The toast's click: whatever the session's menu row would have done.
+    private func reveal(_ session: Session) {
+        if session.isJumpable {
+            jump(to: session)
+        } else if let host = hostApp(of: session.agentPid) {
+            activate(host)
+        }
+    }
+
     @objc private func jump(_ sender: NSMenuItem) {
-        guard let session = sender.representedObject as? Session,
-              FileManager.default.isExecutableFile(atPath: jumpTool.path)
-        else { return }
+        guard let session = sender.representedObject as? Session else { return }
+        jump(to: session)
+    }
+
+    private func jump(to session: Session) {
+        guard FileManager.default.isExecutableFile(atPath: jumpTool.path) else { return }
         // Not waited on: raising kitty takes a moment and this runs on the main thread.
         let proc = Process()
         proc.executableURL = jumpTool
@@ -766,9 +922,12 @@ final class Controller: NSObject, NSMenuDelegate {
     // openApplication rather than NSRunningApplication.activate: since macOS 14 an
     // accessory app asking another app to activate itself is routinely ignored.
     @objc private func activateHost(_ sender: NSMenuItem) {
-        guard let app = sender.representedObject as? NSRunningApplication,
-              let url = app.bundleURL
-        else { return }
+        guard let app = sender.representedObject as? NSRunningApplication else { return }
+        activate(app)
+    }
+
+    private func activate(_ app: NSRunningApplication) {
+        guard let url = app.bundleURL else { return }
         log("activate \(app.bundleIdentifier ?? url.path)")
         let config = NSWorkspace.OpenConfiguration()
         config.activates = true

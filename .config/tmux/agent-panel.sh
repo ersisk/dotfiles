@@ -82,7 +82,8 @@ run() {
   list | fzf --listen="$sock" --read0 \
     --ansi --reverse --no-sort --track --id-nth=1 \
     --delimiter='\t' --with-nth=2 \
-    --border=right --border-label=' Agents ' --prompt='󰘦 ' \
+    --border=right --list-border=top --list-label=' Agents ' --prompt='󰘦 ' \
+    --pointer='' --color=bg+:#2d4f67 \
     --header='enter: jump   esc: close' \
     --bind "enter:execute-silent('$self' jump {1})" \
     --no-preview

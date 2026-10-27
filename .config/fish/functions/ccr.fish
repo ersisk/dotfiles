@@ -114,7 +114,7 @@ function ccr --description 'pick a Claude Code session with fzf and resume it'
         set -l sel (fzf \
             --ansi \
             --delimiter \t --with-nth 1 --query "$query" \
-            --height 90% --reverse --border rounded \
+            --height 90% --reverse --border rounded --border-label ' Claude resume ' \
             --prompt '  resume ❯ ' \
             --pointer '▶' --marker '✓' \
             --info inline \

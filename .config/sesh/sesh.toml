@@ -5,6 +5,11 @@ strict_mode = true
 # "<repo>/_worktrees/fix-GD-536-apk-cache" -> "fix-GD-536-apk-cache".
 git_namer_use_worktree_root = true
 
+sort_order = ["tmux", "config", "zoxide"]
+
+[tui]
+group_separator = true
+
 [default_session]
 preview_command = "eza -la --all --git --icons --color=always {}"
 
