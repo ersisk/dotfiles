@@ -24,7 +24,7 @@
   "disable_ai": false,
   "ui_font_family": "JetBrainsMono Nerd Font",
   "ui_font_size": 11,
-  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_family": "Maple Mono NF",
   "buffer_font_size": 11,
   "agent_buffer_font_size": 11,
   "buffer_line_height": {
