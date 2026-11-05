@@ -32,4 +32,8 @@ else
   ((${#branch} > MAXLEN)) && branch="${branch:0:MAXLEN}.."
 fi
 
+# Tracked files only: scanning untracked ones every status-interval is costly in big repos.
+# Exit 1 means dirty; other codes (no HEAD yet, errors) show nothing.
 printf '#[fg=#98BB6C] \uf418 %s' "$branch"
+git -C "$dir" diff --no-ext-diff --quiet HEAD -- 2>/dev/null
+(($? == 1)) && printf ' #[fg=#e6c384]\u25cf'
