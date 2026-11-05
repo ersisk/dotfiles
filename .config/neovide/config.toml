@@ -11,4 +11,4 @@ mouse-cursor-icon = "arrow"
 
 [font]
 normal = ["Maple Mono NF"] # same family as kitty
-size = 18.0
+size = 13.0

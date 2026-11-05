@@ -63,4 +63,6 @@ if vim.g.neovide then
   vim.g.neovide_cursor_animation_length = 0.08
   vim.g.neovide_cursor_trail_size = 0.5
   vim.g.neovide_hide_mouse_when_typing = true
+  vim.g.neovide_opacity = 0.8
+  vim.g.neovide_window_blurred = true
 end
