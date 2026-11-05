@@ -10,7 +10,5 @@ maximized = false
 mouse-cursor-icon = "arrow"
 
 [font]
-normal = [
-  "JetBrainsMono NFM"
-] # Will use the bundled Fira Code Nerd Font by default
-size = 19.0
+normal = ["Maple Mono NF"] # same family as kitty
+size = 18.0

@@ -50,3 +50,17 @@ vim.api.nvim_create_user_command("FormatEnable", function()
 end, {
   desc = "Re-enable autoformat-on-save",
 })
+
+if vim.g.neovide then
+  vim.o.linespace = 2
+  vim.g.neovide_padding_top = 8
+  vim.g.neovide_padding_bottom = 8
+  vim.g.neovide_padding_left = 12
+  vim.g.neovide_padding_right = 12
+  vim.g.neovide_floating_corner_radius = 0.3
+  vim.g.neovide_floating_shadow = true
+  -- Defaults (0.15 / 1.0) feel floaty; shorter keeps the motion but makes it snappy.
+  vim.g.neovide_cursor_animation_length = 0.08
+  vim.g.neovide_cursor_trail_size = 0.5
+  vim.g.neovide_hide_mouse_when_typing = true
+end
