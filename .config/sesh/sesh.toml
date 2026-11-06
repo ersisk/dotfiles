@@ -90,7 +90,7 @@ path = "$WORK_MAIN"
 # automatic-rename off, so it is turned back on in the shell window -
 # the nerd-font/claude-state glyphs come from there.
 startup_command = "tmux set -w -t 2 automatic-rename on; clear; gh dash"
-windows = ["shell"]
+windows = ["shell", "prping"]
 
 [[session]]
 name = "💼 Notif"
@@ -118,6 +118,10 @@ startup_command="./reset-admin-password.sh; read -P 'enter to continue...'; exit
 
 [[window]]
 name = "shell"
+
+[[window]]
+name = "prping"
+startup_script = "prping"
 
 # Entering a worktree should land straight in the file picker.
 # Note: only startup_command works inside [[wildcard]] - preview_command is never
