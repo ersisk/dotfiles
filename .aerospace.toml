@@ -132,7 +132,7 @@ alt-shift-0 = 'resize smart +50'
 # ctrl-9 = 'workspace 9'
 alt-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
 alt-b = 'workspace B' # Browser, Slack
-alt-c = 'workspace C' # Terminal (kitty, wezterm)
+alt-c = 'workspace C' # Terminal (kitty, wezterm, xirp)
 alt-d = 'workspace D' # Database (Beekeeper studio)
 # alt-e -> used as focus-monitor (below)
 # alt-f = 'workspace F'
@@ -332,6 +332,10 @@ run = "move-node-to-workspace C"
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
+run = "move-node-to-workspace C"
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.xirp'
 run = "move-node-to-workspace C"
 
 # --- COMMUNICATION & EMAIL (WORKSPACES: Z, W) ---
