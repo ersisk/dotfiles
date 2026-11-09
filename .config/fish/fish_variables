@@ -1,14 +1,7 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export BAT_THEME:Kanagawa
-SETUVAR --export CLOUDSDK_PYTHON:/opt/homebrew/bin/python3\x2e14
-SETUVAR --export EDITOR:nvim
-SETUVAR --export EZA_CONFIG_DIR:\x7e/\x2econfig/eza/
-SETUVAR --export FZF_DEFAULT_COMMAND:fd\x20\x2dH\x20\x2dE\x20\x27\x2egit\x27
 SETUVAR --export --path GOPATH:/Users/ersanisik/go
-SETUVAR --export OBSIDIAN_VAULT:\x7e/obsidian\x2dvault
 SETUVAR OLLAMA_ORIGINS:\x2a
-SETUVAR --export PAGER:nvimpager
 SETUVAR __fish_initialized:4300
 SETUVAR _fisher_jorgebucaran_2F_fisher_files:\x7e/\x2econfig/fish/functions/fisher\x2efish\x1e\x7e/\x2econfig/fish/completions/fisher\x2efish
 SETUVAR _fisher_plugins:jorgebucaran/fisher

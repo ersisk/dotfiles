@@ -34,13 +34,13 @@ set -U fish_greeting # disable fish greeting
 
 
 set -U fish_key_bindings fish_vi_key_bindings
-set -Ux CLOUDSDK_PYTHON (which python3.14)
-set -Ux OBSIDIAN_VAULT "~/obsidian-vault"
+set -gx CLOUDSDK_PYTHON /opt/homebrew/bin/python3.14
+set -gx OBSIDIAN_VAULT $HOME/obsidian-vault
 set -gx OLLAMA_ORIGINS "*"
-set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
-set -Ux EDITOR nvim # 'neovim/neovim' text editor
-set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
-set -Ux EZA_CONFIG_DIR "~/.config/eza/"
+set -gx BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone
+set -gx EDITOR nvim # 'neovim/neovim' text editor
+set -gx FZF_DEFAULT_COMMAND "fd -H -E '.git'"
+set -gx EZA_CONFIG_DIR $HOME/.config/eza/
 # Kanagawa Wave; the tone values match agent-tmux-notify and the tmux status bar.
 set -gx FZF_DEFAULT_OPTS (printf '%s ' \
     '--layout=reverse' \
@@ -71,7 +71,7 @@ set -gx FZF_DEFAULT_OPTS (printf '%s ' \
 
 # TODO: fix colors of nvimpager
 # set -Ux PAGER "~/.local/bin/nvimpager" # 'lucc/nvimpager'
-set -Ux PAGER nvimpager
+set -gx PAGER nvimpager
 
 # golang - https://golang.google.cn/
 set -q GOPATH; or set -Ux GOPATH (go env GOPATH)
