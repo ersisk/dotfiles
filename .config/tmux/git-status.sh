@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # git-status — the git branch of the active pane, for the status bar.
 #
-# Called from @minimal-tmux-status-right, so it runs as often as status-interval.
+# Called from status-right, so it runs as often as status-interval.
 # It asks tmux for the directory instead of taking an argument: #{...} formats
 # inside #() are not expanded by tmux, the command line reaches the shell raw.
 # With no git repo it prints nothing. On a detached HEAD it shows the short sha.
