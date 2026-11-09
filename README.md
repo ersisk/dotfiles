@@ -308,7 +308,7 @@ commands in `.config/raycast/scripts`.
   command `opencode.exe`.
 - **An entry is dropped** when its pane is gone, when no agent process is left on
   its recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
-  its pane is on screen. Every drop is logged with its reason to
+  its pane is on screen in the frontmost app. Every drop is logged with its reason to
   `/tmp/agent-menubar.err.log`.
 - **The three surfaces have separate jobs.** The menu bar is the ambient one: it is
   on screen even when kitty is not focused, and it tracks every session including the

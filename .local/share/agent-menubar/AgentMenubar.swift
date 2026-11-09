@@ -13,7 +13,7 @@ import AppKit
 import Carbon.HIToolbox
 
 let appName = "Agent Menubar"
-let appVersion = "1.1.0"
+let appVersion = "1.2.0"
 
 // MARK: - Palette
 
@@ -180,9 +180,21 @@ struct Session {
 // never key: without it the first click would only be spent focusing the window.
 private final class ClickView: NSVisualEffectView {
     var onClick: (() -> Void)?
+    var onHover: ((Bool) -> Void)?
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
     override func hitTest(_ point: NSPoint) -> NSView? { frame.contains(point) ? self : nil }
     override func mouseUp(with event: NSEvent) { onClick?() }
+
+    // activeAlways: the panel is never key, so the default tracking would never fire.
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingAreas.forEach(removeTrackingArea)
+        addTrackingArea(NSTrackingArea(
+            rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self
+        ))
+    }
+    override func mouseEntered(with event: NSEvent) { onHover?(true) }
+    override func mouseExited(with event: NSEvent) { onHover?(false) }
 }
 
 // A transient HUD under the status item. Non-activating, so it never takes focus
@@ -193,7 +205,6 @@ final class Toast {
     private let text = NSTextField(labelWithString: "")
     private var hide: DispatchWorkItem?
     private var session: Session?
-    private let duration: TimeInterval = 3
     private let onClick: (Session) -> Void
 
     init(onClick: @escaping (Session) -> Void) {
@@ -243,6 +254,17 @@ final class Toast {
             self.panel.orderOut(nil)
             self.onClick(session)
         }
+        background.onHover = { [weak self] inside in
+            guard let self else { return }
+            if inside {
+                self.hide?.cancel()
+                // Snaps back a fade already under way; the fade's completion then sees
+                // a non-zero alpha and leaves the panel up.
+                NSAnimationContext.runAnimationGroup { $0.duration = 0; self.panel.animator().alphaValue = 1 }
+            } else {
+                self.scheduleHide(after: 1.5)
+            }
+        }
     }
 
     func show(_ session: Session, tint: NSColor?, under button: NSStatusBarButton?) {
@@ -287,10 +309,14 @@ final class Toast {
         let x = min(max(anchor.midX - size.width / 2, bounds.minX + 8), bounds.maxX - size.width - 8)
         panel.setFrame(NSRect(x: x, y: anchor.minY - size.height - 6, width: size.width, height: size.height), display: true)
 
-        hide?.cancel()
         panel.alphaValue = 1
         panel.orderFrontRegardless()
+        // A question goes unanswered until you look; a finish only reports.
+        scheduleHide(after: session.phase == .waiting ? 8 : 3)
+    }
 
+    private func scheduleHide(after delay: TimeInterval) {
+        hide?.cancel()
         let work = DispatchWorkItem { [weak self] in
             guard let panel = self?.panel else { return }
             NSAnimationContext.runAnimationGroup({ $0.duration = 0.3; panel.animator().alphaValue = 0 }) {
@@ -298,7 +324,7 @@ final class Toast {
             }
         }
         hide = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 }
 
@@ -331,6 +357,9 @@ final class Controller: NSObject, NSMenuDelegate {
     private lazy var toast = Toast { [weak self] session in self?.reveal(session) }
     // Keyed by state file name; nil until the first reload so startup is silent.
     private var lastPhase: [String: Phase]?
+    // Sockets whose list-panes last failed: with no tmux running that is every tick, so
+    // only the change is worth a log line.
+    private var unreachable = Set<String>()
 
     // Fallback only, for entries whose tmux server cannot be reached at all.
     private let maxAge: TimeInterval = 24 * 3600
@@ -359,6 +388,15 @@ final class Controller: NSObject, NSMenuDelegate {
         prune()
         startWatching()
         registerHotKey()
+
+        // Switching to the terminal is the moment a finished session gets seen; without
+        // this it would linger until the next tick.
+        NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            guard let self, self.displayed.contains(where: { $0.phase.clearsWhenSeen }) else { return }
+            self.prune()
+        }
 
         // reload first: prune walks the sessions list, so pruning ahead of it would
         // always be judging the previous tick's snapshot.
@@ -464,10 +502,12 @@ final class Controller: NSObject, NSMenuDelegate {
             "#{@agent_state}", "#{@agent_last}",
         ].joined(separator: "|")]
 
+        let name = socket ?? "the default socket"
         guard let out = capture(tmux, args) else {
-            log("list-panes failed on \(socket ?? "the default socket")")
+            if unreachable.insert(name).inserted { log("list-panes failed on \(name)") }
             return nil
         }
+        if unreachable.remove(name) != nil { log("list-panes works again on \(name)") }
 
         var socketPath = socket ?? ""
         var panes: [PaneInfo] = []
@@ -523,7 +563,7 @@ final class Controller: NSObject, NSMenuDelegate {
     //   the pane is gone                          → the session went with it
     //   the agent is gone but the pane lives      → a crash or ctrl-C fires no SessionEnd
     //   finished and the pane is on screen        → you have seen it; a green icon that
-    //                                               never clears is the pile-up this app exists to avoid
+    //   in the frontmost app                        never clears is the pile-up this app exists to avoid
     //   a placeholder the real session has replaced
     // An unreachable tmux server falls back to age, so a tmux restart mid-session does
     // not wipe the list.
@@ -537,6 +577,25 @@ final class Controller: NSObject, NSMenuDelegate {
             return fresh
         }
 
+        // An attached session counts as seen only while the app showing it is in front:
+        // tmux calls a pane active even when kitty sits behind Slack.
+        let front = NSWorkspace.shared.frontmostApplication?.processIdentifier
+        var frontSessions: [String: Set<String>] = [:]
+        func shownInFront(_ socket: String) -> Set<String> {
+            if let cached = frontSessions[socket] { return cached }
+            var shown = Set<String>()
+            if let front, let tmux = tmuxBin,
+               let out = capture(tmux, ["-S", socket, "list-clients", "-F", "#{client_pid}|#{client_session}"]) {
+                for line in out.split(separator: "\n") {
+                    let f = line.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
+                    guard f.count == 2, let pid = pid_t(f[0]) else { continue }
+                    if hostApp(of: pid)?.processIdentifier == front { shown.insert(String(f[1])) }
+                }
+            }
+            frontSessions[socket] = shown
+            return shown
+        }
+
         let ttys = agentTtys()
         let realPanes = Set(sessions.filter { !$0.isRecovered }.map(\.tmuxPane))
         var removed = false
@@ -548,7 +607,8 @@ final class Controller: NSObject, NSMenuDelegate {
             if !session.tmuxPane.isEmpty, !session.tmuxSocket.isEmpty {
                 if let found = probe(session.tmuxSocket) {
                     if let pane = found.panes.first(where: { $0.id == session.tmuxPane }) {
-                        if session.phase.clearsWhenSeen, pane.visible {
+                        if session.phase.clearsWhenSeen, pane.visible,
+                           shownInFront(session.tmuxSocket).contains(pane.session) {
                             reason = "seen in \(pane.id)"
                             acknowledge(session)
                         }
@@ -677,8 +737,14 @@ final class Controller: NSObject, NSMenuDelegate {
 
     // launchd captures stderr to the path in the plist; a background app that drops
     // and re-adds entries on its own needs to be able to say why.
+    private static let stamp: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return f
+    }()
+
     func log(_ message: String) {
-        FileHandle.standardError.write(Data("agent-menubar: \(message)\n".utf8))
+        FileHandle.standardError.write(Data("\(Self.stamp.string(from: Date())) agent-menubar: \(message)\n".utf8))
     }
 
     private func capture(_ path: String, _ args: [String]) -> String? {
@@ -740,6 +806,8 @@ final class Controller: NSObject, NSMenuDelegate {
         }
 
         item.button?.image = image
+        // Dimmed rather than hidden: ⌃⇧A opens the menu by clicking this button.
+        item.button?.appearsDisabled = top == nil
 
         // Count only when it adds information: several sessions want attention.
         let peers = active.filter { $0.phase == phase }.count
