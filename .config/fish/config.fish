@@ -9,8 +9,14 @@
 # https://fishshell.com/
 # cSpell:words shellcode pkgx direnv
 # Add Homebrew to PATH
+# Inlined `brew shellenv fish` output: saves a ~10ms subprocess per shell. Re-diff after major brew upgrades.
 if test -d /opt/homebrew/bin
-    eval (/opt/homebrew/bin/brew shellenv)
+    set -gx HOMEBREW_PREFIX /opt/homebrew
+    set -gx HOMEBREW_CELLAR /opt/homebrew/Cellar
+    set -gx HOMEBREW_REPOSITORY /opt/homebrew
+    fish_add_path --global --move --path /opt/homebrew/bin /opt/homebrew/sbin
+    if test -n "$MANPATH"; set -gx MANPATH (string replace --regex '^:*(.*?):*$' ':$1' -- "$MANPATH"); end
+    if not set -q INFOPATH; set INFOPATH ''; end; set -gx INFOPATH /opt/homebrew/share/info $INFOPATH
 end
 starship init fish | source # https://starship.rs/
 zoxide init fish | source # 'ajeetdsouza/zoxide'
@@ -68,15 +74,12 @@ set -gx FZF_DEFAULT_OPTS (printf '%s ' \
 set -Ux PAGER nvimpager
 
 # golang - https://golang.google.cn/
-set -Ux GOPATH (go env GOPATH)
+set -q GOPATH; or set -Ux GOPATH (go env GOPATH)
 fish_add_path $GOPATH/bin
 fish_add_path $HOME/.rustup/toolchains/nightly-aarch64-apple-darwin/bin
 
 fish_add_path $HOME/.config/bin # my custom scripts
 fish_add_path $HOME/.cargo/bin
-fish_add_path $HOME/Library/Python/3.9/bin
-
-set copilot_cli_path (which copilot)
 
 set -l foreground DCD7BA normal
 set -l selection 2D4F67 brcyan
@@ -138,8 +141,8 @@ alias wt='git worktree'
 alias sq="sesh connect lsq"
 alias lzd="sesh connect lzd"
 
-# The next line updates PATH for the Google Cloud SDK.
-if test -f $HOME/google-cloud-sdk/path.fish.inc; source $HOME/google-cloud-sdk/path.fish.inc; end
+# Google Cloud SDK: path.fish.inc only prepends bin/, but its two `builtin cd`s fire the zoxide hook on every shell.
+if test -d $HOME/google-cloud-sdk/bin; fish_add_path --global --path $HOME/google-cloud-sdk/bin; end
 
 # kilo
 fish_add_path /Users/ersanisik/.kilo/bin
