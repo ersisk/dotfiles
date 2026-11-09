@@ -1,7 +1,7 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
 SETUVAR --export BAT_THEME:Kanagawa
-SETUVAR --export CLOUDSDK_PYTHON:/opt/homebrew/bin/python3\x2e13
+SETUVAR --export CLOUDSDK_PYTHON:/opt/homebrew/bin/python3\x2e14
 SETUVAR --export EDITOR:nvim
 SETUVAR --export EZA_CONFIG_DIR:\x7e/\x2econfig/eza/
 SETUVAR --export FZF_DEFAULT_COMMAND:fd\x20\x2dH\x20\x2dE\x20\x27\x2egit\x27

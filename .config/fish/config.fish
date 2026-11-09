@@ -34,7 +34,7 @@ set -U fish_greeting # disable fish greeting
 
 
 set -U fish_key_bindings fish_vi_key_bindings
-set -Ux CLOUDSDK_PYTHON (which python3.13)
+set -Ux CLOUDSDK_PYTHON (which python3.14)
 set -Ux OBSIDIAN_VAULT "~/obsidian-vault"
 set -gx OLLAMA_ORIGINS "*"
 set -Ux BAT_THEME "Kanagawa" # 'sharkdp/bat' cat clone

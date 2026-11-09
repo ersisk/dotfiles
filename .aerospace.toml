@@ -146,7 +146,7 @@ alt-i = 'workspace I' # Intellij
 alt-m = 'workspace M' # messaging /media (texting and spotify) 
 alt-n = 'workspace N' # Notes (Obsidian, notesnook)
 # alt-o -> used as focus-back-and-forth (below)
-alt-p = 'workspace P' # Postman and Bruno
+alt-p = 'workspace P' # Bruno
 # alt-q = 'workspace Q'
 # alt-r = 'workspace R'
 # alt-s = 'workspace S' # Slack
@@ -430,10 +430,6 @@ run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'com.usebruno.app'
-run = "move-node-to-workspace P"
-
-[[on-window-detected]]
-if.app-id = 'com.postmanlabs.mac'
 run = "move-node-to-workspace P"
 
 # --- NOTE TAKING & PRODUCTIVITY (WORKSPACE: N) ---
