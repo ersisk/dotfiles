@@ -17,7 +17,8 @@ here. Raycast script hotkeys live in Raycast's own encrypted state, and this
 table is the only file-based record — change a hotkey on the Raycast side and
 update this too, or the panel shows the wrong key.
 
-The `⌃⌥` block was chosen deliberately: aerospace has filled `⌥` and kitty `⌘`,
+The `⌃⌥` block was chosen deliberately: aerospace holds `⌘⌥⌃` (Caps Lock via
+Karabiner), bare `⌥` is AltGr on Turkish-Q and kitty has `⌘`,
 while `⌃⌥` is entirely free — a collision-free namespace for Raycast scripts. Free of
 *other apps*, that is: Raycast's own AI commands and quicklinks live in the same block
 and are not versioned here, so a key can be taken without appearing in the table

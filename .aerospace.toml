@@ -4,7 +4,7 @@
 config-version = 2
 
 # v1 inferred this from the workspace bindings; v2 falls back to [], so keep it explicit.
-persistent-workspaces = ["A", "B", "C", "D", "G", "I", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+persistent-workspaces = ["A", "B", "D", "E", "M", "N", "P", "T", "W", "X"]
 
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
@@ -115,6 +115,10 @@ cmd-alt-ctrl-l = 'focus --boundaries-action wrap-around-the-workspace right'
 
 cmd-alt-ctrl-f = 'fullscreen'
 
+# i3 habits: $mod+Return raises the terminal; close is on backspace, not i3's Shift+q.
+cmd-alt-ctrl-enter = 'exec-and-forget open -a kitty'
+cmd-alt-ctrl-backspace = 'close'
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
 cmd-alt-ctrl-shift-h = 'move left'
 cmd-alt-ctrl-shift-j = 'move down'
@@ -126,80 +130,56 @@ cmd-alt-ctrl-shift-minus = 'resize smart -50'
 cmd-alt-ctrl-shift-0 = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-# Numbered ones are i3-style: left out of persistent-workspaces, so they exist only
-# while they hold a window or have focus.
-cmd-alt-ctrl-1 = 'workspace 1'
-cmd-alt-ctrl-2 = 'workspace 2'
-cmd-alt-ctrl-3 = 'workspace 3'
-cmd-alt-ctrl-4 = 'workspace 4'
-cmd-alt-ctrl-5 = 'workspace 5'
-cmd-alt-ctrl-6 = 'workspace 6'
-cmd-alt-ctrl-7 = 'workspace 7'
-cmd-alt-ctrl-8 = 'workspace 8'
-cmd-alt-ctrl-9 = 'workspace 9'
+# ctrl-1 = 'workspace 1'
+# ctrl-2 = 'workspace 2'
+# ctrl-3 = 'workspace 3'
+# ctrl-4 = 'workspace 4'
+# ctrl-5 = 'workspace 5'
+# ctrl-6 = 'workspace 6'
+# ctrl-7 = 'workspace 7'
+# ctrl-8 = 'workspace 8'
+# ctrl-9 = 'workspace 9'
 # cmd-alt-ctrl is Caps Lock held (Karabiner, .config/karabiner). Plain alt is AltGr
 # on Turkish-Q (₺, @, ...), so no binding here uses it on its own.
-cmd-alt-ctrl-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
-cmd-alt-ctrl-b = 'workspace B' # Browser, Slack
-cmd-alt-ctrl-c = 'workspace C' # Terminal (kitty, wezterm, rex)
-cmd-alt-ctrl-d = 'workspace D' # Database (Beekeeper studio)
-# cmd-alt-ctrl-e -> used as focus-monitor (below)
+# Letters are mnemonic: what the workspace holds, not where it used to be.
+cmd-alt-ctrl-a = 'workspace A' # Alt browsers (firefox, safari, helium)
+cmd-alt-ctrl-b = 'workspace B' # Browser (zen), Slack
+cmd-alt-ctrl-d = 'workspace D' # Database (beekeeper studio, dbx)
+cmd-alt-ctrl-e = 'workspace E' # Editor (phpstorm, zed, neovide)
 # cmd-alt-ctrl-f -> used as fullscreen (above)
-cmd-alt-ctrl-g = 'workspace G' # KeePassXC (Password manager)
-cmd-alt-ctrl-i = 'workspace I' # Intellij
-cmd-alt-ctrl-m = 'workspace M' # messaging /media (texting and spotify)
-cmd-alt-ctrl-n = 'workspace N' # Notes (Obsidian, notesnook)
+cmd-alt-ctrl-m = 'workspace M' # Messaging / media (messages, spotify, music)
+cmd-alt-ctrl-n = 'workspace N' # Notes (obsidian)
 # cmd-alt-ctrl-o -> used as focus-back-and-forth (below)
-cmd-alt-ctrl-p = 'workspace P' # Bruno
-cmd-alt-ctrl-q = 'workspace Q'
-cmd-alt-ctrl-r = 'workspace R' # Reading / office (preview, libreoffice)
-cmd-alt-ctrl-s = 'workspace S'
-cmd-alt-ctrl-t = 'workspace T' # AI (claude desktop, ollama)
-cmd-alt-ctrl-u = 'workspace U'
-cmd-alt-ctrl-v = 'workspace V'
+cmd-alt-ctrl-p = 'workspace P' # API, Postman-style (bruno)
+cmd-alt-ctrl-t = 'workspace T' # Terminal (kitty, rex)
 cmd-alt-ctrl-w = 'workspace W' # Mail (apple mail, thunderbird)
 cmd-alt-ctrl-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
-cmd-alt-ctrl-y = 'workspace Y'
-cmd-alt-ctrl-z = 'workspace Z'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-cmd-alt-ctrl-shift-1 = 'move-node-to-workspace 1'
-cmd-alt-ctrl-shift-2 = 'move-node-to-workspace 2'
-cmd-alt-ctrl-shift-3 = 'move-node-to-workspace 3'
-cmd-alt-ctrl-shift-4 = 'move-node-to-workspace 4'
-cmd-alt-ctrl-shift-5 = 'move-node-to-workspace 5'
-cmd-alt-ctrl-shift-6 = 'move-node-to-workspace 6'
-cmd-alt-ctrl-shift-7 = 'move-node-to-workspace 7'
-cmd-alt-ctrl-shift-8 = 'move-node-to-workspace 8'
-cmd-alt-ctrl-shift-9 = 'move-node-to-workspace 9'
+# ctrl-shift-1 = 'move-node-to-workspace 1'
+# ctrl-shift-2 = 'move-node-to-workspace 2'
+# ctrl-shift-3 = 'move-node-to-workspace 3'
+# ctrl-shift-4 = 'move-node-to-workspace 4'
+# ctrl-shift-5 = 'move-node-to-workspace 5'
+# ctrl-shift-6 = 'move-node-to-workspace 6'
+# ctrl-shift-7 = 'move-node-to-workspace 7'
+# ctrl-shift-8 = 'move-node-to-workspace 8'
+# ctrl-shift-9 = 'move-node-to-workspace 9'
 cmd-alt-ctrl-shift-a = 'move-node-to-workspace A'
 cmd-alt-ctrl-shift-b = 'move-node-to-workspace B'
-cmd-alt-ctrl-shift-c = 'move-node-to-workspace C'
 cmd-alt-ctrl-shift-d = 'move-node-to-workspace D'
-# cmd-alt-ctrl-shift-e -> used as move-node-to-monitor (below)
-# cmd-alt-ctrl-shift-f = 'move-node-to-workspace F'
-cmd-alt-ctrl-shift-g = 'move-node-to-workspace G'
-cmd-alt-ctrl-shift-i = 'move-node-to-workspace I'
+cmd-alt-ctrl-shift-e = 'move-node-to-workspace E'
 cmd-alt-ctrl-shift-m = 'move-node-to-workspace M'
 cmd-alt-ctrl-shift-n = 'move-node-to-workspace N'
 cmd-alt-ctrl-shift-p = 'move-node-to-workspace P'
-cmd-alt-ctrl-shift-q = 'move-node-to-workspace Q'
-cmd-alt-ctrl-shift-r = 'move-node-to-workspace R'
-cmd-alt-ctrl-shift-s = 'move-node-to-workspace S'
 cmd-alt-ctrl-shift-t = 'move-node-to-workspace T'
-cmd-alt-ctrl-shift-u = 'move-node-to-workspace U'
-cmd-alt-ctrl-shift-v = 'move-node-to-workspace V'
 cmd-alt-ctrl-shift-w = 'move-node-to-workspace W'
 cmd-alt-ctrl-shift-x = 'move-node-to-workspace X'
-cmd-alt-ctrl-shift-y = 'move-node-to-workspace Y'
-cmd-alt-ctrl-shift-z = 'move-node-to-workspace Z'
 
 ctrl-left = 'workspace prev'
 ctrl-right = 'workspace next'
 
-# " instead of Tab: with a modifier held, Logi POP Keys drops ~25% of Tab presses
-# entirely (no event is born at the HID layer, regardless of transport).
 # sectionSign is keycode 10, left of Z, which is " on Turkish-Q. ctrl, not cmd or
 # alt: kitty maps cmd-" to the tmux split, and alt is AltGr on this layout.
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
@@ -208,15 +188,16 @@ ctrl-sectionSign = 'workspace-back-and-forth'
 cmd-alt-ctrl-o = 'focus-back-and-forth'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
-cmd-alt-ctrl-e = 'focus-monitor --wrap-around next'
-cmd-alt-ctrl-shift-e = 'move-node-to-monitor --wrap-around next'
+cmd-alt-ctrl-tab = 'focus-monitor --wrap-around next'
+cmd-alt-ctrl-shift-tab = 'move-node-to-monitor --wrap-around next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 # Temporary move for force-assigned workspaces: on reload / monitor reconnect it
 # returns to the monitor it is assigned to.
 ctrl-shift-e = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-ctrl-alt-0 = 'mode service'
+# semicolon is the key right of L (ş on Turkish-Q); keycodes follow the qwerty preset.
+cmd-alt-ctrl-semicolon = 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -252,16 +233,14 @@ cmd-alt-ctrl-shift-f = 'fullscreen'
 [workspace-to-monitor-force-assignment]
 A = ['secondary', 'main']
 D = ['secondary', 'main']
-I = ['secondary', 'main']
+E = ['secondary', 'main']
 M = ['secondary', 'main']
 W = ['secondary', 'main']
-Z = ['secondary', 'main']
 
 B = 'built-in'
-C = 'built-in'
-G = 'built-in'
 N = 'built-in'
 P = 'built-in'
+T = 'built-in'
 
 # ==============================================================================
 # FLOATING WINDOWS
@@ -270,6 +249,10 @@ P = 'built-in'
 [[on-window-detected]]
 if.app-id = 'com.apple.systempreferences'
 run = ['layout floating']                 # The callback itself
+
+[[on-window-detected]]
+if.app-id = 'com.electron.ollama'
+run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.fortinet.FortiClient'
@@ -288,11 +271,12 @@ if.app-id = 'com.apple.calculator'
 run = 'layout floating'
 
 [[on-window-detected]]
-if.app-id = 'com.alienator88.Pearcleaner'
+if.app-id = 'com.anthropic.claudefordesktop'
 run = 'layout floating'
 
+# Password lookups are brief: float it on the current workspace instead of switching.
 [[on-window-detected]]
-if.app-id = 'com.superset.desktop'
+if.app-id = 'org.keepassxc.keepassxc'
 run = 'layout floating'
 
 # ==============================================================================
@@ -319,25 +303,17 @@ run = "move-node-to-workspace A"
 if.app-id = 'net.imput.helium'
 run = "move-node-to-workspace A"
 
-[[on-window-detected]]
-if.app-id = 'com.brave.Browser'
-run = "move-node-to-workspace A"
-
-# --- TERMINALS (WORKSPACE: C) ---
-
-[[on-window-detected]]
-if.app-id = 'com.github.wez.wezterm'
-run = "move-node-to-workspace C"
+# --- TERMINALS (WORKSPACE: T) ---
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
-run = "move-node-to-workspace C"
+run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.superlogical.rex'
-run = "move-node-to-workspace C"
+run = "move-node-to-workspace T"
 
-# --- COMMUNICATION & EMAIL (WORKSPACES: Z, W) ---
+# --- COMMUNICATION & EMAIL (WORKSPACES: B, W) ---
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -366,55 +342,31 @@ run = ["move-node-to-workspace M", "layout floating"]
 if.app-id = 'com.apple.Music'
 run = ["move-node-to-workspace M", "layout floating"]
 
-# --- DEVELOPMENT TOOLS & IDEs (WORKSPACE: I) ---
+# --- EDITORS & IDEs (WORKSPACE: E) ---
 
 [[on-window-detected]]
 if.app-id = 'com.neovide.neovide'
-run = 'move-node-to-workspace I'
+run = 'move-node-to-workspace E'
 check-further-callbacks = true
 
 # Launched from the terminal via the binary inside the bundle, macOS reports no
 # bundle id (NULL-APP-BUNDLE-ID), so the app-id rule does not match; catch it by name.
 [[on-window-detected]]
 if.app-name-regex-substring = '[Nn]eovide'
-run = 'move-node-to-workspace I'
-
-[[on-window-detected]]
-if.app-id = 'com.jetbrains.intellij'
-run = "move-node-to-workspace I"
-
-[[on-window-detected]]
-if.app-id = 'com.google.antigravity'
-run = "move-node-to-workspace I"
+run = 'move-node-to-workspace E'
 
 [[on-window-detected]]
 if.app-id = 'com.jetbrains.PhpStorm'
-run = "move-node-to-workspace I"
+run = "move-node-to-workspace E"
 
 [[on-window-detected]]
 if.app-id = 'dev.zed.Zed'
-run = "move-node-to-workspace I"
-
-[[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
-run = "move-node-to-workspace I"
+run = "move-node-to-workspace E"
 
 # --- DATABASE MANAGEMENT (WORKSPACE: D) ---
 [[on-window-detected]]
 if.app-id = 'io.beekeeperstudio.desktop'
 run = ["move-node-to-workspace D", "layout floating"] # Beekeeper studio has some weird behavior with AeroSpace, so I set it to floating layout]
-
-[[on-window-detected]]
-if.app-id = 'com.TablePro'
-run = ["move-node-to-workspace D", "layout floating"] # TablePro has some weird behavior with AeroSpace, so I set it to floating layout]
-
-[[on-window-detected]]
-if.app-id = 'org.jkiss.dbeaver.core.product'
-run = "move-node-to-workspace D"
-
-[[on-window-detected]]
-if.app-id = 'ai.reyz.tusk'
-run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'com.dbx.app'
@@ -426,38 +378,8 @@ run = "move-node-to-workspace D"
 if.app-id = 'com.usebruno.app'
 run = "move-node-to-workspace P"
 
-# --- AI (WORKSPACE: T) ---
-
-[[on-window-detected]]
-if.app-id = 'com.anthropic.claudefordesktop'
-run = "move-node-to-workspace T"
-
-[[on-window-detected]]
-if.app-id = 'com.electron.ollama'
-run = "move-node-to-workspace T"
-
-# --- READING & OFFICE (WORKSPACE: R) ---
-
-[[on-window-detected]]
-if.app-id = 'com.apple.Preview'
-run = "move-node-to-workspace R"
-
-[[on-window-detected]]
-if.app-id = 'org.libreoffice.script'
-run = "move-node-to-workspace R"
-
 # --- NOTE TAKING & PRODUCTIVITY (WORKSPACE: N) ---
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
 run = "move-node-to-workspace N"
-
-# --- SECURITY & UTILITIES (WORKSPACE: G) ---
-
-[[on-window-detected]]
-if.app-id = 'org.keepassxc.keepassxc'
-run = "move-node-to-workspace G"
-
-[[on-window-detected]]
-if.app-id = 'com.bitwarden.desktop'
-run = "move-node-to-workspace G"

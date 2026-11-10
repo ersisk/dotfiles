@@ -186,8 +186,9 @@ keeps the buttons from triggering the rescan that draws them.
 
 `ctrl+j` selects the next JSON payload on the page whole, so `cmd+c` copies it
 without hand-dragging over a wrapped log line; the key repeats through every
-payload and wraps. Plain `⌃` is the only free modifier block left: `⌥` is
-aerospace's, `⌘` is kitty's, `⌃⌥` is Raycast's, and Scoot holds `⌃⇧J/K/L`.
+payload and wraps. Plain `⌃` is the only free modifier block left: bare `⌥` is
+AltGr on Turkish-Q, `⌘⌥⌃` is aerospace's (Caps Lock via Karabiner), `⌘` is kitty's,
+`⌃⌥` is Raycast's, and Scoot holds `⌃⇧J/K/L`.
 Detected payloads are tinted through the CSS Custom Highlight API rather than
 wrapped in elements, because Graylog is React and reclaims any DOM the script
 would inject. Payloads Graylog stores escaped inside a string field
