@@ -4,7 +4,7 @@
 config-version = 2
 
 # v1 inferred this from the workspace bindings; v2 falls back to [], so keep it explicit.
-persistent-workspaces = ["A", "B", "C", "D", "G", "I", "M", "N", "P", "W", "X", "Z"]
+persistent-workspaces = ["A", "B", "C", "D", "G", "I", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
@@ -126,15 +126,17 @@ cmd-alt-ctrl-shift-minus = 'resize smart -50'
 cmd-alt-ctrl-shift-0 = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-# ctrl-1 = 'workspace 1'
-# ctrl-2 = 'workspace 2'
-# ctrl-3 = 'workspace 3'
-# ctrl-4 = 'workspace 4'
-# ctrl-5 = 'workspace 5'
-# ctrl-6 = 'workspace 6'
-# ctrl-7 = 'workspace 7'
-# ctrl-8 = 'workspace 8'
-# ctrl-9 = 'workspace 9'
+# Numbered ones are i3-style: left out of persistent-workspaces, so they exist only
+# while they hold a window or have focus.
+cmd-alt-ctrl-1 = 'workspace 1'
+cmd-alt-ctrl-2 = 'workspace 2'
+cmd-alt-ctrl-3 = 'workspace 3'
+cmd-alt-ctrl-4 = 'workspace 4'
+cmd-alt-ctrl-5 = 'workspace 5'
+cmd-alt-ctrl-6 = 'workspace 6'
+cmd-alt-ctrl-7 = 'workspace 7'
+cmd-alt-ctrl-8 = 'workspace 8'
+cmd-alt-ctrl-9 = 'workspace 9'
 # cmd-alt-ctrl is Caps Lock held (Karabiner, .config/karabiner). Plain alt is AltGr
 # on Turkish-Q (₺, @, ...), so no binding here uses it on its own.
 cmd-alt-ctrl-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
@@ -149,28 +151,28 @@ cmd-alt-ctrl-m = 'workspace M' # messaging /media (texting and spotify)
 cmd-alt-ctrl-n = 'workspace N' # Notes (Obsidian, notesnook)
 # cmd-alt-ctrl-o -> used as focus-back-and-forth (below)
 cmd-alt-ctrl-p = 'workspace P' # Bruno
-# cmd-alt-ctrl-q = 'workspace Q'
-# cmd-alt-ctrl-r = 'workspace R'
-# cmd-alt-ctrl-s = 'workspace S' # Slack
-# cmd-alt-ctrl-t = 'workspace T'
-# cmd-alt-ctrl-u = 'workspace U'
-# cmd-alt-ctrl-v = 'workspace V'
+cmd-alt-ctrl-q = 'workspace Q'
+cmd-alt-ctrl-r = 'workspace R' # Reading / office (preview, libreoffice)
+cmd-alt-ctrl-s = 'workspace S'
+cmd-alt-ctrl-t = 'workspace T' # AI (claude desktop, ollama)
+cmd-alt-ctrl-u = 'workspace U'
+cmd-alt-ctrl-v = 'workspace V'
 cmd-alt-ctrl-w = 'workspace W' # Mail (apple mail, thunderbird)
 cmd-alt-ctrl-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
-# cmd-alt-ctrl-y = 'workspace Y'
+cmd-alt-ctrl-y = 'workspace Y'
 cmd-alt-ctrl-z = 'workspace Z'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-# ctrl-shift-1 = 'move-node-to-workspace 1'
-# ctrl-shift-2 = 'move-node-to-workspace 2'
-# ctrl-shift-3 = 'move-node-to-workspace 3'
-# ctrl-shift-4 = 'move-node-to-workspace 4'
-# ctrl-shift-5 = 'move-node-to-workspace 5'
-# ctrl-shift-6 = 'move-node-to-workspace 6'
-# ctrl-shift-7 = 'move-node-to-workspace 7'
-# ctrl-shift-8 = 'move-node-to-workspace 8'
-# ctrl-shift-9 = 'move-node-to-workspace 9'
+cmd-alt-ctrl-shift-1 = 'move-node-to-workspace 1'
+cmd-alt-ctrl-shift-2 = 'move-node-to-workspace 2'
+cmd-alt-ctrl-shift-3 = 'move-node-to-workspace 3'
+cmd-alt-ctrl-shift-4 = 'move-node-to-workspace 4'
+cmd-alt-ctrl-shift-5 = 'move-node-to-workspace 5'
+cmd-alt-ctrl-shift-6 = 'move-node-to-workspace 6'
+cmd-alt-ctrl-shift-7 = 'move-node-to-workspace 7'
+cmd-alt-ctrl-shift-8 = 'move-node-to-workspace 8'
+cmd-alt-ctrl-shift-9 = 'move-node-to-workspace 9'
 cmd-alt-ctrl-shift-a = 'move-node-to-workspace A'
 cmd-alt-ctrl-shift-b = 'move-node-to-workspace B'
 cmd-alt-ctrl-shift-c = 'move-node-to-workspace C'
@@ -182,15 +184,15 @@ cmd-alt-ctrl-shift-i = 'move-node-to-workspace I'
 cmd-alt-ctrl-shift-m = 'move-node-to-workspace M'
 cmd-alt-ctrl-shift-n = 'move-node-to-workspace N'
 cmd-alt-ctrl-shift-p = 'move-node-to-workspace P'
-# cmd-alt-ctrl-shift-q = 'move-node-to-workspace Q'
-# cmd-alt-ctrl-shift-r = 'move-node-to-workspace R'
-# cmd-alt-ctrl-shift-s = 'move-node-to-workspace S'
-# cmd-alt-ctrl-shift-t = 'move-node-to-workspace T'
-# cmd-alt-ctrl-shift-u = 'move-node-to-workspace U'
-# cmd-alt-ctrl-shift-v = 'move-node-to-workspace V'
+cmd-alt-ctrl-shift-q = 'move-node-to-workspace Q'
+cmd-alt-ctrl-shift-r = 'move-node-to-workspace R'
+cmd-alt-ctrl-shift-s = 'move-node-to-workspace S'
+cmd-alt-ctrl-shift-t = 'move-node-to-workspace T'
+cmd-alt-ctrl-shift-u = 'move-node-to-workspace U'
+cmd-alt-ctrl-shift-v = 'move-node-to-workspace V'
 cmd-alt-ctrl-shift-w = 'move-node-to-workspace W'
 cmd-alt-ctrl-shift-x = 'move-node-to-workspace X'
-# cmd-alt-ctrl-shift-y = 'move-node-to-workspace Y'
+cmd-alt-ctrl-shift-y = 'move-node-to-workspace Y'
 cmd-alt-ctrl-shift-z = 'move-node-to-workspace Z'
 
 ctrl-left = 'workspace prev'
@@ -270,10 +272,6 @@ if.app-id = 'com.apple.systempreferences'
 run = ['layout floating']                 # The callback itself
 
 [[on-window-detected]]
-if.app-id = 'com.electron.ollama'
-run = 'layout floating'
-
-[[on-window-detected]]
 if.app-id = 'com.fortinet.FortiClient'
 run = 'layout floating'
 
@@ -291,10 +289,6 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.alienator88.Pearcleaner'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.anthropic.claudefordesktop'
 run = 'layout floating'
 
 [[on-window-detected]]
@@ -431,6 +425,26 @@ run = "move-node-to-workspace D"
 [[on-window-detected]]
 if.app-id = 'com.usebruno.app'
 run = "move-node-to-workspace P"
+
+# --- AI (WORKSPACE: T) ---
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'com.electron.ollama'
+run = "move-node-to-workspace T"
+
+# --- READING & OFFICE (WORKSPACE: R) ---
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Preview'
+run = "move-node-to-workspace R"
+
+[[on-window-detected]]
+if.app-id = 'org.libreoffice.script'
+run = "move-node-to-workspace R"
 
 # --- NOTE TAKING & PRODUCTIVITY (WORKSPACE: N) ---
 
