@@ -64,6 +64,7 @@ PREFIX = "^a"
 # read via fzf --ansi; visually separates alias rows from shortcuts
 CYAN, DIM, RESET = "\033[36m", "\033[2m", "\033[0m"
 GLYPHS = {"cmd": "⌘", "shift": "⇧", "ctrl": "⌃", "alt": "⌥", "opt": "⌥"}
+HYPER = {"⌘", "⌥", "⌃"}
 SKIP_DESC = ("note:",)
 
 
@@ -82,6 +83,9 @@ def pretty_key(key, sep="+"):
             out.append(part.upper())
         else:
             out.append(part.title())
+    # Caps Lock held (Karabiner) is cmd+alt+ctrl at once; one glyph reads better than three.
+    if HYPER <= set(out):
+        out = ["⇪"] + [p for p in out if p not in HYPER]
     return "+".join(out)
 
 

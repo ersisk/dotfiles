@@ -6,6 +6,7 @@ the files where they are; unlike the AI Commands, these really are versioned.
 
 | Command | Hotkey | What it does |
 | --- | --- | --- |
+| Branch PR | `⌃⌥P` | Opens the GitHub PR of the branch in the active tmux pane |
 | Jump to Claude | `⌃⌥J` | Raises kitty on the Claude session that wants attention |
 | Screen OCR | `⌃⌥O` | Select a screen region, copy the text to the clipboard (macOS Vision) |
 | Sesh Session | `⌃⌥S` | Raise kitty and switch to the matching sesh session |
