@@ -108,22 +108,22 @@ ctrl-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 # wrap-around-the-workspace: on an edge window the key should wrap instead of doing nothing.
-alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
-alt-j = 'focus --boundaries-action wrap-around-the-workspace down'
-alt-k = 'focus --boundaries-action wrap-around-the-workspace up'
-alt-l = 'focus --boundaries-action wrap-around-the-workspace right'
+cmd-alt-ctrl-h = 'focus --boundaries-action wrap-around-the-workspace left'
+cmd-alt-ctrl-j = 'focus --boundaries-action wrap-around-the-workspace down'
+cmd-alt-ctrl-k = 'focus --boundaries-action wrap-around-the-workspace up'
+cmd-alt-ctrl-l = 'focus --boundaries-action wrap-around-the-workspace right'
 
-alt-f = 'fullscreen'
+cmd-alt-ctrl-f = 'fullscreen'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
-alt-shift-h = 'move left'
-alt-shift-j = 'move down'
-alt-shift-k = 'move up'
-alt-shift-l = 'move right'
+cmd-alt-ctrl-shift-h = 'move left'
+cmd-alt-ctrl-shift-j = 'move down'
+cmd-alt-ctrl-shift-k = 'move up'
+cmd-alt-ctrl-shift-l = 'move right'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-alt-shift-minus = 'resize smart -50'
-alt-shift-0 = 'resize smart +50'
+cmd-alt-ctrl-shift-minus = 'resize smart -50'
+cmd-alt-ctrl-shift-0 = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 # ctrl-1 = 'workspace 1'
@@ -135,30 +135,30 @@ alt-shift-0 = 'resize smart +50'
 # ctrl-7 = 'workspace 7'
 # ctrl-8 = 'workspace 8'
 # ctrl-9 = 'workspace 9'
-alt-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
-alt-b = 'workspace B' # Browser, Slack
-alt-c = 'workspace C' # Terminal (kitty, wezterm, rex)
-alt-d = 'workspace D' # Database (Beekeeper studio)
-# alt-e -> used as focus-monitor (below)
-# alt-f = 'workspace F'
-alt-g = 'workspace G' # KeePassXC (Password manager)
-alt-i = 'workspace I' # Intellij
-alt-m = 'workspace M' # messaging /media (texting and spotify) 
-alt-n = 'workspace N' # Notes (Obsidian, notesnook)
-# alt-o -> used as focus-back-and-forth (below)
-alt-p = 'workspace P' # Bruno
-# alt-q = 'workspace Q'
-# alt-r = 'workspace R'
-# alt-s = 'workspace S' # Slack
-# alt-t: left unbound on purpose. alt is AltGr on Turkish-Q and alt-t is the
-# only way to type the lira sign.
-# alt-t = 'workspace T'
-# alt-u = 'workspace U'
-# alt-v = 'workspace V'
-alt-w = 'workspace W' # Mail (apple mail, thunderbird)
-alt-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
-# alt-y = 'workspace Y'
-alt-z = 'workspace Z'
+# cmd-alt-ctrl is Caps Lock held (Karabiner, .config/karabiner). Plain alt is AltGr
+# on Turkish-Q (₺, @, ...), so no binding here uses it on its own.
+cmd-alt-ctrl-a = 'workspace A' # Browsers (firefox, safari, brave, helium)
+cmd-alt-ctrl-b = 'workspace B' # Browser, Slack
+cmd-alt-ctrl-c = 'workspace C' # Terminal (kitty, wezterm, rex)
+cmd-alt-ctrl-d = 'workspace D' # Database (Beekeeper studio)
+# cmd-alt-ctrl-e -> used as focus-monitor (below)
+# cmd-alt-ctrl-f -> used as fullscreen (above)
+cmd-alt-ctrl-g = 'workspace G' # KeePassXC (Password manager)
+cmd-alt-ctrl-i = 'workspace I' # Intellij
+cmd-alt-ctrl-m = 'workspace M' # messaging /media (texting and spotify)
+cmd-alt-ctrl-n = 'workspace N' # Notes (Obsidian, notesnook)
+# cmd-alt-ctrl-o -> used as focus-back-and-forth (below)
+cmd-alt-ctrl-p = 'workspace P' # Bruno
+# cmd-alt-ctrl-q = 'workspace Q'
+# cmd-alt-ctrl-r = 'workspace R'
+# cmd-alt-ctrl-s = 'workspace S' # Slack
+# cmd-alt-ctrl-t = 'workspace T'
+# cmd-alt-ctrl-u = 'workspace U'
+# cmd-alt-ctrl-v = 'workspace V'
+cmd-alt-ctrl-w = 'workspace W' # Mail (apple mail, thunderbird)
+cmd-alt-ctrl-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
+# cmd-alt-ctrl-y = 'workspace Y'
+cmd-alt-ctrl-z = 'workspace Z'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
@@ -171,27 +171,27 @@ alt-z = 'workspace Z'
 # ctrl-shift-7 = 'move-node-to-workspace 7'
 # ctrl-shift-8 = 'move-node-to-workspace 8'
 # ctrl-shift-9 = 'move-node-to-workspace 9'
-alt-shift-a = 'move-node-to-workspace A'
-alt-shift-b = 'move-node-to-workspace B'
-alt-shift-c = 'move-node-to-workspace C'
-alt-shift-d = 'move-node-to-workspace D'
-# alt-shift-e -> used as move-node-to-monitor (below)
-# alt-shift-f = 'move-node-to-workspace F'
-alt-shift-g = 'move-node-to-workspace G'
-alt-shift-i = 'move-node-to-workspace I'
-alt-shift-m = 'move-node-to-workspace M'
-alt-shift-n = 'move-node-to-workspace N'
-alt-shift-p = 'move-node-to-workspace P'
-# alt-shift-q = 'move-node-to-workspace Q'
-# alt-shift-r = 'move-node-to-workspace R'
-# alt-shift-s = 'move-node-to-workspace S'
-# alt-shift-t = 'move-node-to-workspace T'
-# alt-shift-u = 'move-node-to-workspace U'
-# alt-shift-v = 'move-node-to-workspace V'
-alt-shift-w = 'move-node-to-workspace W'
-alt-shift-x = 'move-node-to-workspace X'
-# alt-shift-y = 'move-node-to-workspace Y'
-alt-shift-z = 'move-node-to-workspace Z'
+cmd-alt-ctrl-shift-a = 'move-node-to-workspace A'
+cmd-alt-ctrl-shift-b = 'move-node-to-workspace B'
+cmd-alt-ctrl-shift-c = 'move-node-to-workspace C'
+cmd-alt-ctrl-shift-d = 'move-node-to-workspace D'
+# cmd-alt-ctrl-shift-e -> used as move-node-to-monitor (below)
+# cmd-alt-ctrl-shift-f = 'move-node-to-workspace F'
+cmd-alt-ctrl-shift-g = 'move-node-to-workspace G'
+cmd-alt-ctrl-shift-i = 'move-node-to-workspace I'
+cmd-alt-ctrl-shift-m = 'move-node-to-workspace M'
+cmd-alt-ctrl-shift-n = 'move-node-to-workspace N'
+cmd-alt-ctrl-shift-p = 'move-node-to-workspace P'
+# cmd-alt-ctrl-shift-q = 'move-node-to-workspace Q'
+# cmd-alt-ctrl-shift-r = 'move-node-to-workspace R'
+# cmd-alt-ctrl-shift-s = 'move-node-to-workspace S'
+# cmd-alt-ctrl-shift-t = 'move-node-to-workspace T'
+# cmd-alt-ctrl-shift-u = 'move-node-to-workspace U'
+# cmd-alt-ctrl-shift-v = 'move-node-to-workspace V'
+cmd-alt-ctrl-shift-w = 'move-node-to-workspace W'
+cmd-alt-ctrl-shift-x = 'move-node-to-workspace X'
+# cmd-alt-ctrl-shift-y = 'move-node-to-workspace Y'
+cmd-alt-ctrl-shift-z = 'move-node-to-workspace Z'
 
 ctrl-left = 'workspace prev'
 ctrl-right = 'workspace next'
@@ -203,11 +203,11 @@ ctrl-right = 'workspace next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 ctrl-sectionSign = 'workspace-back-and-forth'
 # The window-level counterpart of ctrl-": toggles between the last two windows.
-alt-o = 'focus-back-and-forth'
+cmd-alt-ctrl-o = 'focus-back-and-forth'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
-alt-e = 'focus-monitor --wrap-around next'
-alt-shift-e = 'move-node-to-monitor --wrap-around next'
+cmd-alt-ctrl-e = 'focus-monitor --wrap-around next'
+cmd-alt-ctrl-shift-e = 'move-node-to-monitor --wrap-around next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 # Temporary move for force-assigned workspaces: on reload / monitor reconnect it
 # returns to the monitor it is assigned to.
@@ -235,11 +235,11 @@ backspace = ['close-all-windows-but-current', 'mode main']
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 #s = ['layout sticky tiling', 'mode main']
 
-alt-shift-h = ['join-with left', 'mode main']
-alt-shift-j = ['join-with down', 'mode main']
-alt-shift-k = ['join-with up', 'mode main']
-alt-shift-l = ['join-with right', 'mode main']
-alt-shift-f = 'fullscreen'
+cmd-alt-ctrl-shift-h = ['join-with left', 'mode main']
+cmd-alt-ctrl-shift-j = ['join-with down', 'mode main']
+cmd-alt-ctrl-shift-k = ['join-with up', 'mode main']
+cmd-alt-ctrl-shift-l = ['join-with right', 'mode main']
+cmd-alt-ctrl-shift-f = 'fullscreen'
 
 # Monitor order (1, 2, ...) shifts with the physical layout; moving a screen moves
 # the assignments with it. Hence a stable pattern instead of an ID.

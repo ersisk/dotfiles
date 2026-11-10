@@ -45,6 +45,9 @@
 .config/raycast/extensions/
 .config/raycast/ai/
 
+# Karabiner rewrites karabiner.json in place and drops a backup here on each change
+.config/karabiner/automatic_backups/
+
 # macOS Finder metadata
 .DS_Store
 
