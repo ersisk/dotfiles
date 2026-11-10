@@ -18,14 +18,34 @@ if test -d /opt/homebrew/bin
     if test -n "$MANPATH"; set -gx MANPATH (string replace --regex '^:*(.*?):*$' ':$1' -- "$MANPATH"); end
     if not set -q INFOPATH; set INFOPATH ''; end; set -gx INFOPATH /opt/homebrew/share/info $INFOPATH
 end
-starship init fish | source # https://starship.rs/
-zoxide init fish | source # 'ajeetdsouza/zoxide'
-fzf --fish | source
+# Each init is a 3-12ms subprocess per shell. Their output is deterministic, so cache it keyed on
+# the resolved binary (a versioned Cellar path, so an upgrade invalidates it) plus the arguments.
+function __cached_init --argument-names name
+    set -l bin (command -s $name); or return
+    set -l key "# "(path resolve $bin)" $argv[2..]"
+    set -l cache (set -q XDG_CACHE_HOME; and echo $XDG_CACHE_HOME; or echo $HOME/.cache)/fish-init/$name.fish
+    set -l first
+    test -r $cache; and read first <$cache
+    if test "$first" != "$key"
+        mkdir -p (path dirname $cache)
+        begin
+            echo $key
+            command $argv
+        end >$cache
+    end
+    source $cache
+end
+__cached_init starship init fish --print-full-init # https://starship.rs/
+__cached_init zoxide init fish # 'ajeetdsouza/zoxide'
+__cached_init fzf --fish
+# Not cached: the output names a per-shell multishell path.
 fnm --log-level quiet env --use-on-cd | source # "Schniz/fnm"
-direnv hook fish | source # https://direnv.net/
-fx --comp fish | source # https://fx.wtf/
+# Homebrew's vendor_conf.d/direnv.fish already hooks it before this file runs; a second hook cost ~4ms.
+functions -q __direnv_export_eval; or direnv hook fish | source # https://direnv.net/
+__cached_init fx --comp fish # https://fx.wtf/
 # --disable-up-arrow: keep the up arrow on fish's own history, send only ctrl-r to atuin.
-atuin init fish --disable-up-arrow | source # https://atuin.sh/
+__cached_init atuin init fish --disable-up-arrow # https://atuin.sh/
+functions -e __cached_init
 # atuin 18.19 enters natural-language (AI) mode on '?' at the start of an empty line; not wanted on a sync-off setup.
 bind -e '?' 2>/dev/null
 set -g direnv_fish_mode eval_on_arrow # trigger direnv at prompt, and on every arrow-based directory change (default)
