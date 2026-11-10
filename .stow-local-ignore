@@ -9,6 +9,10 @@ Library
 /.ssh/config
 /.wget-hsts
 ^/README*
+^/bootstrap\.sh
+
+# Project-level opencode config for this repo; ~/.opencode is opencode's own install dir
+^/\.opencode
 
 \.git
 \.gitignore
