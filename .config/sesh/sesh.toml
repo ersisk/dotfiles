@@ -89,8 +89,8 @@ path = "$WORK_MAIN"
 # startup_command lands in window 1. Creating a named window turns
 # automatic-rename off, so it is turned back on in the shell window -
 # the nerd-font/claude-state glyphs come from there.
-startup_command = "tmux rename-window -t $TMUX_PANE '󰊤 GHDash'; tmux set -w -t 4 automatic-rename on; clear; gh dash"
-windows = ["prping", "revping", "shell"]
+startup_command = "tmux rename-window -t $TMUX_PANE '󰊤 GHDash'; tmux set -w -t 3 automatic-rename on; clear; gh dash"
+windows = ["prping", "shell"]
 
 [[session]]
 name = "💼 Notif"
@@ -122,11 +122,8 @@ name = "shell"
 [[window]]
 name = "prping"
 # Without -t, tmux targets the session's current window, not this pane's.
-startup_script = "tmux set -w -t $TMUX_PANE automatic-rename on; prping -u"
-
-[[window]]
-name = "revping"
-startup_script = "tmux set -w -t $TMUX_PANE automatic-rename on; revping"
+# revping gets a side-by-side split; -d keeps focus on prping.
+startup_script = 'tmux set -w -t $TMUX_PANE automatic-rename on; tmux send-keys -t "$(tmux split-window -dh -t $TMUX_PANE -P -F "#{pane_id}")" revping Enter; prping -u'
 
 # Entering a worktree should land straight in the file picker.
 # Note: only startup_command works inside [[wildcard]] - preview_command is never
