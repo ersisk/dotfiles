@@ -4,7 +4,7 @@
 config-version = 2
 
 # v1 inferred this from the workspace bindings; v2 falls back to [], so keep it explicit.
-persistent-workspaces = ["A", "B", "D", "E", "M", "N", "P", "T", "W", "X"]
+persistent-workspaces = ["A", "B", "D", "E", "M", "N", "P", "R", "T", "W", "X"]
 
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
@@ -151,7 +151,8 @@ cmd-alt-ctrl-m = 'workspace M' # Messaging / media (messages, spotify, music)
 cmd-alt-ctrl-n = 'workspace N' # Notes (obsidian)
 # cmd-alt-ctrl-o -> used as focus-back-and-forth (below)
 cmd-alt-ctrl-p = 'workspace P' # API, Postman-style (bruno)
-cmd-alt-ctrl-t = 'workspace T' # Terminal (kitty, rex)
+cmd-alt-ctrl-r = 'workspace R' # Rex (agent review tabs)
+cmd-alt-ctrl-t = 'workspace T' # Terminal (kitty)
 cmd-alt-ctrl-w = 'workspace W' # Mail (apple mail, thunderbird)
 cmd-alt-ctrl-x = 'workspace X' # Scratch (unassigned windows; not pinned to a monitor)
 
@@ -173,6 +174,7 @@ cmd-alt-ctrl-shift-e = 'move-node-to-workspace E'
 cmd-alt-ctrl-shift-m = 'move-node-to-workspace M'
 cmd-alt-ctrl-shift-n = 'move-node-to-workspace N'
 cmd-alt-ctrl-shift-p = 'move-node-to-workspace P'
+cmd-alt-ctrl-shift-r = 'move-node-to-workspace R'
 cmd-alt-ctrl-shift-t = 'move-node-to-workspace T'
 cmd-alt-ctrl-shift-w = 'move-node-to-workspace W'
 cmd-alt-ctrl-shift-x = 'move-node-to-workspace X'
@@ -235,6 +237,7 @@ A = ['secondary', 'main']
 D = ['secondary', 'main']
 E = ['secondary', 'main']
 M = ['secondary', 'main']
+R = ['secondary', 'main']
 W = ['secondary', 'main']
 
 B = 'built-in'
@@ -303,7 +306,7 @@ run = "move-node-to-workspace A"
 if.app-id = 'net.imput.helium'
 run = "move-node-to-workspace A"
 
-# --- TERMINALS (WORKSPACE: T) ---
+# --- TERMINALS (WORKSPACES: T, R) ---
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
@@ -311,7 +314,7 @@ run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.superlogical.rex'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace R"
 
 # --- COMMUNICATION & EMAIL (WORKSPACES: B, W) ---
 
