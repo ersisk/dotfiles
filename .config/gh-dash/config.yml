@@ -93,6 +93,11 @@ keybindings:
           # The TUI sends --prompt as plain text, so a /t2-review command would not expand; point at its file.
           command: >-
             tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "KT2-{{.PrNumber}}" "kilo --agent code --auto --prompt 'Follow ~/.config/kilo/command/t2-review.md exactly for PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+        - key: F
+          name: pr revize
+          # Same launch as prping's c key; c and C are already taken here.
+          command: >-
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "REV-{{.PrNumber}}" "claude '/pr-review-loop {{.RepoName}}#{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: D
           name: codediff in nvim
           # PR branches are rarely fetched already, so origin/<head> would not resolve.
