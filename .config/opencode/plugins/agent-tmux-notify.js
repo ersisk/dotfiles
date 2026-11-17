@@ -22,6 +22,7 @@
 // still working. Their tool calls still keep the pane on "working".
 
 import { spawn } from "node:child_process";
+import { closeSync, openSync, writeSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join } from "node:path";
 
@@ -43,8 +44,31 @@ const ASK_GRACE_MS = 1500;
 let chain = Promise.resolve();
 
 function send(payload) {
+  reportRex(payload.hook_event_name);
   chain = chain.then(() => run(payload)).catch(() => {});
   return chain;
+}
+
+// Rex reads an agent's state from OSC 7501 (rex-reviews keys "done" off it).
+// Claude Code reports it natively; opencode and kilo do not, so the plugin does.
+const IN_REX = Boolean(process.env.REX_SESSION);
+const REX_STATE = {
+  UserPromptSubmit: "working",
+  PreToolUse: "working",
+  Notification: "blocked",
+  Stop: "done",
+};
+let rexState = "";
+
+function reportRex(event) {
+  const state = REX_STATE[event];
+  if (!IN_REX || !state || state === rexState) return;
+  rexState = state;
+  try {
+    const fd = openSync("/dev/tty", "w");
+    writeSync(fd, `\x1b]7501;state=${state}:app=${AGENT}\x1b\\`);
+    closeSync(fd);
+  } catch {}
 }
 
 function run(payload) {
