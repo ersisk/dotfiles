@@ -15,8 +15,8 @@ WIDTH=52
 
 . "${AGENT_STATE_LIB:-$HOME/.local/share/agent-menubar/agent-state.sh}"
 
-# Same rows as the menu bar: recovered placeholders are hidden once the session's
-# own state file exists, and sessions outside tmux are listed too.
+# The menu bar's rows minus sessions outside tmux, which this panel cannot jump to.
+# Recovered placeholders are hidden once the session's own state file exists.
 # Each item is two lines, NUL-terminated (fzf --read0). The location comes from tmux,
 # not the state file: the recorded window index goes stale when windows renumber.
 list() {
@@ -40,28 +40,24 @@ list() {
 
   for line in "${lines[@]}"; do
     pane=$(json_field "$line" tmux_pane)
+    [[ -n "$pane" ]] || continue
     [[ "$line" == *'"recovered":true'* && -n "${real[$pane]:-}" ]] && continue
     local state agent updated
     state=$(json_field "$line" state)
     agent=$(json_field "$line" agent)
     updated=$(json_num "$line" updated_at)
-    id=${pane:-none}
-    [[ -n "$pane" ]] || agent="${agent:-claude}·ext"
+    id=$pane
     printf '%s\t%s\t%s\t%s %-14.14s %-9s %4s  %s\t%s\n' \
       "$(state_prio "$state")" "${updated:-0}" "$id" \
       "$(state_icon "$state")" "$(json_field "$line" project)" "${agent:-claude}" \
       "$(short_age "$updated" "$now")" "$(json_field "$line" detail)" \
-      "${loc[$id]:-${pane:+gone}}"
+      "${loc[$id]:-gone}"
   done | sort -t$'\t' -k1,1n -k2,2nr |
-    awk -F'\t' '{ printf "%s\t%s\n   \033[2m%s\033[0m%c", $3, $4, ($5 == "" ? "not in tmux" : $5), 0 }'
+    awk -F'\t' '{ printf "%s\t%s\n   \033[2m%s\033[0m%c", $3, $4, $5, 0 }'
 }
 
 jump() {
   local pane="$1" session
-  if [[ "$pane" == none ]]; then
-    tmux display-message -d 1500 "not in tmux"
-    return 0
-  fi
   session=$(tmux display-message -p -t "$pane" '#{session_name}' 2>/dev/null) || return 0
   tmux switch-client -t "$session"
   tmux select-window -t "$pane"
