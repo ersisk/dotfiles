@@ -1,5 +1,12 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
+    "allow": [
+      "Bash(~/.claude/scripts/graylog-search.sh:*)"
+    ],
     "defaultMode": "auto"
   },
   "hooks": {
@@ -79,13 +86,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/Users/ersanisik/.claude/hooks/herdr-agent-state.sh' session",
-            "timeout": 10
-          },
-          {
-            "type": "command",
             "command": "~/.local/bin/agent-tmux-notify",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'rex __internal session-start --agent claude --feature-session-naming=false 2>/dev/null || true'",
+            "timeout": 5
           }
         ]
       }
@@ -126,7 +137,6 @@
     "claude-hud@claude-hud": true,
     "atlassian@claude-plugins-official": true,
     "andrej-karpathy-skills@karpathy-skills": false,
-    "claude-mem@thedotmack": true,
     "lua-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true
   },
@@ -148,12 +158,6 @@
         "source": "github",
         "repo": "forrestchang/andrej-karpathy-skills"
       }
-    },
-    "thedotmack": {
-      "source": {
-        "source": "github",
-        "repo": "thedotmack/claude-mem"
-      }
     }
   },
   "alwaysThinkingEnabled": true,
@@ -168,7 +172,8 @@
     "allow": [
       "$defaults",
       "Bash(composer install:*)",
-      "Bash(composer require:*)"
+      "Bash(composer require:*)",
+      "Bash(~/.claude/scripts/graylog-search.sh:*)"
     ],
     "soft_deny": [
       "$defaults",
