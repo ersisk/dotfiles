@@ -85,20 +85,22 @@ keybindings:
             tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "SUM-{{.PrNumber}}" "claude --dangerously-skip-permissions '/pr-summary #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: K
           name: kilo review
-          # Kilo is an opencode fork: same flags, and code is its build agent.
+          # Kilo is an opencode fork: same flags, and code is its build agent. Stays on code, not
+          # t2-lead: gtc-pr-review reads and posts through the GitHub MCP, which t2-lead denies.
           # Same model/effort as rex-reviews: the TUI reads effort only from model.json, so it gets a private state dir.
           # kv.json holds the theme, which that private dir would otherwise lose.
           command: >-
-            mkdir -p ~/.local/state/gh-dash-kilo/kilo && echo '{"variant":{"teknasyon-llmgateway/claude-opus-5-5":"xhigh"} }' > ~/.local/state/gh-dash-kilo/kilo/model.json &&
+            mkdir -p ~/.local/state/gh-dash-kilo/kilo && echo '{"variant":{"teknasyon-llmgateway/claude-opus-5-5":"high"} }' > ~/.local/state/gh-dash-kilo/kilo/model.json &&
             { cp ~/.local/state/kilo/kv.json ~/.local/state/gh-dash-kilo/kilo/ 2>/dev/null || true; } &&
             tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "KC-{{.PrNumber}}" "env XDG_STATE_HOME=$HOME/.local/state/gh-dash-kilo kilo --agent code --auto -m teknasyon-llmgateway/claude-opus-5-5 --prompt 'Use the gtc-pr-review skill to review PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: L
           name: kilo t2 review
           # The TUI sends --prompt as plain text, so a /t2-review command would not expand; point at its file.
+          # Same launch as rex-reviews: t2-lead is code minus the GitHub MCP (~30K tokens per request, unused by T2).
           command: >-
-            mkdir -p ~/.local/state/gh-dash-kilo/kilo && echo '{"variant":{"teknasyon-llmgateway/claude-opus-5-5":"xhigh"} }' > ~/.local/state/gh-dash-kilo/kilo/model.json &&
+            mkdir -p ~/.local/state/gh-dash-kilo/kilo && echo '{"variant":{"teknasyon-llmgateway/claude-opus-5-5":"high"} }' > ~/.local/state/gh-dash-kilo/kilo/model.json &&
             { cp ~/.local/state/kilo/kv.json ~/.local/state/gh-dash-kilo/kilo/ 2>/dev/null || true; } &&
-            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "KT2-{{.PrNumber}}" "env XDG_STATE_HOME=$HOME/.local/state/gh-dash-kilo kilo --agent code --auto -m teknasyon-llmgateway/claude-opus-5-5 --prompt 'Follow ~/.config/kilo/command/t2-review.md exactly for PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
+            tmux new-window -d -P -F '#{window_id}' -c "$(gh-repo-path {{.RepoName}})" -n "KT2-{{.PrNumber}}" "env XDG_STATE_HOME=$HOME/.local/state/gh-dash-kilo kilo --agent t2-lead --auto -m teknasyon-llmgateway/claude-opus-5-5 --prompt 'Follow ~/.config/kilo/command/t2-review.md exactly for PR #{{.PrNumber}}'" | xargs -I% tmux set-window-option -t % remain-on-exit failed
         - key: F
           name: pr revize
           # Same launch as pr-dash's c key (replies tab); c and C are already taken here.
