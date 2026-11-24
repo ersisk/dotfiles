@@ -1,6 +1,6 @@
 # agent-state — reader for ~/.local/state/agent-menubar/sessions.
 #
-# The contract is written down in the main README. The reader lives here because the
+# The contract is written down in README.md next to this file. The reader lives here because the
 # app that defines it (AgentMenubar.swift) is in this directory too; two separate
 # callers source it:
 #   agent-next.sh                      (tmux, prefix + j)

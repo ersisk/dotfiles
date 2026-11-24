@@ -31,6 +31,9 @@ On Linux there is no bootstrap; `stow . -t ~` is the whole install.
 
 ## What bootstrap.sh does
 
+All three Swift tools are rebuilt only when their source is newer than the
+binary.
+
 ### Brewfile
 
 `brew bundle install --no-upgrade`, with Homebrew's `bin` put first on `PATH`.
@@ -74,9 +77,6 @@ there, not from `~/.config`, so stow does not cover them.
 Builds the helper `jira-to-branch` reads the Jira key with — the title itself
 comes from the API through jira-cli (see [jira-cli](#jira-cli)). It wraps the
 Vision framework, so nothing is installed beyond what macOS ships.
-
-All three Swift tools are rebuilt only when their source is newer than the
-binary.
 
 ### Coding-agent menu bar indicator
 
@@ -177,23 +177,8 @@ the `@include` glob applies to the whole URL.
 pbcopy < ~/.local/share/graylog-json-select/graylog-json-select.user.js
 ```
 
-Every detected payload gets a `{}` button in the gutter at its left edge, and
-clicking one selects that payload alone — the way to grab a single row out of a
-screen full of them. The buttons live in the shadow root of a fixed overlay on
-`document.body`, both because React reclaims anything injected into its own tree
-and because the observer below cannot see into a shadow tree, which is what
-keeps the buttons from triggering the rescan that draws them.
-
-`ctrl+j` selects the next JSON payload on the page whole, so `cmd+c` copies it
-without hand-dragging over a wrapped log line; the key repeats through every
-payload and wraps. Plain `⌃` is the only free modifier block left: bare `⌥` is
-AltGr on Turkish-Q, `⌘⌥⌃` is aerospace's (Caps Lock via Karabiner), `⌘` is kitty's,
-`⌃⌥` is Raycast's, and Scoot holds `⌃⇧J/K/L`.
-Detected payloads are tinted through the CSS Custom Highlight API rather than
-wrapped in elements, because Graylog is React and reclaims any DOM the script
-would inject. Payloads Graylog stores escaped inside a string field
-(`{\"a\":1}`) are found too, but the selection copies what is on screen — still
-escaped.
+What the script does once installed is described in
+[its own README](.local/share/graylog-json-select/README.md).
 
 ### jira-cli
 
@@ -235,90 +220,17 @@ Skills need no step: opencode scans `~/.claude/skills` and `~/.agents/skills` on
 its own, and reads `~/.claude/CLAUDE.md` as global instructions, so both agents
 share one set. `opencode debug skill` lists what it found.
 
-# Shortcut panel
+## Design notes
 
-`prefix + ?` (and `⌃⌥/` from outside tmux) opens `.config/tmux/keys-panel.sh`,
-a searchable list of every binding on this machine. It parses the config files
-themselves rather than a hand-written cheatsheet, so a new binding shows up
-without touching the panel:
+Component internals live next to their code:
 
-- **kitty** — the comment line above each `map`.
-- **tmux** — the `-N` note on each `bind`. Pairs that do the same job are merged
-  onto one row, keyed by the byte kitty sends (`\x01G` → `G`), not by the note.
-- **aerospace** — `[mode.*.binding]` tables and the end-of-line comment naming
-  the app. Bindings outside the main mode are prefixed with whatever key enters
-  their mode, read from the config rather than hardcoded. `[gaps]` and
-  `[[on-window-detected]]` carry `key = value` lines of the same shape, so the
-  table header is what tells bindings apart from settings.
-- **Raycast** — the hotkey table in `.config/raycast/scripts/README.md`. This is
-  the one mirror: Raycast keeps script hotkeys in its own encrypted state, so
-  that table is the only file-based record. Change a hotkey in Raycast and the
-  table goes stale, and so does the panel.
-- **fish** — aliases from `config.fish` and the function names under
-  `fish/functions`, listed dimmed after the shortcuts.
+- [Shortcut panel](.config/tmux/README.md) — `prefix + ?`, the searchable list
+  of every binding.
+- [Coding-agent session state](.local/share/agent-menubar/README.md) — the
+  contract between `agent-tmux-notify`, the menu bar app, `prefix + j` and the
+  Raycast scripts.
 
-# Coding-agent session state
-
-Four things share one directory, `~/.local/state/agent-menubar/sessions`, so the
-contract between them is worth writing down: the `agent-tmux-notify` hook, the
-`agent-menubar` app, `agent-next.sh` (prefix + j), and the Raycast script
-commands in `.config/raycast/scripts`.
-
-- **One file per agent session**, single-line JSON, always replaced by writing a
-  temp file and renaming it. The rename is what wakes the menu bar app's directory
-  watcher — an in-place rewrite leaves the icon stale. Single line so the reader can
-  parse it with bash alone, without spawning `jq` on a keypress. **The pane id is the
-  only durable coordinate in it:** tmux renumbers window indices when a window is
-  closed or moved, so the recorded `session:window` is a hint as old as the last hook
-  event and `agent-jump` re-derives the pair from the pane before switching. On a stale
-  index `select-window` fails and `select-pane` merely rearranges an off-screen window
-  — a jump that looks like it did nothing.
-- **One reader, `agent-state.sh`**, next to the app that defines the contract.
-  `agent-next.sh` and the Raycast jump script source it. The tmux side used to carry
-  its own copy to avoid sourcing a file on a keypress; measured, that costs nothing
-  (2.2 ms for an empty bash, 2.0 ms with the source), so the copy is gone.
-- **`agent-tmux-notify` is the primary writer**, one write per hook event. Claude
-  Code calls it directly as a hook; opencode has no hook mechanism, so
-  `.config/opencode/plugins/agent-tmux-notify.js` subscribes to its event bus and
-  synthesises the same payloads. The payload's `agent` field is how the two are told
-  apart — absent means Claude Code. The menu bar app only fills gaps: a pane running
-  an agent with no file at all gets one written from what tmux still knows, marked
-  `"recovered": true`. Without that, a session already waiting for input when its
-  file went missing could never announce itself again — the next hook event is
-  exactly what is not coming.
-- **`@agent_state` (per tmux window) means "unacknowledged work"**, and it is the
-  second half of the contract: the hook sets the state glyph, and the app *unsets* it
-  when it clears an entry you have looked at — also stripping the glyph from the window
-  *name*, since a window with `automatic-rename off` never re-renders it from the
-  option. Without that durable acknowledgement, recovery would resurrect every
-  finished session from the glyph on the next tick.
-  The glyph list therefore lives in two places — `agent-tmux-notify`
-  (`set_window_state`) and `AgentMenubar.swift` (`phaseByGlyph`). The set of
-  process names that count as an agent is a third such place:
-  `AgentMenubar.swift` (`agentComms`), which is what keeps an opencode pane from
-  being pruned as dead. `ps` calls it `opencode` even though tmux calls the pane
-  command `opencode.exe`.
-- **An entry is dropped** when its pane is gone, when no agent process is left on
-  its recorded tty (a crash or ctrl-C fires no `SessionEnd`), or when it is finished and
-  its pane is on screen in the frontmost app. Every drop is logged with its reason to
-  `/tmp/agent-menubar.err.log`.
-- **The three surfaces have separate jobs.** The menu bar is the ambient one: it is
-  on screen even when kitty is not focused, and it tracks every session including the
-  finished and idle ones. `prefix + j` is the keyboard one, but it only exists once you
-  are already in tmux. Raycast (`⌃⌥J`) is the one that works from Slack or a browser;
-  it reuses `agent-jump` rather than reimplementing the switch. `⌃⇧A` opens the menu
-  bar's own menu from anywhere and numbers its rows, so a digit picks a session — the
-  only surface that reaches a *working* or *idle* one from outside tmux, since both
-  jump keys deliberately visit nothing but the sessions that want an answer. The tmux
-  status bar
-  used to carry a fourth copy of the same signal; it was removed rather than kept in
-  sync.
-- **launchd gives the app no UTF-8 locale**, and tmux then mangles its own output:
-  a tab in a format string becomes `_` and emoji session names become `__ Main`.
-  Hence `LANG` in the LaunchAgent plist. Related rule: an unparsable `list-panes`
-  answer must be treated as "cannot tell", never as "every pane is gone".
-
-# Software
+## Software
 
 - Terminal: [Kitty](https://sw.kovidgoyal.net/kitty/)
 - Font: [Maple Mono Nerd Font](https://font.subf.dev/en/)
