@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""agentcost — what Claude Code, kilo and opencode sessions cost, per Jira key / PR.
+
+Costs are API-list-price equivalents computed from token counts: a subscription
+or a company gateway bills differently, and kilo's gateway records cost as 0 anyway.
+"""
+
+import argparse
+import json
+import os
+import re
+import sqlite3
+import sys
+import time
+from collections import Counter, defaultdict
+from datetime import datetime
+from pathlib import Path
+
+# $/MTok: input, output, cache read. Cache writes are 1.25x input (5m TTL), 2x (1h).
+PRICES = {
+    "claude-fable-5-2": (8, 40, 0.20),
+    "claude-fable-5-1": (10, 50, 0.25),
+    "claude-fable-5": (10, 50, 1.00),
+    "claude-opus-5-5": (4, 20, 0.20),
+    "claude-opus-5": (5, 25, 0.50),
+    "claude-opus-4-8": (5, 25, 0.50),
+    "claude-opus-4-7": (5, 25, 0.50),
+    "claude-opus-4-6": (5, 25, 0.50),
+    "claude-opus-4-5": (5, 25, 0.50),
+    "claude-sonnet-5-5": (2, 10, 0.10),
+    "claude-sonnet-5": (2, 10, 0.20),
+    "claude-sonnet-4-6": (3, 15, 0.30),
+    "claude-sonnet-4-5": (3, 15, 0.30),
+    "claude-haiku-5-5": (0.10, 0.50, 0.01),
+    "claude-haiku-4-5": (1, 5, 0.10),
+}
+
+JIRA_RE = re.compile(r"\b([A-Z][A-Z0-9]+-\d+)\b")
+PR_RE = re.compile(r"(?:PR\s*#?|pull/|review-pr-|#)(\d{3,})", re.I)
+TRUNK = {"main", "master", "HEAD", "develop", "release-candidate", "stage", "test", ""}
+
+
+def aliases():
+    # Gateway aliases such as kilo's "Orchestrator" hide the real model.
+    out = {}
+    for pair in os.environ.get("AGENTCOST_ALIASES", "").split(","):
+        if "=" in pair:
+            k, v = pair.split("=", 1)
+            out[k.strip()] = v.strip()
+    return out
+
+
+ALIASES = aliases()
+
+
+def norm_model(m):
+    m = ALIASES.get(m, m)
+    m = m.rsplit("/", 1)[-1].replace(".", "-")
+    return re.sub(r"-\d{8}$", "", m)
+
+
+def price(model, inp, out, cread, w5m, w1h):
+    p = PRICES.get(norm_model(model))
+    if not p:
+        return None
+    i, o, r = p
+    return (inp * i + out * o + cread * r + w5m * i * 1.25 + w1h * i * 2) / 1e6
+
+
+def parse_day(s, end=False):
+    if s == "today":
+        s = time.strftime("%Y-%m-%d")
+    m = re.fullmatch(r"(\d+)([dh])", s)
+    if m:
+        n, unit = int(m[1]), m[2]
+        return time.time() - n * (86400 if unit == "d" else 3600)
+    return datetime.strptime(s, "%Y-%m-%d").timestamp()
+
+
+class Session:
+    __slots__ = ("tool", "repo", "branches", "title", "text", "cost", "tokens", "models", "unpriced", "days",
+                 "model_tokens", "day_tokens")
+
+    def __init__(self, tool):
+        self.tool = tool
+        self.repo = ""
+        self.branches = Counter()
+        self.title = ""
+        self.text = ""
+        self.cost = 0.0
+        self.tokens = 0
+        self.models = Counter()
+        self.unpriced = Counter()
+        self.days = Counter()
+        self.model_tokens = Counter()
+        self.day_tokens = Counter()
+
+    def add(self, model, ts, inp, out, cread, w5m, w1h):
+        total = inp + out + cread + w5m + w1h
+        if not total:
+            return
+        c = price(model, inp, out, cread, w5m, w1h)
+        day = time.strftime("%Y-%m-%d", time.localtime(ts))
+        self.tokens += total
+        self.day_tokens[day] += total
+        self.model_tokens[norm_model(model)] += total
+        if c is None:
+            self.unpriced[model] += total
+            return
+        self.cost += c
+        self.models[norm_model(model)] += c
+        self.days[day] += c
+
+    def key(self):
+        branch = self.branches.most_common(1)[0][0] if self.branches else ""
+        for src in (branch, self.title, self.text):
+            m = JIRA_RE.search(src or "")
+            if m:
+                return m[1]
+        for src in (self.title, self.text):
+            m = PR_RE.search(src or "")
+            if m:
+                return f"{self.repo}#{m[1]}"
+        return f"{self.repo}@{branch}" if branch not in TRUNK else self.repo
+
+
+def mtok(n):
+    return f"{n / 1e6:.1f}M"
+
+
+def iso_ts(s):
+    return datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp()
+
+
+def load_claude(since, until, sessions):
+    root = Path.home() / ".claude" / "projects"
+    seen = set()
+    for f in root.glob("*/**/*.jsonl"):
+        try:
+            if f.stat().st_mtime < since:
+                continue
+        except OSError:
+            continue
+        rel = f.relative_to(root).parts
+        sid = rel[1].removesuffix(".jsonl")
+        s = sessions.get(("claude", sid)) or sessions.setdefault(("claude", sid), Session("claude"))
+        main = len(rel) == 2
+        with f.open(encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if main and ('"ai-title"' in line or '"custom-title"' in line):
+                    try:
+                        d = json.loads(line)
+                        s.title = d.get("customTitle") or d.get("aiTitle") or s.title
+                    except ValueError:
+                        pass
+                    continue
+                # A substring check first: json.loads on every line of 1.6 GB is the slow part.
+                if '"type":"assistant"' not in line or '"usage"' not in line:
+                    continue
+                try:
+                    d = json.loads(line)
+                except ValueError:
+                    continue
+                msg = d.get("message") or {}
+                ident = (msg.get("id"), d.get("requestId"))
+                # One API response is logged once per content block, each line repeating its usage.
+                if ident in seen:
+                    continue
+                seen.add(ident)
+                ts = iso_ts(d.get("timestamp", "1970-01-01T00:00:00Z"))
+                if not since <= ts < until:
+                    continue
+                u = msg.get("usage") or {}
+                cc = u.get("cache_creation") or {}
+                w1h = cc.get("ephemeral_1h_input_tokens", 0)
+                w5m = cc.get("ephemeral_5m_input_tokens", u.get("cache_creation_input_tokens", 0) - w1h)
+                cwd = d.get("cwd") or ""
+                if not s.repo and cwd:
+                    s.repo = cwd.rstrip("/").rsplit("/", 1)[-1]
+                    if not s.text:
+                        s.text = cwd
+                if d.get("gitBranch"):
+                    s.branches[d["gitBranch"]] += 1
+                s.add(msg.get("model", ""), ts, u.get("input_tokens", 0), u.get("output_tokens", 0),
+                      u.get("cache_read_input_tokens", 0), w5m, w1h)
+
+
+def load_opencode_like(tool, since, until, sessions):
+    db = Path.home() / ".local" / "share" / tool / f"{tool}.db"
+    if not db.exists():
+        return
+    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    meta = {sid: (parent, directory, title)
+            for sid, parent, directory, title in con.execute("select id, parent_id, directory, title from session")}
+
+    def root_of(sid):
+        while meta.get(sid, (None,))[0]:
+            sid = meta[sid][0]
+        return sid
+
+    rows = con.execute(
+        """select session_id, time_created,
+                  json_extract(data, '$.modelID'),
+                  json_extract(data, '$.tokens.input'), json_extract(data, '$.tokens.output'),
+                  json_extract(data, '$.tokens.reasoning'),
+                  json_extract(data, '$.tokens.cache.read'), json_extract(data, '$.tokens.cache.write')
+           from message
+           where time_created >= ? and time_created < ?
+             and json_extract(data, '$.role') = 'assistant'""",
+        (int(since * 1000), int(until * 1000)))
+    roots = set()
+    for sid, tc, model, inp, out, reason, cread, cwrite in rows:
+        rid = root_of(sid)
+        s = sessions.get((tool, rid))
+        if s is None:
+            s = sessions[(tool, rid)] = Session(tool)
+            _, directory, title = meta.get(rid, (None, "", ""))
+            s.repo = (directory or "").rstrip("/").rsplit("/", 1)[-1]
+            s.title = title or ""
+            roots.add(rid)
+        # Reasoning is billed as output but reported apart from it.
+        s.add(model or "", tc / 1000, inp or 0, (out or 0) + (reason or 0), cread or 0, cwrite or 0, 0)
+    # The PR number of a review lives only in its first prompt.
+    for rid in roots:
+        row = con.execute(
+            """select json_extract(data, '$.text') from part
+               where session_id = ? and json_extract(data, '$.type') = 'text'
+               order by time_created limit 1""", (rid,)).fetchone()
+        if row and row[0]:
+            sessions[(tool, rid)].text = row[0][:500]
+    con.close()
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("-s", "--since", default="7d", help="7d, 24h, today or YYYY-MM-DD (default: 7d)")
+    ap.add_argument("-u", "--until", help="YYYY-MM-DD, exclusive (default: now)")
+    ap.add_argument("-b", "--by", default="key", choices=["key", "repo", "day", "model", "tool"])
+    ap.add_argument("-n", "--top", type=int, default=20, help="rows to show (default: 20)")
+    ap.add_argument("--total", action="store_true", help="print only the total cost and tokens")
+    a = ap.parse_args()
+
+    since = parse_day(a.since)
+    until = parse_day(a.until) if a.until else time.time() + 1
+
+    sessions = {}
+    load_claude(since, until, sessions)
+    load_opencode_like("kilo", since, until, sessions)
+    load_opencode_like("opencode", since, until, sessions)
+    sessions = [s for s in sessions.values() if s.tokens]
+
+    total = sum(s.cost for s in sessions)
+    if a.total:
+        print(f"${total:.2f} · {mtok(sum(s.tokens for s in sessions))} tokens")
+        return
+
+    groups = defaultdict(lambda: {"cost": 0.0, "tok": 0, "n": 0, "tools": Counter(), "title": ("", -1.0)})
+    for s in sessions:
+        if a.by in ("day", "model"):
+            costs, toks = (s.days, s.day_tokens) if a.by == "day" else (s.models, s.model_tokens)
+            for k, t in toks.items():
+                groups[k]["cost"] += costs.get(k, 0.0)
+                groups[k]["tok"] += t
+                groups[k]["n"] += 1
+                groups[k]["tools"][s.tool] += 1
+            continue
+        k = {"key": s.key, "repo": lambda: s.repo, "tool": lambda: s.tool}[a.by]()
+        g = groups[k]
+        g["cost"] += s.cost
+        g["tok"] += s.tokens
+        g["n"] += 1
+        g["tools"][s.tool] += 1
+        if s.cost > g["title"][1]:
+            g["title"] = (s.title, s.cost)
+
+    order = sorted(groups.items(), key=(lambda kv: kv[0]) if a.by == "day" else (lambda kv: -kv[1]["cost"]))
+    shown = order if a.by == "day" else order[: a.top]
+    width = max([len(k) for k, _ in shown] + [len(a.by)])
+    print(f"{a.by:<{width}}  {'cost $':>9}  {'tokens':>8}  {'sess':>4}  tools            example")
+    for k, g in shown:
+        tools = ",".join(f"{t}:{n}" for t, n in g["tools"].most_common())
+        print(f"{k:<{width}}  {g['cost']:>9.2f}  {mtok(g['tok']):>8}  {g['n']:>4}  {tools:<15}  {g['title'][0][:60]}")
+    if len(order) > len(shown):
+        rest = order[len(shown):]
+        print(f"{'(' + str(len(rest)) + ' more)':<{width}}  {sum(g['cost'] for _, g in rest):>9.2f}"
+              f"  {mtok(sum(g['tok'] for _, g in rest)):>8}")
+    print(f"{'total':<{width}}  {total:>9.2f}  {mtok(sum(s.tokens for s in sessions)):>8}  {len(sessions):>4}")
+
+    unpriced = Counter()
+    for s in sessions:
+        unpriced.update(s.unpriced)
+    if unpriced:
+        names = ", ".join(f"{m} ({t / 1e6:.0f}M tok)" for m, t in unpriced.most_common(6))
+        print(f"\nunpriced: {names}", file=sys.stderr)
+        print("map gateway aliases with AGENTCOST_ALIASES='Orchestrator=claude-opus-5-5,...'", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
