@@ -1,0 +1,264 @@
+#!/usr/bin/env python3
+"""agentgrep — search past Claude Code, kilo and opencode conversations; Enter resumes one."""
+
+import argparse
+import json
+import os
+import re
+import shutil
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import time
+from datetime import datetime
+from pathlib import Path
+
+HOME = Path.home()
+CLAUDE_ROOT = HOME / ".claude" / "projects"
+CACHE = HOME / ".cache" / "agentgrep"
+STATE = HOME / ".local" / "state" / "agent-menubar" / "sessions"
+# Text parts can still be streaming when indexed; re-reading the tail picks up their final text.
+REINDEX_TAIL = 5000
+
+
+class Hit:
+    __slots__ = ("tool", "id", "cwd", "title", "branch", "last", "hits")
+
+    def __init__(self, tool, sid):
+        self.tool, self.id = tool, sid
+        self.cwd = self.title = self.branch = ""
+        self.last = 0.0
+        self.hits = []
+
+    def add(self, ts, role, snippet):
+        self.hits.append((ts, role, snippet))
+        self.last = max(self.last, ts)
+
+
+def snippet(text, word, width=110):
+    i = text.casefold().find(word)
+    start = max(0, i - width // 2)
+    s = text[start:start + width * 2].replace("\n", " ").strip()
+    return ("…" if start else "") + s
+
+
+def matches(text, words):
+    t = text.casefold()
+    return all(w in t for w in words)
+
+
+def claude_text(msg):
+    content = msg.get("content")
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(c.get("text", "") for c in content if isinstance(c, dict) and c.get("type") == "text")
+    return ""
+
+
+def search_claude(words, results):
+    rg = subprocess.run(
+        ["rg", "-i", "-F", "-N", "--with-filename", "--no-heading", "--max-depth", "2",
+         "--glob", "*.jsonl", "--glob", "!-private-*", "--glob", "!*claude-mem*", "-e", words[0], "."],
+        cwd=CLAUDE_ROOT, capture_output=True, text=True, errors="replace")
+    files = {}
+    for line in rg.stdout.splitlines():
+        path, _, raw = line.partition(":")
+        if '"type":"user"' not in raw and '"type":"assistant"' not in raw:
+            continue
+        try:
+            d = json.loads(raw)
+        except ValueError:
+            continue
+        # sdk-cli is `claude -p` (ai-oneshot and friends): one-shot, nothing to resume.
+        if d.get("isMeta") or d.get("isSidechain") or d.get("entrypoint") == "sdk-cli" \
+                or d.get("type") not in ("user", "assistant"):
+            continue
+        text = claude_text(d.get("message") or {})
+        branch = d.get("gitBranch") or ""
+        hit_text = text if matches(text, words) else ""
+        if not hit_text and not matches(branch, words):
+            continue
+        sid = d.get("sessionId") or Path(path).stem
+        h = results.get(("claude", sid)) or results.setdefault(("claude", sid), Hit("claude", sid))
+        h.branch = branch or h.branch
+        ts = datetime.fromisoformat(d.get("timestamp", "1970-01-01T00:00:00Z").replace("Z", "+00:00")).timestamp()
+        h.add(ts, d["type"], snippet(hit_text, words[0]) if hit_text else f"branch: {branch}")
+        files[str(CLAUDE_ROOT / path)] = sid
+
+    if not files:
+        return
+    # --resume looks the id up under the project of the cwd the session started in;
+    # a later `cd` inside the session must not move it.
+    for path, sid in files.items():
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                m = re.search(r'"cwd":"([^"]+)"', line)
+                if m:
+                    results[("claude", sid)].cwd = m[1]
+                    break
+    # The title lives on its own line, so one more pass over just the matched files.
+    titles = subprocess.run(
+        ["rg", "-N", "--with-filename", "--no-heading", '"type":"(ai-title|custom-title)"', *files],
+        capture_output=True, text=True, errors="replace")
+    for line in titles.stdout.splitlines():
+        path, _, raw = line.partition(":")
+        try:
+            d = json.loads(raw)
+        except ValueError:
+            continue
+        h = results.get(("claude", files.get(path)))
+        if h:
+            h.title = d.get("customTitle") or d.get("aiTitle") or h.title
+
+
+def sync_index(tool, src):
+    # kilo.db is ~15 GB of mostly tool output: a LIKE scan takes 15 s, so text parts
+    # are copied into a small cache, incrementally by rowid.
+    CACHE.mkdir(parents=True, exist_ok=True)
+    idx = sqlite3.connect(CACHE / f"{tool}.db")
+    idx.execute("create table if not exists part (src_rowid integer primary key, session_id text, time integer, role text, text text)")
+    last = idx.execute("select coalesce(max(src_rowid), 0) from part").fetchone()[0]
+    if not last:
+        print(f"agentgrep: indexing {tool} (first run only)…", file=sys.stderr)
+    src.execute("attach database ? as idx", (str(CACHE / f"{tool}.db"),))
+    rows = src.execute(
+        """select p.rowid, p.session_id, p.time_created, json_extract(m.data, '$.role'), json_extract(p.data, '$.text')
+           from part p join message m on m.id = p.message_id
+           where p.rowid > ? and json_extract(p.data, '$.type') = 'text'""",
+        (max(0, last - REINDEX_TAIL) if last else 0,)).fetchall()
+    src.execute("detach database idx")
+    idx.executemany("insert or replace into part values (?, ?, ?, ?, ?)", rows)
+    idx.commit()
+    return idx
+
+
+def search_opencode_like(tool, words, results):
+    db = HOME / ".local" / "share" / tool / f"{tool}.db"
+    if not db.exists():
+        return
+    src = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    idx = sync_index(tool, src)
+    meta = {sid: (parent, directory, title)
+            for sid, parent, directory, title in src.execute("select id, parent_id, directory, title from session")}
+    src.close()
+
+    def root_of(sid):
+        while meta.get(sid, (None,))[0]:
+            sid = meta[sid][0]
+        return sid
+
+    for sid, ts, role, text in idx.execute(
+            "select session_id, time, role, text from part where text like ?", (f"%{words[0]}%",)):
+        if not text or not matches(text, words):
+            continue
+        rid = root_of(sid)
+        h = results.get((tool, rid))
+        if h is None:
+            h = results[(tool, rid)] = Hit(tool, rid)
+            _, h.cwd, h.title = meta.get(rid, (None, "", ""))
+        h.add(ts / 1000, role or "", snippet(text, words[0]))
+    idx.close()
+
+
+def live_pane(sid):
+    f = STATE / f"{sid}.json"
+    try:
+        d = json.loads(f.read_text())
+        os.kill(int(d["agent_pid"]), 0)
+        return d
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def tmux_session_for(path):
+    try:
+        root = subprocess.run(["git", "-C", path, "rev-parse", "--show-toplevel"],
+                              capture_output=True, text=True).stdout.strip() or path
+        panes = subprocess.run(["tmux", "list-panes", "-a", "-F", "#{session_name}\t#{pane_current_path}"],
+                               capture_output=True, text=True).stdout
+    except OSError:
+        return None
+    for line in panes.splitlines():
+        name, _, p = line.partition("\t")
+        if p == root or p.startswith(root + "/"):
+            return name
+    return None
+
+
+def resume(h):
+    live = live_pane(h.id)
+    if live and live.get("tmux_pane"):
+        # A second --resume on a running session would have two processes appending to one transcript.
+        os.execvp("agent-jump", ["agent-jump", live["tmux_socket"], live["tmux_session"],
+                                 str(live["tmux_window"]), live["tmux_pane"]])
+    cmd = {"claude": ["claude", "--resume", h.id],
+           "kilo": ["kilo", "--session", h.id],
+           "opencode": ["opencode", "--session", h.id]}[h.tool]
+    cwd = h.cwd if h.cwd and os.path.isdir(h.cwd) else str(HOME)
+    if os.environ.get("TMUX"):
+        target = tmux_session_for(cwd)
+        t = ["-t", f"={target}:"] if target else []
+        subprocess.run(["tmux", "new-window", *t, "-c", cwd, "-n", h.tool, *cmd])
+        if target:
+            subprocess.run(["tmux", "switch-client", "-t", f"={target}"])
+        return
+    os.chdir(cwd)
+    os.execvp(cmd[0], cmd)
+
+
+def fmt_time(ts):
+    return time.strftime("%Y-%m-%d %H:%M", time.localtime(ts))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("words", nargs="+", help="all must appear in one message (case-insensitive)")
+    ap.add_argument("-p", "--print", action="store_true", help="list matches, no picker")
+    ap.add_argument("--header", default="", help="text shown above the picker")
+    a = ap.parse_args()
+
+    words = sorted({w.casefold() for w in a.words}, key=len, reverse=True)
+    results = {}
+    search_claude(words, results)
+    for tool in ("kilo", "opencode"):
+        search_opencode_like(tool, words, results)
+    hits = sorted(results.values(), key=lambda h: h.last, reverse=True)
+
+    if not hits:
+        if a.header:
+            print(a.header)
+        print("agentgrep: no session matches", file=sys.stderr)
+        sys.exit(1)
+
+    if a.print or not shutil.which("fzf") or not sys.stdout.isatty():
+        if a.header:
+            print(a.header + "\n")
+        for h in hits:
+            print(f"{fmt_time(h.last)}  {h.tool:<8} {Path(h.cwd).name[:14]:<14} {h.title[:50]:<50}  {h.hits[-1][2][:80]}")
+        return
+
+    mark = re.compile("|".join(map(re.escape, words)), re.I)
+    with tempfile.TemporaryDirectory() as tmp:
+        lines = []
+        for i, h in enumerate(hits):
+            body = [f"\x1b[1m{h.title or '(untitled)'}\x1b[0m",
+                    f"{h.tool} · {h.id}", f"{h.cwd}" + (f" @ {h.branch}" if h.branch else ""), ""]
+            for ts, role, snip in sorted(h.hits, reverse=True)[:30]:
+                body.append(f"\x1b[2m{fmt_time(ts)} {role}\x1b[0m")
+                body.append(mark.sub(lambda m: f"\x1b[33;1m{m[0]}\x1b[0m", snip) + "\n")
+            Path(tmp, str(i)).write_text("\n".join(body))
+            lines.append(f"{i}\t{fmt_time(h.last)}\t{h.tool}\t{Path(h.cwd).name}\t{h.title[:60]}\t{h.hits[-1][2][:120]}")
+        pick = subprocess.run(
+            ["fzf", "--ansi", "--no-sort", "--delimiter", "\t", "--with-nth", "2..", "--tabstop", "2",
+             "--header", a.header or f"{len(hits)} sessions · enter: resume / jump",
+             "--preview", f"cat {tmp}/{{1}}", "--preview-window", "down,55%,wrap"],
+            input="\n".join(lines), capture_output=False, stdout=subprocess.PIPE, text=True)
+    if pick.returncode != 0 or not pick.stdout.strip():
+        return
+    resume(hits[int(pick.stdout.split("\t", 1)[0])])
+
+
+if __name__ == "__main__":
+    main()
