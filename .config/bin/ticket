@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# ticket — everything about one Jira key on one screen: the issue, its PRs, local
+# branches and every agent session that touched it; Enter resumes a session.
+
+set -uo pipefail
+
+key=$(printf '%s' "${1:-}" | tr '[:lower:]' '[:upper:]')
+[[ "$key" =~ ^[A-Z][A-Z0-9]+-[0-9]+$ ]] || { echo "usage: ticket <JIRA-KEY>" >&2; exit 1; }
+shift
+extra=("$@")
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+jira issue list --plain --no-headers --columns key,summary,status,assignee -q "key = $key" 2>/dev/null \
+  | tr -s '\t' | awk -F'\t' '{print $2 "  [" $3 "]  " $4}' >"$tmp/jira" &
+gh search prs "$key" ${WORK_ORG:+--owner="$WORK_ORG"} --limit 10 \
+    --json repository,number,title,state \
+    --jq '.[] | "\(.repository.name)#\(.number)  [\(.state)]  \(.title)"' >"$tmp/prs" 2>/dev/null &
+fd -H -I -t d '^\.git$' --max-depth 5 -E node_modules -E vendor "${DAYLOG_REPOS_ROOT:-$HOME/workspace}" 2>/dev/null \
+  | while read -r gitdir; do
+      repo=${gitdir%/.git/}; repo=${repo%/.git}
+      git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads 2>/dev/null \
+        | rg -F "$key" | sed "s|^|${repo##*/}: |"
+    done >"$tmp/branches"
+wait
+
+header=$(
+  printf '%s  %s\n' "$key" "$(cat "$tmp/jira")"
+  [[ -s "$tmp/prs" ]] && sed 's/^/  PR      /' "$tmp/prs"
+  [[ -s "$tmp/branches" ]] && sed 's/^/  branch  /' "$tmp/branches"
+)
+
+exec agentgrep --header "$header" "${extra[@]}" "$key"
