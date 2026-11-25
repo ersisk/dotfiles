@@ -124,6 +124,18 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/agent-tmux-notify",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

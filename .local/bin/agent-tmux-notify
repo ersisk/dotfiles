@@ -22,7 +22,8 @@
 #   PreToolUse  (Bash)         → stash start timestamp, mark working
 #   PostToolUse (Bash)         → notify only if elapsed >= threshold
 #   PreToolUse  (Task)         → stash run_in_background flag, mark bg-running
-#   SubagentStop               → notify only if the subagent was background
+#   SubagentStart              → count the subagent on the session's row (silent)
+#   SubagentStop               → uncount it; notify only if it was background
 #
 # Every event writes the session's state to $MENUBAR_DIR, which the menu bar app
 # watches. The tmux status line is used only where it can actually be seen:
@@ -59,7 +60,7 @@ if command -v jq &>/dev/null; then
   # (a Notification, say) every field would shift. Newlines/tabs inside a field and
   # the separator itself are turned into spaces: a command or message carrying 0x1F
   # would shift the fields. All of it is only used for a single-line display.
-  IFS=$'\x1f' read -r EVENT TOOL TOOL_CMD TOOL_DESC RUN_BG SESSION_ID CWD TRANSCRIPT MESSAGE AGENT LAST_MSG_IN < <(
+  IFS=$'\x1f' read -r EVENT TOOL TOOL_CMD TOOL_DESC RUN_BG SESSION_ID CWD TRANSCRIPT MESSAGE AGENT LAST_MSG_IN AGENT_ID < <(
     jq -r '[
       .hook_event_name // "Unknown",
       .tool_name // "",
@@ -71,7 +72,8 @@ if command -v jq &>/dev/null; then
       .transcript_path // "",
       .message // "",
       .agent // "",
-      .last_message // ""
+      .last_message // "",
+      .agent_id // ""
     ] | map(tostring | gsub("[\n\r\t\u001f]"; " ")) | join("\u001f")' <<< "$PAYLOAD" 2>/dev/null
   ) || true
   # If the parse failed outright there is nothing to write: rather than producing a
@@ -88,6 +90,7 @@ else
   MESSAGE=""
   AGENT=""
   LAST_MSG_IN=""
+  AGENT_ID=""
   CWD=$(echo "$PAYLOAD" | grep -o '"cwd":"[^"]*"' | head -1 | sed 's/.*:"\(.*\)"/\1/')
 fi
 
@@ -227,14 +230,15 @@ write_state() {
       --arg tmux_pane "${TMUX_PANE:-}" \
       --arg tmux_tty "$TMUX_TTY" \
       --argjson agent_pid "$PPID" \
+      --argjson subagents "${#SUBAGENTS[@]}" \
       --argjson updated_at "$(date +%s)" \
       '$ARGS.named' > "$tmp" 2>/dev/null || { rm -f "$tmp"; return 0; }
   else
-    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","agent":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","agent_pid":%s,"updated_at":%s}\n' \
+    printf '{"session_id":"%s","state":"%s","project":"%s","cwd":"%s","detail":"%s","agent":"%s","tmux_socket":"%s","tmux_session":"%s","tmux_window":"%s","tmux_pane":"%s","tmux_tty":"%s","agent_pid":%s,"subagents":%s,"updated_at":%s}\n' \
       "$(json_escape "$SESSION_ID")" "$state" "$(json_escape "$PROJECT")" \
       "$(json_escape "$CWD")" "$(json_escape "$detail")" "$(json_escape "$AGENT")" "$(json_escape "$socket")" \
       "$(json_escape "$TMUX_SESS")" "$(json_escape "$TMUX_WIN")" \
-      "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$PPID" "$(date +%s)" > "$tmp" 2>/dev/null \
+      "$(json_escape "${TMUX_PANE:-}")" "$(json_escape "$TMUX_TTY")" "$PPID" "${#SUBAGENTS[@]}" "$(date +%s)" > "$tmp" 2>/dev/null \
       || { rm -f "$tmp"; return 0; }
   fi
 
@@ -243,6 +247,28 @@ write_state() {
 
 remove_state() {
   rm -f "$(state_file)" 2>/dev/null || true
+}
+
+# Ids of the session's running subagents, one per line; the row shows how many.
+SUBAGENTS_FILE="${STATE_DIR}/subagents_${SESSION_ID:-$KEY}"
+SUBAGENTS=()
+[[ -f "$SUBAGENTS_FILE" ]] && mapfile -t SUBAGENTS < "$SUBAGENTS_FILE"
+
+# Rewrites the subagent list, then only the count in the state file: a subagent
+# starting or stopping says nothing about what the main agent is doing.
+set_subagents() {
+  SUBAGENTS=("$@")
+  if (( ${#SUBAGENTS[@]} )); then
+    printf '%s\n' "${SUBAGENTS[@]}" > "$SUBAGENTS_FILE"
+  else
+    rm -f "$SUBAGENTS_FILE"
+  fi
+  local file tmp
+  file=$(state_file)
+  tmp="${file}.$$"
+  [[ -f "$file" ]] && command -v jq &>/dev/null || return 0
+  jq -c --argjson n "${#SUBAGENTS[@]}" '.subagents = $n' "$file" > "$tmp" 2>/dev/null \
+    && mv -f "$tmp" "$file" 2>/dev/null || rm -f "$tmp"
 }
 
 # Kanagawa Wave palette — inline styling for tmux display-message.
@@ -383,6 +409,8 @@ if [[ "$EVENT" == "SessionStart" ]]; then
   # Only this event is skipped: a claimed spare keeps the same argv, and its first
   # UserPromptSubmit registers it.
   [[ "$(ps -o command= -p "$PPID" 2>/dev/null)" == *--bg-spare* ]] && exit 0
+  rm -f "$SUBAGENTS_FILE"
+  SUBAGENTS=()
   write_state idle ""
   exit 0
 fi
@@ -390,6 +418,14 @@ fi
 if [[ "$EVENT" == "SessionEnd" ]]; then
   set_window_state idle
   remove_state
+  rm -f "$SUBAGENTS_FILE"
+  exit 0
+fi
+
+if [[ "$EVENT" == "SubagentStart" ]]; then
+  [[ -n "$AGENT_ID" ]] || exit 0
+  for id in "${SUBAGENTS[@]}"; do [[ "$id" == "$AGENT_ID" ]] && exit 0; done
+  set_subagents "${SUBAGENTS[@]}" "$AGENT_ID"
   exit 0
 fi
 
@@ -440,6 +476,11 @@ fi
 
 # --- SubagentStop: notify only if subagent was background --------------------
 if [[ "$EVENT" == "SubagentStop" ]]; then
+  if [[ -n "$AGENT_ID" ]]; then
+    rest=()
+    for id in "${SUBAGENTS[@]}"; do [[ "$id" == "$AGENT_ID" ]] || rest+=("$id"); done
+    (( ${#rest[@]} == ${#SUBAGENTS[@]} )) || set_subagents "${rest[@]}"
+  fi
   BG_FILE="${STATE_DIR}/bg_task_${KEY}"
 
   if [[ -f "$BG_FILE" ]]; then

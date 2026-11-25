@@ -134,6 +134,7 @@ struct Session {
     let tmuxPane: String
     let tmuxTty: String
     let agentPid: pid_t
+    let subagents: Int
     let isRecovered: Bool
     let updatedAt: Date
 
@@ -156,6 +157,7 @@ struct Session {
         tmuxPane = str("tmux_pane")
         tmuxTty = str("tmux_tty")
         agentPid = (obj["agent_pid"] as? NSNumber)?.int32Value ?? 0
+        subagents = (obj["subagents"] as? NSNumber)?.intValue ?? 0
         isRecovered = (obj["recovered"] as? Bool) ?? false
         updatedAt = Date(timeIntervalSince1970: (obj["updated_at"] as? Double) ?? 0)
     }
@@ -167,6 +169,14 @@ struct Session {
     }
 
     var isJumpable: Bool { !tmuxSocket.isEmpty && !tmuxSession.isEmpty }
+
+    var subagentLabel: String {
+        switch subagents {
+        case 0: return ""
+        case 1: return " · 1 subagent"
+        default: return " · \(subagents) subagents"
+        }
+    }
 
     // ps reports ttys008, the tmux format reports /dev/ttys008.
     var ttyName: String {
@@ -291,7 +301,7 @@ final class Toast {
             attributes: [.font: NSFont.boldSystemFont(ofSize: 12), .foregroundColor: NSColor.labelColor]
         )
         title.append(NSAttributedString(
-            string: "  \(session.agent) · \(session.phase.label)",
+            string: "  \(session.agent) · \(session.phase.label)\(session.subagentLabel)",
             attributes: [.font: NSFont.systemFont(ofSize: 11), .foregroundColor: tint ?? NSColor.secondaryLabelColor]
         ))
         let detail = session.detail.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? ""
@@ -923,7 +933,7 @@ final class Controller: NSObject, NSMenuDelegate {
         var context = "\(session.agent) · "
         if !session.context.isEmpty { context += "\(session.context) · " }
         if let name = host?.localizedName { context += "\(name) · " }
-        context += session.phase.label
+        context += session.phase.label + session.subagentLabel
         if !session.isRecovered { context += " · \(shortAge(session.updatedAt))" }
         title.append(NSAttributedString(
             string: "  \(context)",

@@ -16,10 +16,12 @@
 //   session.error                         → Notification
 //   session.idle                          → Stop
 //   session.deleted                       → SessionEnd
+//   subagent session created / idle       → SubagentStart / SubagentStop
 //
 // Subagent sessions are tracked and excluded from the session-level mapping: a
 // finished subagent must not mark the pane done while the root session is
-// still working. Their tool calls still keep the pane on "working".
+// still working. Their tool calls and asks are reported under the root session
+// id, so they keep the root's row on "working" instead of opening rows of their own.
 
 import { spawn } from "node:child_process";
 import { closeSync, openSync, writeSync } from "node:fs";
@@ -96,8 +98,11 @@ function run(payload) {
 export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
   const rootDir = directory || worktree || process.cwd();
 
-  // Subagent sessions, so their lifecycle events can be dropped.
-  const childSessions = new Set();
+  // Subagent session → its parent, so lifecycle events can be dropped and the
+  // rest attributed to the root session.
+  const childSessions = new Map();
+  // Subagents between their start and their idle; the root's row counts them.
+  const runningChildren = new Set();
   // sessionID → directory, for sessions opened in another worktree.
   const sessionDirs = new Map();
   // sessionID → id of the assistant message currently streaming, so a text part
@@ -112,6 +117,12 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
 
   const cwdFor = (sessionID) => sessionDirs.get(sessionID) || rootDir;
 
+  const rootOf = (sessionID) => {
+    let id = sessionID;
+    while (childSessions.has(id)) id = childSessions.get(id);
+    return id;
+  };
+
   const payload = (event, sessionID, extra = {}) => ({
     hook_event_name: event,
     session_id: sessionID || "",
@@ -123,6 +134,12 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
   // Claude Code fires SessionStart before anything else; opencode has no
   // equivalent, so the first root session we see stands in for it. Without this
   // a fresh pane carries no menubar row until the first prompt.
+  const childStarted = (id) => {
+    if (runningChildren.has(id)) return;
+    runningChildren.add(id);
+    send(payload("SubagentStart", rootOf(id), { agent_id: id }));
+  };
+
   const ensureStarted = (sessionID) => {
     if (started || !sessionID || childSessions.has(sessionID)) return;
     started = true;
@@ -131,7 +148,9 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
 
   return {
     "chat.message": async ({ sessionID }) => {
-      if (!sessionID || childSessions.has(sessionID)) return;
+      if (!sessionID) return;
+      // A finished subagent the task tool prompts again is running again.
+      if (childSessions.has(sessionID)) return childStarted(sessionID);
       ensureStarted(sessionID);
       lastText.delete(sessionID);
       await send(payload("UserPromptSubmit", sessionID));
@@ -140,7 +159,7 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
     "tool.execute.before": async ({ tool, sessionID }, output) => {
       const args = output?.args ?? {};
       await send(
-        payload("PreToolUse", sessionID, {
+        payload("PreToolUse", rootOf(sessionID), {
           tool_name: TOOL_NAMES[tool] || tool,
           tool_input: {
             command: args.command ?? "",
@@ -156,7 +175,7 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
       // spawn per tool call for a branch that exits immediately.
       if (tool !== "bash") return;
       await send(
-        payload("PostToolUse", sessionID, {
+        payload("PostToolUse", rootOf(sessionID), {
           tool_name: "Bash",
           tool_input: { command: args?.command ?? "" },
         }),
@@ -173,7 +192,9 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
           const info = props.info;
           if (!info?.id) return;
           if (info.parentID) {
-            childSessions.add(info.id);
+            if (childSessions.has(info.id)) return;
+            childSessions.set(info.id, info.parentID);
+            childStarted(info.id);
             return;
           }
           if (info.directory) sessionDirs.set(info.id, info.directory);
@@ -212,7 +233,12 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
 
         case "session.idle": {
           const id = props.sessionID;
-          if (!id || childSessions.has(id)) return;
+          if (!id) return;
+          if (childSessions.has(id)) {
+            if (!runningChildren.delete(id)) return;
+            await send(payload("SubagentStop", rootOf(id), { agent_id: id }));
+            return;
+          }
           await send(
             payload("Stop", id, { last_message: lastText.get(id) || "" }),
           );
@@ -223,7 +249,7 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
         // line off the word "permission", so the prefix is load-bearing: without
         // it the approval request loses to the last assistant message.
         case "permission.asked": {
-          const id = props.sessionID;
+          const id = rootOf(props.sessionID);
           if (!id) return;
           const patterns = Array.isArray(props.patterns)
             ? props.patterns.join(", ")
@@ -249,7 +275,7 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
         }
 
         case "question.asked": {
-          const id = props.sessionID;
+          const id = rootOf(props.sessionID);
           if (!id) return;
           const first = props.questions?.[0];
           await send(
@@ -266,7 +292,7 @@ export const AgentTmuxNotifyPlugin = async ({ directory, worktree }) => {
         case "permission.replied":
         case "question.replied":
         case "question.rejected": {
-          const id = props.sessionID;
+          const id = rootOf(props.sessionID);
           if (!id) return;
           const timer = pendingAsks.get(props.requestID);
           if (timer) {
