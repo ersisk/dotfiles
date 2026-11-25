@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+#
+# daylog — one day's work (commits, PRs, Jira, agent sessions) summarised into
+# an Obsidian daily note, ready to read out at standup.
+
+set -uo pipefail
+
+usage() {
+  cat >&2 <<'USAGE_EOF'
+daylog — summarise a day's work into an Obsidian note
+
+USAGE
+  daylog [-y | -d YYYY-MM-DD] [-n] [-f] [--raw]
+
+OPTIONS
+  -y, --yesterday   yesterday instead of today (the morning standup case)
+  -d, --date DATE   any day
+  -n, --dry-run     print to stdout, write nothing
+  -f, --force       overwrite an existing note
+      --raw         skip the AI summary, keep only the collected lists
+  -h, --help        this help
+
+ENVIRONMENT
+  OBSIDIAN_VAULT     default: ~/obsidian-vault (note goes to daily/DATE.md)
+  DAYLOG_REPOS_ROOT  where git repos are searched, default: ~/workspace
+USAGE_EOF
+}
+
+DAY=$(date +%Y-%m-%d)
+DRY=0 FORCE=0 RAW=0
+while (( $# )); do
+  case "$1" in
+    -y|--yesterday) DAY=$(date -v-1d +%Y-%m-%d); shift ;;
+    -d|--date)      DAY="${2:?date missing}"; shift 2 ;;
+    -n|--dry-run)   DRY=1; shift ;;
+    -f|--force)     FORCE=1; shift ;;
+    --raw)          RAW=1; shift ;;
+    -h|--help)      usage; exit 0 ;;
+    *)              usage; exit 1 ;;
+  esac
+done
+
+START=$(date -j -f '%Y-%m-%d %H:%M:%S' "$DAY 00:00:00" +%s 2>/dev/null) \
+  || { echo "daylog: bad date: $DAY" >&2; exit 1; }
+END=$(( START + 86400 ))
+NEXT=$(date -r "$END" +%Y-%m-%d)
+
+VAULT="${OBSIDIAN_VAULT:-$HOME/obsidian-vault}"
+VAULT="${VAULT/#\~/$HOME}"
+NOTE="$VAULT/daily/$DAY.md"
+if (( !DRY && !FORCE )) && [[ -e "$NOTE" ]]; then
+  echo "daylog: $NOTE exists, use -f to overwrite" >&2; exit 1
+fi
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# The network calls dominate the runtime, so they run in parallel.
+gh search prs --author=@me --updated="$DAY" --limit 50 \
+    --json repository,number,title,state \
+    --jq '.[] | "\(.repository.nameWithOwner)#\(.number) [\(.state)] \(.title)"' \
+    >"$tmp/prs" 2>/dev/null &
+gh search prs --reviewed-by=@me --updated="$DAY" --limit 50 \
+    --json repository,number,title,author \
+    --jq '.[] | select(.author.login != "'"$(gh api user -q .login 2>/dev/null)"'")
+              | "\(.repository.nameWithOwner)#\(.number) \(.title)"' \
+    >"$tmp/reviews" 2>/dev/null &
+agentcost --since "$DAY" --until "$NEXT" --total 2>/dev/null \
+  | sed 's/$/ (API list price equivalent)/' >"$tmp/cost" &
+jira issue list --plain --no-headers --columns key,summary,status -q \
+    "status CHANGED BY currentUser() DURING (\"$DAY\", \"$NEXT\") OR (assignee = currentUser() AND updated >= \"$DAY\" AND updated < \"$NEXT\")" \
+    2>/dev/null | tr -s '\t' | awk -F'\t' '{print $1 " — " $2 " [" $3 "]"}' >"$tmp/jira" &
+
+# --all with sort -u: a rebased branch shows the same commit subject twice.
+author=$(git config --global user.email)
+fd -H -I -t d '^\.git$' --max-depth 5 -E node_modules -E vendor \
+    "${DAYLOG_REPOS_ROOT:-$HOME/workspace}" 2>/dev/null \
+  | while read -r gitdir; do
+      repo=${gitdir%/.git/}; repo=${repo%/.git}
+      git -C "$repo" log --all --no-merges --author="$author" \
+          --since="@$START" --until="@$END" --format='%s' 2>/dev/null \
+        | sort -u | sed "s|^|${repo##*/}: |"
+    done >"$tmp/commits"
+
+# Claude Code: sessions touched that day; the title is the last (ai-|custom-)title.
+find "$HOME/.claude/projects" -mindepth 2 -maxdepth 2 -name '*.jsonl' \
+    -newermt "$DAY 00:00:00" ! -newerBt "$NEXT 00:00:00" 2>/dev/null \
+  | rg -v -e '/-private-' -e 'claude-mem' \
+  | while read -r f; do
+      title=$(rg -N '"type":"(ai-title|custom-title)"' "$f" | tail -1 \
+              | jq -r '.customTitle // .aiTitle // empty' 2>/dev/null)
+      [[ -n "$title" ]] || continue
+      cwd=$(rg -m1 -o '"cwd":"[^"]*"' "$f" | cut -d'"' -f4)
+      echo "claude · ${cwd##*/}: $title"
+    done >"$tmp/sessions"
+
+# kilo and opencode share a schema; subagents (parent_id set) are noise.
+for tool in kilo opencode; do
+  db="$HOME/.local/share/$tool/$tool.db"
+  [[ -f "$db" ]] || continue
+  sqlite3 -readonly "$db" \
+    "select '$tool · ' || replace(directory, rtrim(directory, replace(directory, '/', '')), '') || ': ' || title
+     from session where parent_id is null and title not like 'New session - %'
+       and time_updated >= ${START}000 and time_created < ${END}000
+     order by time_created" 2>/dev/null
+done >>"$tmp/sessions"
+
+wait
+
+# The same T2 review title repeats once per PR; one line with a count is enough.
+sort "$tmp/sessions" | uniq -c \
+  | awk '{n=$1; sub(/^ *[0-9]+ /, ""); print (n > 1 ? $0 " (x" n ")" : $0)}' >"$tmp/s" \
+  && mv "$tmp/s" "$tmp/sessions"
+
+section() {
+  [[ -s "$tmp/$2" ]] || return 0
+  printf '### %s\n' "$1"
+  sed 's/^/- /' "$tmp/$2"
+  echo
+}
+sources=$(
+  section "PRs" prs
+  section "Reviews" reviews
+  section "Jira" jira
+  section "Commits" commits
+  section "Agent sessions" sessions
+  section "Agent cost" cost
+)
+[[ -n "$sources" ]] || { echo "daylog: nothing found for $DAY" >&2; exit 1; }
+
+summary=""
+if (( !RAW )); then
+  summary=$(printf '%s\n' "$sources" | AI_ONESHOT_BACKEND=claude ai-oneshot "$(cat <<PROMPT_EOF
+Below is everything one backend developer did on $DAY: PRs, reviews, Jira
+tickets, commits and coding-agent sessions. Write their standup summary in
+Turkish, as markdown bullets only, no heading and no preamble.
+
+- Group by piece of work, not by source: a Jira key, its PR, its commits and
+  its agent sessions are one item. Lead each item with the Jira key or PR ref.
+- One line per item: what was done and where it stands (merged, in review,
+  blocked...). Reviews of others' PRs go in one "Review:" item.
+- Skip noise: config tweaks, agent sessions that are only tooling chatter.
+- End with a "Blocker:" line only if a ticket is Blocked; otherwise omit it.
+PROMPT_EOF
+)")
+fi
+
+note=$(
+  printf -- '---\ntype: standup\ndate: %s\ntags: [daylog, standup]\n---\n\n# %s\n\n' "$DAY" "$DAY"
+  [[ -n "$summary" ]] && printf '## Summary\n\n%s\n\n' "$summary"
+  printf '## Sources\n\n%s\n' "$sources"
+)
+
+if (( DRY )); then
+  printf '%s\n' "$note"
+else
+  mkdir -p "${NOTE%/*}"
+  printf '%s\n' "$note" >"$NOTE"
+  echo "$NOTE"
+fi
